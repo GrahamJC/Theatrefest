@@ -2,36 +2,36 @@
 
 {% block content %}
 
-	<div class="panel panel-default">
-		<div class="panel-heading">My Fringers</div>
-		<div class="panel-body">
+    <div class="panel panel-default">
+        <div class="panel-heading">My Fringers</div>
+        <div class="panel-body">
 
-			<ul>
-				{% for fringer in fringers %}
-					<li>{{ fringer.shows }} shows</li>
-				{% endfor %}
-			</ul>
+            <ul>
+                {% for fringer in fringers %}
+                    <li>{{ fringer.shows }} shows</li>
+                {% endfor %}
+            </ul>
 
-			<div class="well">
-				<form class="form-horizontal" method="POST">
-					{% csrf_token %}
-					<div class="form-group">
-						<div class="col-xs-6 col-sm-3 col-sm-offset-3">
-							<select name="add_to_basket" class="form-control">
-								{% for type in fringer_types %}
-									<option value="{{ type.name }}">{{ type.shows }} shows for {{ type.price }}</option>
-								{% endfor %}
-							</select>
-						</div>
-						<div class="col-xs-6">
-							<button class="btn btn-primary" name="submit" type="submit">Add to Basket</button>
-						</div>
-					</div>
-				</form>
-			</div>
+            <div class="well">
+                <form class="form-horizontal" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <div class="col-xs-6 col-sm-3 col-sm-offset-3">
+                            <select name="add_to_basket" class="form-control">
+                                {% for type in fringer_types %}
+                                    <option value="{{ type.name }}">{{ type.shows }} shows for {{ type.price }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-xs-6">
+                            <button class="btn btn-primary" name="submit" type="submit">Add to Basket</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
-		</div>
-	</div>
+        </div>
+    </div>
 
 
 {% endblock %}

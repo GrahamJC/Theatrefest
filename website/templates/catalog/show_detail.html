@@ -2,85 +2,85 @@
 
 {% block content %}
 
-	<div id="tf-show-detail">
-		
-		<div class="row">
-			
-			<div class="col-xs-12 col-sm-3">
-				<p class="visible-xs-block tf-show-detail__title"><a href="{% url 'catalog:show_detail' show.id %}">{{ show.name }}</a></p>
-				<p class="visible-xs-block tf-show-detail__company">{{ show.company.name }}</p>
-				{% if show.image %}
-					<block class="tf-show-detail__image">
-						<img src="{{ MEDIA_ROOT }}{{ show.image.url }}" />
-					</block>
-				{% endif %}
-				{% if show.display_genres %}
-					<span class="tf-show-card__genres hidden-xs">
-						{{ show.display_genres }}
-					</span>
-				{% endif %}
-				{% if show.display_genre_warnings %}
-					<span class="tf-show-card__genre-warnings">
-						{{ show.display_genre_warnings }}
-					</span>
-				{% endif %}
-				{% if show.age_range %}
-					<p class="tf-show-detail__age-range">Age {{ show.age_range }}</p>
-				{% endif %}
-				{% if show.duration %}
-					<p class="tf-show-detail__duration">{{ show.duration }} mins</p>
-				{% endif %}
-				<div class="tf-show-detail__venue" style="border-color: {{ show.payment_type_color }};">
-					<p class="tf-show-detail__venue-name">{{ show.venue.name }}</p>
-					{% if show.performances.all %}
-						<ul class="tf-show-detail-performances">
-							{% for performance in show.performances.all %}
-								<li><p class="tf-show-detail__performance"><a href="{% url 'tickets:buy' performance.id %}">{{ performance.date_time|date:'l P' }}</a></p></li>
-							{% endfor %}
-						</ul>
-						<p>Select performance to book tickets</p>
-					{% endif %}
-				</div>
-			</div>
+    <div id="tf-show-detail">
+        
+        <div class="row">
+            
+            <div class="col-xs-12 col-sm-3">
+                <p class="visible-xs-block tf-show-detail__title"><a href="{% url 'catalog:show_detail' show.id %}">{{ show.name }}</a></p>
+                <p class="visible-xs-block tf-show-detail__company">{{ show.company.name }}</p>
+                {% if show.image %}
+                    <block class="tf-show-detail__image">
+                        <img src="{{ MEDIA_ROOT }}{{ show.image.url }}" />
+                    </block>
+                {% endif %}
+                {% if show.display_genres %}
+                    <span class="tf-show-card__genres hidden-xs">
+                        {{ show.display_genres }}
+                    </span>
+                {% endif %}
+                {% if show.display_genre_warnings %}
+                    <span class="tf-show-card__genre-warnings">
+                        {{ show.display_genre_warnings }}
+                    </span>
+                {% endif %}
+                {% if show.age_range %}
+                    <p class="tf-show-detail__age-range">Age {{ show.age_range }}</p>
+                {% endif %}
+                {% if show.duration %}
+                    <p class="tf-show-detail__duration">{{ show.duration }} mins</p>
+                {% endif %}
+                <div class="tf-show-detail__venue" style="border-color: {{ show.payment_type_color }};">
+                    <p class="tf-show-detail__venue-name">{{ show.venue.name }}</p>
+                    {% if show.performances.all %}
+                        <ul class="tf-show-detail-performances">
+                            {% for performance in show.performances.all %}
+                                <li><p class="tf-show-detail__performance"><a href="{% url 'tickets:buy' performance.id %}">{{ performance.date_time|date:'l P' }}</a></p></li>
+                            {% endfor %}
+                        </ul>
+                        <p>Select performance to book tickets</p>
+                    {% endif %}
+                </div>
+            </div>
 
-			<div class="col-xs-12 col-sm-9">
-				<p class="hidden-xs tf-show-detail__title">{{ show.name }}</p>
-				<p class="hidden-xs tf-show-detail__company">{{ show.company.name }}</p>
-				<p class="tf-show-detail__description">{{ show.description | linebreaks }}</p>
-				{% if show.website %}
-					<p class="tf-show-detail__website"><a href="{{ show.website }}" target="_blank">{{ show.website }}</a></p>
-				{% endif %}
-				{% if show.twitter %}
-					<p class="tf-show-detail__twitter"><a href="https://twitter.com/{{ show.twitter }}" target="_blank">Twitter: {{ show.twitter }}</a></p>
-				{% endif %}
-				{% if show.instagram %}
-					<p class="tf-show-detail__instagram"><a href="https://www.instagram.com/{{ show.instagram }}" target="_blank">Instagram: {{ show.instagram }}</a></p>
-				{% endif %}
-				{% if show.facebook %}
-					<p class="tf-show-detail__facebook"><a href="https://www.facebook.com/{{ show.facebook }}" target="_blank">Facebook: {{ show.facebook }}</a></p>
-				{% endif %}
-				{% if show.reviews.all %}
-					<p class="tf-show-detail__reviews">Reviews</p>
-					{% for review in show.reviews.all %}
-					<div class="tf-show-detail__review">
-						<div class="tf-show-detail__review-head">
-							<span class="tf-show-detail__review-rating">{{ review.get_rating_display }}</span>
-							<span class="tf-show-detail__review-source">{{ review.source }}</span>
-							{% if review.url %}
-								<a class="tf-show-detail__review-url" href="{{ review.url }}" target="_blank">Here</a>
-							{% endif %}
-						</div>
-						<div class="tf-show-detail__review-body">
-							{{ review.body }}
-						</div>
-					</div>
-					{% endfor %}
-				{% endif %}
-			</div>
-			
-		</div>
+            <div class="col-xs-12 col-sm-9">
+                <p class="hidden-xs tf-show-detail__title">{{ show.name }}</p>
+                <p class="hidden-xs tf-show-detail__company">{{ show.company.name }}</p>
+                <p class="tf-show-detail__description">{{ show.description | linebreaks }}</p>
+                {% if show.website %}
+                    <p class="tf-show-detail__website"><a href="{{ show.website }}" target="_blank">{{ show.website }}</a></p>
+                {% endif %}
+                {% if show.twitter %}
+                    <p class="tf-show-detail__twitter"><a href="https://twitter.com/{{ show.twitter }}" target="_blank">Twitter: {{ show.twitter }}</a></p>
+                {% endif %}
+                {% if show.instagram %}
+                    <p class="tf-show-detail__instagram"><a href="https://www.instagram.com/{{ show.instagram }}" target="_blank">Instagram: {{ show.instagram }}</a></p>
+                {% endif %}
+                {% if show.facebook %}
+                    <p class="tf-show-detail__facebook"><a href="https://www.facebook.com/{{ show.facebook }}" target="_blank">Facebook: {{ show.facebook }}</a></p>
+                {% endif %}
+                {% if show.reviews.all %}
+                    <p class="tf-show-detail__reviews">Reviews</p>
+                    {% for review in show.reviews.all %}
+                    <div class="tf-show-detail__review">
+                        <div class="tf-show-detail__review-head">
+                            <span class="tf-show-detail__review-rating">{{ review.get_rating_display }}</span>
+                            <span class="tf-show-detail__review-source">{{ review.source }}</span>
+                            {% if review.url %}
+                                <a class="tf-show-detail__review-url" href="{{ review.url }}" target="_blank">Here</a>
+                            {% endif %}
+                        </div>
+                        <div class="tf-show-detail__review-body">
+                            {{ review.body }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            
+        </div>
 
-	</div>
+    </div>
 
 {% endblock %}
 

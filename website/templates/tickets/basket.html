@@ -2,18 +2,18 @@
 
 {% block content %}
 
-	<div class="panel panel-default">
-		<div class="panel-heading">My Basket</div>
-		<div class="panel-body">
+    <div class="panel panel-default">
+        <div class="panel-heading">My Basket</div>
+        <div class="panel-body">
 
-			<ul>
-				{% for fringer in fringers %}
-					<li>{{ fringer.shows }} shows</li>
-				{% endfor %}
-			</ul>
+            <ul>
+                {% for fringer in basket.fringers.all %}
+                    <li>{{ fringer.shows }} shows</li>
+                {% endfor %}
+            </ul>
 
-		</div>
-	</div>
+        </div>
+    </div>
 
 
 {% endblock %}

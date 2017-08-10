@@ -65,19 +65,17 @@
     <Compile Include="tickets\urls.py" />
     <Compile Include="tickets\views.py" />
     <Compile Include="tickets\__init__.py" />
+    <Compile Include="website\utils.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="website\__init__.py" />
     <Compile Include="website\settings.py" />
     <Compile Include="website\urls.py" />
     <Compile Include="website\wsgi.py" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="accounts\admin.py.bak" />
-    <Content Include="accounts\forms.py.bak" />
     <Content Include="accounts\migrations\__pycache__\0001_initial.cpython-36.pyc" />
     <Content Include="accounts\migrations\__pycache__\__init__.cpython-36.pyc" />
-    <Content Include="accounts\models.py.bak" />
-    <Content Include="accounts\urls.py.bak" />
-    <Content Include="accounts\views.py.bak" />
     <Content Include="accounts\__pycache__\admin.cpython-36.pyc" />
     <Content Include="accounts\__pycache__\apps.cpython-36.pyc" />
     <Content Include="accounts\__pycache__\forms.cpython-36.pyc" />
@@ -115,16 +113,11 @@
     <Content Include="static\Bridge.png" />
     <Content Include="static\jquery\jquery-3.2.1.min.js" />
     <Content Include="static\styles.css" />
-    <Content Include="static\styles.css.bak" />
     <Content Include="templates\accounts\profile.html" />
-    <Content Include="templates\accounts\profile.html.bak" />
     <Content Include="templates\base.html" />
-    <Content Include="templates\base.html.bak" />
     <Content Include="templates\catalog\home.html" />
     <Content Include="templates\catalog\shows.html" />
-    <Content Include="templates\catalog\shows.html.bak" />
     <Content Include="templates\catalog\show_detail.html" />
-    <Content Include="templates\catalog\show_detail.html.bak" />
     <Content Include="templates\catalog\venues.html" />
     <Content Include="templates\catalog\venue_detail.html" />
     <Content Include="templates\registration\activate.html" />
@@ -132,9 +125,6 @@
     <Content Include="templates\registration\activation_email.txt" />
     <Content Include="templates\registration\activation_email_subject.txt" />
     <Content Include="templates\registration\login.html" />
-    <Content Include="templates\registration\login.html.bak" />
-    <Content Include="templates\registration\login_b3.html" />
-    <Content Include="templates\registration\login_b3.html.bak" />
     <Content Include="templates\registration\logout.html" />
     <Content Include="templates\registration\password_change_done.html" />
     <Content Include="templates\registration\password_change_form.html" />
@@ -146,22 +136,13 @@
     <Content Include="templates\registration\registration_closed.html" />
     <Content Include="templates\registration\registration_complete.html" />
     <Content Include="templates\registration\registration_form.html" />
-    <Content Include="templates\registration\registration_form.html.bak" />
     <Content Include="templates\tickets\basket.html" />
-    <Content Include="templates\tickets\basket.html.bak" />
-    <Content Include="templates\tickets\buy_fringer.html.bak" />
     <Content Include="templates\tickets\fringers.html" />
-    <Content Include="templates\tickets\fringers.html.bak" />
-    <Content Include="tickets\admin.py.bak" />
-    <Content Include="tickets\forms.py.bak" />
     <Content Include="tickets\migrations\__pycache__\0001_initial.cpython-36.pyc" />
     <Content Include="tickets\migrations\__pycache__\0002_auto_20170807_1551.cpython-36.pyc" />
     <Content Include="tickets\migrations\__pycache__\0003_auto_20170808_0701.cpython-36.pyc" />
     <Content Include="tickets\migrations\__pycache__\0004_auto_20170808_1214.cpython-36.pyc" />
     <Content Include="tickets\migrations\__pycache__\__init__.cpython-36.pyc" />
-    <Content Include="tickets\models.py.bak" />
-    <Content Include="tickets\urls.py.bak" />
-    <Content Include="tickets\views.py.bak" />
     <Content Include="tickets\__pycache__\admin.cpython-36.pyc" />
     <Content Include="tickets\__pycache__\apps.cpython-36.pyc" />
     <Content Include="tickets\__pycache__\forms.cpython-36.pyc" />

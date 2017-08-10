@@ -3,10 +3,10 @@
 
 {% block content %}
 
- 	{% crispy form form.helper %}
+    {% crispy form form.helper %}
 
-	<p>{% trans "Forgot password" %}? <a href="{% url 'auth_password_reset' %}">{% trans "Reset it" %}</a>!</p>
-	<p>{% trans "Not member" %}? <a href="{% url 'registration_register' %}">{% trans "Register" %}</a>!</p>
-	<p>Next: {{ next }}</p>
-	
+    <p>{% trans "Forgot password" %}? <a href="{% url 'auth_password_reset' %}">{% trans "Reset it" %}</a>!</p>
+    <p>{% trans "Not member" %}? <a href="{% url 'registration_register' %}">{% trans "Register" %}</a>!</p>
+    <p>Next: {{ next }}</p>
+    
 {% endblock %}

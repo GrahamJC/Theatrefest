@@ -5,75 +5,75 @@
 <html lang="en">
 
 <head>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
-	<link rel="stylesheet" href="{% static 'styles.css' %}">
-	<title>{% block title %}TheatreFest{% endblock %}</title>
-	<script src="{% static 'jquery/jquery-3.2.1.min.js' %}" ></script>
-	<script src="{% static 'bootstrap/js/bootstrap.min.js' %}" ></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <title>{% block title %}TheatreFest{% endblock %}</title>
+    <script src="{% static 'jquery/jquery-3.2.1.min.js' %}" ></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}" ></script>
 </head>
 
 <body>
 
-	<div id="tf-container" class="container">
+    <div id="tf-container" class="container">
 
-		<div id="tf-header" class="row">
-			<div class="col-xs-12 col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
-				<img src="{% static 'bridge.png' %}" />	
-			</div>
-		</div>
-	
-		<div id="tf-navigation" class="row">
-			<div class="col-xs-12">
-				<nav class="navbar navbar-default">
+        <div id="tf-header" class="row">
+            <div class="col-xs-12 col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+                <img src="{% static 'bridge.png' %}" /> 
+            </div>
+        </div>
+    
+        <div id="tf-navigation" class="row">
+            <div class="col-xs-12">
+                <nav class="navbar navbar-default">
 
-					<div class="navbar-header">
-						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#tf-navbar-collapse-1">
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-						</button>
-						<a class="navbar-brand" href="#">TheatreFest</a>
-					</div>
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#tf-navbar-collapse-1">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="#">TheatreFest</a>
+                    </div>
 
-					<div id="tf-navbar-collapse-1" class="collapse navbar-collapse">
-						<ul class="nav navbar-nav">
-							<li class="{% if 'catalog:home' == request.resolver_match.url_name %}active{% endif %}"><a href="{% url 'catalog:home' %}">Home</a></li>
-							<li class="{% if 'catalog:show' in request.resolver_match.url_name %}active{% endif %}"><a href="{% url 'catalog:shows' %}">Shows</a></li>
-							<li><a href="#">Times</a></li>
-							<li><a href="#">Tickets</a></li>
-							<li class="{% if 'catalog:venue' in request.resolver_match.url_name %}active{% endif %}"><a href="{% url 'catalog:venues' %}">Venues</a></li>
-							<li><a href="#">Volunteer</a></li>
-							<li><a href="#">Contact</a></li>
-						</ul>
-						<ul class="nav navbar-nav navbar-right">
-							{% if user.is_authenticated %}
-								<li class="dropdown">
-									<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }} <span class="caret"></span></a>
-									<ul class="dropdown-menu">
-										<li><a href="{% url 'tickets:fringers' %}">Fringers</a></li>
-										<li><a href="{% url 'tickets:basket' %}">Basket</a></li>
-										{% if user.is_staff and user.is_active %}
-											<li><a href="/admin">Admin</a></li>
-										{% endif %}
-										<li><a href="{% url 'auth_logout' %}">Logout</a></li>
-									</ul>
-								</li>
-							{% else %}
-								<li><a href="{% url 'auth_login' %}">Login</a></li>
-							{% endif %}
-						</ul>
-					</div>
-				</nav>
-			</div>
-		</div>
+                    <div id="tf-navbar-collapse-1" class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav">
+                            <li class="{% if 'catalog:home' == request.resolver_match.url_name %}active{% endif %}"><a href="{% url 'catalog:home' %}">Home</a></li>
+                            <li class="{% if 'catalog:show' in request.resolver_match.url_name %}active{% endif %}"><a href="{% url 'catalog:shows' %}">Shows</a></li>
+                            <li><a href="#">Times</a></li>
+                            <li><a href="#">Tickets</a></li>
+                            <li class="{% if 'catalog:venue' in request.resolver_match.url_name %}active{% endif %}"><a href="{% url 'catalog:venues' %}">Venues</a></li>
+                            <li><a href="#">Volunteer</a></li>
+                            <li><a href="#">Contact</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            {% if user.is_authenticated %}
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }} <span class="caret"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="{% url 'tickets:fringers' %}">Fringers</a></li>
+                                        <li><a href="{% url 'tickets:basket' %}">Basket</a></li>
+                                        {% if user.is_staff and user.is_active %}
+                                            <li><a href="/admin">Admin</a></li>
+                                        {% endif %}
+                                        <li><a href="{% url 'auth_logout' %}">Logout</a></li>
+                                    </ul>
+                                </li>
+                            {% else %}
+                                <li><a href="{% url 'auth_login' %}">Login</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </div>
 
-		<div id="tf-content">
-			{% block content %}{% endblock %}
-		</div>
-		
-	</div>	
-		
+        <div id="tf-content">
+            {% block content %}{% endblock %}
+        </div>
+        
+    </div>  
+        
 </body>
 
 </html>
