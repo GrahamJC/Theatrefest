@@ -1,0 +1,161 @@
+p {
+	margin-bottom: 5px;
+}
+
+#tf-container {
+    background-color: white;
+    box-shadow: 0 0 75px;
+}
+
+#tf-header {
+    text-align: center;
+}
+
+#tf-header img {
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+#tf-navigator {
+}
+
+@media (min-width: 992px) {
+	#tf-content {
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+}
+
+/* Show list */
+.tf-show-card {
+	margin-bottom: 10px;
+	border: 10px solid #cccccc;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.tf-show-card__image {
+}
+
+.tf-show-card__image img {
+	width: 100%;
+}
+
+.tf-show-card__title {
+	color: #1a7cf3;
+	font-weght: bold;
+	font-size: 14pt;
+}
+
+.tf-show-card__company {
+	color: #fd7f02;
+	font-weght: bold;
+	font-size: 12pt;
+}
+
+@media (max-width: 768px) {
+	.tf-show-card {
+		font-size: 8pt;
+	}
+
+	.tf-show-card__title {
+		font-size: 10pt;
+	}
+
+	.tf-show-card__company {
+		font-size: 8pt;
+	}
+}
+
+.tf-show-card__genres {
+	color: #fd7f02;
+	font-weght: bold;
+	margin-right: 20px;
+}
+
+.tf-show-card__genre-warnings {
+	color: #ff4040;
+	font-weght: bold;
+	margin-right: 20px;
+}
+
+.tf-show-card__age-range {
+	color: #1a7cf3;
+	font-weght: bold;
+	margin-right: 20px;
+}
+
+.tf-show-card__duration {
+	color: #fd7f02;
+	font-weght: bold;
+}
+
+/* Show details */
+.tf-show-detail {
+}
+
+.tf-show-detail__image img {
+	margin-bottom: 10px;
+	width: 100%;
+}
+
+.tf-show-detail__title {
+	color: #1a7cf3;
+	font-weght: bold;
+	font-size: 14pt;
+}
+
+.tf-show-detail__company {
+	color: #fd7f02;
+	font-weght: bold;
+	font-size: 12pt;
+}
+
+.tf-show-detail__genres {
+	color: #fd7f02;
+	font-weght: bold;
+	margin-right: 20px;
+}
+
+.tf-show-detail__genre-warnings {
+	color: #ff4040;
+	font-weght: bold;
+	margin-right: 20px;
+}
+
+.tf-show-detail__age-range {
+	color: #1a7cf3;
+	font-weght: bold;
+	margin-right: 20px;
+}
+
+.tf-show-detail__duration {
+	color: #fd7f02;
+	font-weght: bold;
+}
+
+.tf-show-detail__venue {
+	border: 10px solid #cccccc;
+	padding: 10px;
+}
+
+.tf-show-detail__venue-name {
+	color: #1a7cf3;
+	font-weght: bold;
+	font-size: 12pt;
+}
+
+.tf-show-detail__reviews {
+	margin-top: 10px;
+	font-size: 12pt;
+	font-weight: bold;
+}
+
+.tf-show-detail__review {
+	margin-top: 10px;
+}
+
+.tf-show-detail__review-rating,
+.tf-show-detail__review-source  {
+	font-weight: bold;
+}

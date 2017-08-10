@@ -1,0 +1,7 @@
+django
+django-registration
+django-crispy-forms
+psycopg2
+pillow
+
+
