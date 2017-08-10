@@ -1,7 +1,9 @@
-django
-django-registration
-django-crispy-forms
-psycopg2
-pillow
-
-
+Django==1.11.4
+django-crispy-forms==1.6.1
+django-registration==2.2
+olefile==0.44
+Pillow==4.2.1
+pip==9.0.1
+psycopg2==2.7.3
+pytz==2017.2
+setuptools==28.8.0
