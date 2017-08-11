@@ -51,6 +51,9 @@
     <Compile Include="catalog\urls.py" />
     <Compile Include="catalog\views.py" />
     <Compile Include="catalog\__init__.py" />
+    <Compile Include="website\tf_filters.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="manage.py" />
     <Compile Include="tickets\admin.py" />
     <Compile Include="tickets\apps.py" />

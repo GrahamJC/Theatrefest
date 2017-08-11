@@ -24,6 +24,12 @@ class Basket(models.Model):
     def __str__(self):
         return self.user.username
 
+    def add_item(self, item):
+        item.basket = self
+        item.save()
+        self.updated = datetime.now()
+        self.save()
+
 
 class FringerType(models.Model):
     

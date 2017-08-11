@@ -28,9 +28,12 @@ class FringersView(LoginRequiredMixin, View):
         return render(request, "tickets/fringers.html", context)
 
     def post(self, request):
+        # Get fringer type, box office and basket
         fringer_type = get_object_or_404(FringerType, name = request.POST.get("add_to_basket"))
-        box_office = BoxOffice.objects.get(name = 'Online')
+        box_office = get_object_or_404(BoxOffice, name = 'Online')
         basket = request.user.basket
+
+        # Create new fringer and add to basket
         fringer = Fringer(
             user = request.user,
             box_office = box_office,
@@ -41,9 +44,20 @@ class FringersView(LoginRequiredMixin, View):
             basket = basket
         )
         fringer.save()
-        basket.updated = datetime.now()
-        basket.save()
-        return redirect(reverse('tickets:basket'))
+        basket.add_item(fringer)
+
+        # Create confirmation alert
+        alerts = {
+            'success': ["{0} added to basket".format(fringer_type),],
+        }
+
+        # Redisplay with confirmation
+        context = {
+            'fringer_types': FringerType.objects.filter(is_online = True),
+            'fringers': Fringer.objects.filter(user = request.user, basket = None),
+            'alerts': alerts,
+        }
+        return render(request, "tickets/fringers.html", context)
 
 """
 from .forms import FringerForm
