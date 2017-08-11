@@ -4,7 +4,7 @@
 
     <div class="panel panel-default">
 
-        <div class="panel-heading">My Basket</div>
+        <div class="panel-heading">Checkout</div>
 
         <div class="panel-body">
 
@@ -14,10 +14,12 @@
                 {% endfor %}
             </ul>
 
-            <a class="btn btn-primary" href="{% url 'tickets:checkout' %}">Checkout</a>
+            <form method="POST">
+                {% csrf_token %}
+                <button class="btn btn-primary" type="submit">Purchase</button>
+            </form>
 
         </div>
     </div>
-
 
 {% endblock %}

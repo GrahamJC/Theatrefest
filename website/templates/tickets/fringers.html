@@ -1,15 +1,16 @@
 {% extends "base.html" %}
-{% load tf_filters %}
 
 {% block content %}
 
-    <div class="panel panel-default">
-        <div class="panel-heading">My Fringers</div>
-        <div class="panel-body">
+    {% if not basket.is_empty %}
+        {% include 'tickets/_basket.html' %}
+    {% endif %}
 
-            {% if alerts %}
-                {{ alerts|bs_alerts|safe }}
-            {% endif %}
+    <div class="panel panel-default">
+
+        <div class="panel-heading">My Fringers</div>
+
+        <div class="panel-body">
 
             <ul>
                 {% for fringer in fringers %}
@@ -36,7 +37,7 @@
             </div>
 
         </div>
-    </div>
 
+    </div>
 
 {% endblock %}

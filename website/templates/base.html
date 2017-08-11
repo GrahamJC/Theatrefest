@@ -1,4 +1,5 @@
 {% load static %}
+{% load tf_filters %}
 
 <!DOCTYPE html>
 
@@ -69,7 +70,13 @@
         </div>
 
         <div id="tf-content">
+
+            {% if alerts %}
+                {{ alerts|bs_alerts|safe }}
+            {% endif %}
+
             {% block content %}{% endblock %}
+
         </div>
         
     </div>  

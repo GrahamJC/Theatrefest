@@ -24,6 +24,7 @@ class FringersView(LoginRequiredMixin, View):
         context = {
             'fringer_types': FringerType.objects.filter(is_online = True),
             'fringers': Fringer.objects.filter(user = request.user, basket = None),
+            'basket': request.user.basket,
         }
         return render(request, "tickets/fringers.html", context)
 
@@ -48,7 +49,7 @@ class FringersView(LoginRequiredMixin, View):
 
         # Create confirmation alert
         alerts = {
-            'success': ["{0} added to basket".format(fringer_type),],
+            'success': ["{0} added to basket".format(fringer_type)],
         }
 
         # Redisplay with confirmation
@@ -56,6 +57,7 @@ class FringersView(LoginRequiredMixin, View):
             'fringer_types': FringerType.objects.filter(is_online = True),
             'fringers': Fringer.objects.filter(user = request.user, basket = None),
             'alerts': alerts,
+            'basket': basket,
         }
         return render(request, "tickets/fringers.html", context)
 
@@ -111,6 +113,15 @@ class BasketView(LoginRequiredMixin, View):
         }
         return render(request, "tickets/basket.html", context)
 
+
+class CheckoutView(LoginRequiredMixin, View):
+
+    def get(self, request):
+        context = {
+            'basket': request.user.basket
+        }
+        return render(request, "tickets/checkout.html", context)
+
     def post(self, request):
         basket = request.user.basket
         for fringer in basket.fringers.all():
@@ -119,7 +130,15 @@ class BasketView(LoginRequiredMixin, View):
         for ticket in basket.tickets.all():
             ticket.basket = None
             ticket.save()
+
+        # Create confirmation alert
+        alerts = {
+            'success': ["Purhase complete"],
+        }
+
+
         context = {
+            'alerts': alerts,
             'basket': basket,
         }
-        return render(request, "tickets/basket.html", context)
+        return render(request, "tickets/checkout.html", context)

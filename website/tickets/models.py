@@ -24,6 +24,9 @@ class Basket(models.Model):
     def __str__(self):
         return self.user.username
 
+    def is_empty(self):
+        return not(self.fringers.all() or self.tickets.all())
+
     def add_item(self, item):
         item.basket = self
         item.save()

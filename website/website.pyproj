@@ -139,6 +139,8 @@
     <Content Include="templates\registration\registration_closed.html" />
     <Content Include="templates\registration\registration_complete.html" />
     <Content Include="templates\registration\registration_form.html" />
+    <Content Include="templates\tickets\checkout.html" />
+    <Content Include="templates\tickets\_basket.html" />
     <Content Include="templates\tickets\basket.html" />
     <Content Include="templates\tickets\fringers.html" />
     <Content Include="tickets\migrations\__pycache__\0001_initial.cpython-36.pyc" />
