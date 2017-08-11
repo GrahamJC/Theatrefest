@@ -30,8 +30,7 @@ class FringersView(LoginRequiredMixin, View):
     def post(self, request):
         fringer_type = get_object_or_404(FringerType, name = request.POST.get("add_to_basket"))
         box_office = BoxOffice.objects.get(name = 'Online')
-        #basket = request.user.basket
-        basket, created = Basket.objects.get_or_create(user = request.user)
+        basket = request.user.basket
         fringer = Fringer(
             user = request.user,
             box_office = box_office,
@@ -92,14 +91,20 @@ class FringersView(View):
 class BasketView(LoginRequiredMixin, View):
 
     def get(self, request):
-        basket, created = Basket.objects.get_or_create(user = request.user)
+        basket = request.user.basket
         context = {
             'basket': basket,
         }
         return render(request, "tickets/basket.html", context)
 
     def post(self, request):
-        basket, created = Basket.objects.get_or_create(user = request.user)
+        basket = request.user.basket
+        for fringer in basket.fringers.all():
+            fringer.basket = None
+            fringer.save()
+        for ticket in basket.tickets.all():
+            ticket.basket = None
+            ticket.save()
         context = {
             'basket': basket,
         }

@@ -45,7 +45,7 @@ class Fringer(models.Model):
     description = models.CharField(max_length = 32)
     shows = models.PositiveIntegerField()
     cost = models.DecimalField(max_digits = 4, decimal_places = 2)
-    basket = models.ForeignKey(Basket, on_delete = models.CASCADE, blank = True, related_name = 'fringers')
+    basket = models.ForeignKey(Basket, on_delete = models.CASCADE, null = True, blank = True, related_name = 'fringers')
 
     def __str__(self):
         return self.description + ' (' + self.user.username + ')'
@@ -71,8 +71,8 @@ class Ticket(models.Model):
     date_time = models.DateTimeField()
     description = models.CharField(max_length = 32)
     cost = models.DecimalField(max_digits = 4, decimal_places = 2)
-    fringer = models.ForeignKey(Fringer, on_delete = models.PROTECT, blank = True, related_name = 'tickets')
-    basket = models.ForeignKey(Basket, on_delete = models.CASCADE, blank = True, related_name = 'tickets')
+    fringer = models.ForeignKey(Fringer, on_delete = models.PROTECT, null = True, blank = True, related_name = 'tickets')
+    basket = models.ForeignKey(Basket, on_delete = models.CASCADE, null = True, blank = True, related_name = 'tickets')
     
     def __str__(self):
-        return str(self.performance) + ': ' + self.perfromance 
+        return str(self.performance) + ': ' + self.perfromance
