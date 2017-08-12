@@ -2,6 +2,15 @@ from django.db import IntegrityError
 from django.db.models.fields.related import OneToOneField, ReverseOneToOneDescriptor
 
 
+def init_alerts():
+    return {
+        'error': [],
+        'warning': [],
+        'success': [],
+        'info': [],
+    }
+
+
 class AutoSingleRelatedObjectDescriptor(ReverseOneToOneDescriptor):
 
     def __get__(self, instance, type=None):

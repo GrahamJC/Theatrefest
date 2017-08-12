@@ -12,29 +12,51 @@
 
         <div class="panel-body">
 
-            <ul>
-                {% for fringer in fringers %}
-                    <li>{{ fringer.shows }} shows</li>
-                {% endfor %}
-            </ul>
+            <form class="form-horizontal" method="POST">
 
-            <div class="well">
-                <form class="form-horizontal" method="POST">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <div class="col-xs-6 col-sm-3 col-sm-offset-3">
-                            <select name="add_to_basket" class="form-control">
-                                {% for type in fringer_types %}
-                                    <option value="{{ type.name }}">{{ type.shows }} shows for {{ type.price }}</option>
-                                {% endfor %}
-                            </select>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Shows</th>
+                            <th>Used</th>
+                            <th>Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fringer in fringers %}
+                            <tr>
+                                <td>{{ fringer.description }}</td>
+                                <td>{{ fringer.shows }}</td>
+                                <td>{{ fringer.tickets.all.count }}</td>
+                                <td><input type="text" name="fringer_name{{ fringer.id }}" value="{{ fringer.name }}"/></td>
+                                <td><button class="btn btn-default" name="action" type="submit" value="rename{{ fringer.id }}">Rename</button></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="well">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <div class="col-xs-6 col-sm-3 col-sm-offset-3">
+                                <select name="fringer_type" class="form-control">
+                                    {% for type in fringer_types %}
+                                        <option value="{{ type.name }}">{{ type.shows }} shows for {{ type.price }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-xs-4">
+                                <input class="form-control" type="text" name="name" />
+                            </div>
+                            <div class="col-xs-2">
+                                <button class="btn btn-primary" name="action" type="submit" value="add">Add to Basket</button>
+                            </div>
                         </div>
-                        <div class="col-xs-6">
-                            <button class="btn btn-primary" name="submit" type="submit">Add to Basket</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+                </div>
+
+            </form>
 
         </div>
 

@@ -262,3 +262,6 @@ __pycache__/
 
 # Python virtual environment
 env/
+
+# Docker image files
+theatrefest.tar

@@ -35,8 +35,6 @@ class CompanyAdmin(admin.ModelAdmin):
     ]
     
     
-    
-    
 class PerformanceInline(admin.TabularInline):
     
     model = Performance

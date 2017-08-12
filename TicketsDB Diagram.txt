@@ -1,0 +1,61 @@
+# www.quickdatabasediagrams.com
+# Modify the code to update the DB schema diagram.
+# To reset the sample schema, replace everything with
+# two dots ('..' - without quotes).
+
+BoxOffice
+-----
+id PK int
+
+
+Perfromance
+-----
+id PK int
+
+User
+-----
+id PK int
+
+Basket
+-----
+id PK int
+user_id int FK - User.id
+created datetime
+updated datetime
+
+Fringer
+-----
+id PK int
+user_id int FK >- User.id
+box_office_id int fk >- BoxOffice.id
+date_time datetime
+description string
+shows int
+cost money
+basket_id int fk >- Basket.id
+
+Ticket
+-----
+id PK int
+user_id int fk >- User.id
+performance_id int fk >- Perfromance.id
+box_office_id int fk >- BoxOffice.id
+date_time datetime
+description string
+cost money
+fringer_id int fk >- Fringer.id
+basket_id int fk >- Basket.id
+
+
+[settings]
+Zoom 100
+DefaultFieldType int
+CaseSensitive on
+
+[layout]
+Perfromance 14 493
+User 112 52
+Basket 354 36
+Fringer 585 198
+Ticket 845 441
+BoxOffice 63 247

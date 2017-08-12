@@ -49,6 +49,7 @@ class FringerType(models.Model):
 class Fringer(models.Model):
     
     user = models.ForeignKey(User, on_delete = models.PROTECT, related_name = 'fringers')
+    name = models.CharField(max_length = 32, blank = True, default = '', unique = True)
     box_office = models.ForeignKey(BoxOffice, on_delete = models.PROTECT, related_name = 'fringers')
     date_time = models.DateTimeField()
     description = models.CharField(max_length = 32)
@@ -57,7 +58,7 @@ class Fringer(models.Model):
     basket = models.ForeignKey(Basket, on_delete = models.CASCADE, null = True, blank = True, related_name = 'fringers')
 
     def __str__(self):
-        return self.description + ' (' + self.user.username + ')'
+        return "{0}: {1}".format(self.name, self.description)
 
 
 class TicketType(models.Model):
@@ -84,4 +85,4 @@ class Ticket(models.Model):
     basket = models.ForeignKey(Basket, on_delete = models.CASCADE, null = True, blank = True, related_name = 'tickets')
     
     def __str__(self):
-        return str(self.performance) + ': ' + self.perfromance
+        return "{0} fro {1}".format(self.description, self.performance)

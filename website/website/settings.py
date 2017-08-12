@@ -90,6 +90,7 @@ DATABASES = {
         'USER': 'Theatrefest',
         'PASSWORD': 'barnum',
         'HOST': 'localhost',
+#        'HOST': 'db',
         'PORT': '5432',
     }
 }

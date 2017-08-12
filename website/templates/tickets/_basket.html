@@ -4,11 +4,23 @@
 
     <div class="panel-body">
 
-        <ul>
-            {% for fringer in basket.fringers.all %}
-                <li>{{ fringer.shows }} shows</li>
-            {% endfor %}
-        </ul>
+        {% if basket.fringers.all %}
+            <h4>Fringers</h4>
+            <ul>
+                {% for fringer in basket.fringers.all %}
+                    <li>{{ fringer.name }}: {{ fringer.description }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if basket.tickets.all %}
+            <h4>Tickets</h4>
+            <ul>
+                {% for ticket in basket.tickets.all %}
+                    <li>{{ ticket.performance }} ({{ ticket.description }})</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
 
         <a class="btn btn-primary" href="{% url 'tickets:checkout' %}">Checkout</a>
 

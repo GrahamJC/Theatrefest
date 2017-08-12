@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h3>{{ performance }}</h3>
+
+    {% if not basket.is_empty %}
+        {% include 'tickets/_basket.html' %}
+    {% endif %}
+
+    <div class="panel panel-default">
+
+        <div class="panel-heading">Buy Tickets</div>
+
+        <div class="panel-body">
+
+            <form method="post">
+                {% csrf_token %}
+
+                {% if fringers %}
+                    <h4>Fringers</h4>
+                    {% for fringer in fringers %}
+                        <input type="checkbox" name="fringer{{ fringer.id }}" /> {{ fringer.name }}<br/>
+                    {% endfor %}
+                    <button class="btn btn-primary" name="action" type="submit" value="fringer">Use Fringers</button>
+                {% endif %}
+
+                {% if ticket_types %}
+                    <h4>Tickets</h4>
+                    {% for ticket_type in ticket_types %}
+                        <input type="number" name="{{ ticket_type.name }}" /> {{ ticket_type.name }}<br/>
+                    {% endfor %}
+                    <button class="btn btn-primary" name="action" type="submit" value="add">Add to Basket</button>
+                {% endif %}
+
+            </form>
+
+        </div>
+
+    </div>
+
+{% endblock %}

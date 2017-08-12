@@ -53,7 +53,7 @@
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }} <span class="caret"></span></a>
                                     <ul class="dropdown-menu">
                                         <li><a href="{% url 'tickets:fringers' %}">Fringers</a></li>
-                                        <li><a href="{% url 'tickets:basket' %}">Basket</a></li>
+                                        <li><a href="{% url 'tickets:checkout' %}">Checkout</a></li>
                                         {% if user.is_staff and user.is_active %}
                                             <li><a href="/admin">Admin</a></li>
                                         {% endif %}
