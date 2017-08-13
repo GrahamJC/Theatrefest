@@ -60,6 +60,18 @@ class Fringer(models.Model):
     def __str__(self):
         return "{0}: {1}".format(self.name, self.description)
 
+    @property
+    def used(self):
+        return self.tickets.count()
+
+    @property
+    def unused(self):
+        return self.shows - self.used
+
+    @property
+    def has_unused(self):
+        return self.unused > 0
+
 
 class TicketType(models.Model):
     

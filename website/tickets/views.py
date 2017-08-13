@@ -7,11 +7,16 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
+from django.forms import modelformset_factory
+
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit
+from crispy_forms.bootstrap import FormActions, StrictButton
 
 from website.utils import init_alerts
 from catalog.models import Performance
 from .models import BoxOffice, Basket, FringerType, Fringer, TicketType, Ticket
-from .forms import FringerForm
+from .forms import BuyFringerForm
 
 
 class BuyView(LoginRequiredMixin, View):
@@ -113,76 +118,91 @@ class FringersView(LoginRequiredMixin, View):
 
     def get(self, request):
 
-        # Get fringer types and create form
+        # Create fringer formset
+        FringerFormSet = modelformset_factory(Fringer, fields = ('name',), extra = 0)
+        formset = FringerFormSet(queryset = Fringer.objects.filter(user = request.user, basket = None))
+
+        # Get fringer types and create buy form
         fringer_types = FringerType.objects.filter(is_online = True)
-        form = FringerForm(fringer_types)
+        buy_form = BuyFringerForm(fringer_types)
 
         # Display fringers
         context = {
             'basket': request.user.basket,
-            'form': form,
-            'fringers': Fringer.objects.filter(user = request.user, basket = None),
+            'formset': formset,
+            'buy_form': buy_form,
         }
         return render(request, "tickets/fringers.html", context)
 
     def post(self, request):
 
-        # Get the action and basket
+        # Get the action, box-office and basket
         action = request.POST.get("action")
         box_office = get_object_or_404(BoxOffice, name = 'Online')
         basket = request.user.basket
         alerts = init_alerts()
 
-        # Check for add to basket
-        if action == "Add to Basket":
+        # Check for buying
+        if action == "Buy":
 
             # Get fringer types and create form
             fringer_types = FringerType.objects.filter(is_online = True)
-            form = FringerForm(fringer_types, request.POST)
+            buy_form = BuyFringerForm(fringer_types, request.POST)
 
             # Check for errors
-            if form.is_valid():
+            if buy_form.is_valid():
 
-                # Get fringer type, box office and basket
-                fringer_type_id = form.cleaned_data['type']
-                fringer_type = get_object_or_404(FringerType, pk = int(fringer_type_id))
-                name = form.cleaned_data['name']
+                # Get fringer type
+                buy_type = get_object_or_404(FringerType, pk = int(buy_form.cleaned_data['type']))
+                buy_name = buy_form.cleaned_data['name']
 
                 # Create new fringer and add to basket
                 fringer = Fringer(
                     user = request.user,
-                    name = name,
+                    name = buy_name if buy_name else buy_type.name,
                     box_office = box_office,
                     date_time = datetime.now(),
-                    description = fringer_type.name,
-                    shows = fringer_type.shows,
-                    cost = fringer_type.price,
+                    description = buy_type.name,
+                    shows = buy_type.shows,
+                    cost = buy_type.price,
                 )
                 fringer.save()
-                if not name:
-                    fringer.name = "Fringer{0}".format(fringer.id)
-                    fringer.save()
                 basket.add_item(fringer)
-                alerts['success'].append("{0} added to basket".format(fringer_type))
+                alerts['success'].append("{0} added to basket".format(buy_type.name))
+
+            # Create fringer formset
+            FringerFormSet = modelformset_factory(Fringer, fields = ('name',), extra = 0)
+            formset = FringerFormSet(queryset = Fringer.objects.filter(user = request.user, basket = None))
 
         else: # Must be rename
 
-            # Get the fringer id
-            fringer_id = int(action[6:])
-            fringer = get_object_or_404(Fringer, pk = fringer_id)
-            new_name = request.POST.get("fringer_name{0}".format(fringer_id))
-            if new_name:
-                old_name = fringer.name
-                fringer.name = new_name
-                fringer.save()
-                alerts['success'].append("{0} renamed to {1}".format(old_name, new_name))
+            # Create fringer formset
+            FringerFormSet = modelformset_factory(Fringer, fields = ('name',), extra = 0)
+            formset = FringerFormSet(request.POST)
+
+            # Check for errors
+            if formset.is_valid():
+
+                # Process each form
+                for form in formset:
+                    fringer = form.instance
+                    new_name = form.cleaned_data['name']
+                    if new_name and new_name != fringer.name:
+                        old_name = fringer.name
+                        fringer.name = new_name
+                        fringer.save()
+                        alerts['success'].append("{0} renamed to {1}".format(old_name, new_name))
+
+            # Get fringer types and create form
+            fringer_types = FringerType.objects.filter(is_online = True)
+            buy_form = BuyFringerForm(fringer_types)
 
         # Redisplay with confirmation
         context = {
             'alerts': alerts,
             'basket': basket,
-            'fringers': Fringer.objects.filter(user = request.user, basket = None),
-            'form': form,
+            'formset': formset,
+            'buy_form': buy_form,
         }
         return render(request, "tickets/fringers.html", context)
 

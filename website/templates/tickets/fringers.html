@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags tf_filters %}
 
 {% block content %}
 
@@ -7,45 +7,76 @@
         {% include 'tickets/_basket.html' %}
     {% endif %}
 
-    <div class="panel panel-default">
+    <form class="form-inline" method="POST">
+        {% csrf_token %}
 
-        <div class="panel-heading">My Fringers</div>
+        {% if formset.forms %}
+            <div class="panel panel-default">
 
-        <div class="panel-body">
+                <div class="panel-heading">My Fringers</div>
 
-            <form class="form-horizontal" method="POST">
+                <div class="panel-body">
 
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Description</th>
-                            <th>Shows</th>
-                            <th>Used</th>
-                            <th>Name</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for fringer in fringers %}
-                            <tr>
-                                <td>{{ fringer.description }}</td>
-                                <td>{{ fringer.shows }}</td>
-                                <td>{{ fringer.tickets.all.count }}</td>
-                                <td><input type="text" name="fringer_name{{ fringer.id }}" value="{{ fringer.name }}"/></td>
-                                <td><button class="btn btn-default" name="action" type="submit" value="rename{{ fringer.id }}">Rename</button></td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                    {{ formset.management_form }}
 
-            </form>
+                    <div class="row">
 
-            <div class="well">
-                {% crispy form %}
+                        <div class="col-xs-12 col-md-6">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Unused</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for form in formset %}
+                                        <tr>
+                                            <td>{{ form.id }}{{ form.name|add_css_class:'form-control' }}</td>
+                                            <td>{{ form.instance.unused }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <button class="btn btn-primary" type="submit" name="action" value="Rename">Rename</button>
+                        </div>
+
+                        <div class="hidden-xs hidden-sm col-md-6">
+                            <div class="well">
+                                <p>Blah blah blah</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        {% endif %}
+
+        <div class="panel panel-default">
+
+            <div class="panel-heading">Buy Fringers</div>
+
+            <div class="panel-body">
+
+                <div class="row">
+                    <div class="col-xs-12 col-md-6">
+                        {{ buy_form.type|add_css_class:'form-control' }}
+                        {{ buy_form.name|add_css_class:'form-control' }}<br/>
+                        <button class="btn btn-primary" type="submit" name="action" value="Buy">Add to Basket</button>
+                    </div>
+
+                    <div class="hidden-xs hidden-sm col-md-6">
+                        <div class="well">
+                            <p>Blah blah blah</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
         </div>
-
-    </div>
+    </form>
 
 {% endblock %}
