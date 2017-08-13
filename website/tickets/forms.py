@@ -1,21 +1,31 @@
 from django import forms
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
+from crispy_forms.layout import Layout, Submit
+from crispy_forms.bootstrap import FormActions, StrictButton
 
-"""
 class FringerForm(forms.Form):
 
-    def __init__(self, *args, **kwargs):
-        fringer_types = kwargs.pop('types')
-        super(FringerForm, self).__init__(*args,**kwargs)
-        for type in fringer_types:
-            self.fields[type.name] = forms.IntegerField(label = '{0} shows for {1}'.format(type.shows, type.price), initial = 0)
-            type.form_field = self.fields[type.name]
+    def __init__(self, fringer_types, *args, **kwargs):
+
+        #Call base constructor
+        super(FringerForm, self).__init__(*args, **kwargs)
+
+        # Create fringer type choices
+        fringer_choices = [('', '')]
+        for fringer_type in fringer_types:
+            fringer_choices.append((fringer_type.id, fringer_type.name))
+
+        # Add fields
+        self.fields['type'] = forms.ChoiceField(label = "Type", choices = fringer_choices)
+        self.fields['name'] = forms.CharField(label = "Name", max_length = 32) 
         self.use_required_attribute = False
-        self.helper = FormHelper()
-        self.helper.form_class = "form-horizontal"
-        self.helper.label_class = "col-sm-3"
-        self.helper.field_class = "col-sm-3 col-md-2 col-lg-1"
-        self.helper.add_input(Submit('submit', 'Buy'))
-"""
+        helper = FormHelper()
+        helper.form_class = "form-inline"
+        helper.field_template = 'bootstrap3/layout/inline_field.html'
+        helper.layout = Layout(
+            'type',
+            'name',
+            FormActions(Submit('action','Add to Basket')),
+        )
+        self.helper = helper

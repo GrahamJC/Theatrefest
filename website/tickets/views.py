@@ -11,6 +11,7 @@ from django.views import View
 from website.utils import init_alerts
 from catalog.models import Performance
 from .models import BoxOffice, Basket, FringerType, Fringer, TicketType, Ticket
+from .forms import FringerForm
 
 
 class BuyView(LoginRequiredMixin, View):
@@ -111,6 +112,84 @@ class BuyView(LoginRequiredMixin, View):
 class FringersView(LoginRequiredMixin, View):
 
     def get(self, request):
+
+        # Get fringer types and create form
+        fringer_types = FringerType.objects.filter(is_online = True)
+        form = FringerForm(fringer_types)
+
+        # Display fringers
+        context = {
+            'basket': request.user.basket,
+            'form': form,
+            'fringers': Fringer.objects.filter(user = request.user, basket = None),
+        }
+        return render(request, "tickets/fringers.html", context)
+
+    def post(self, request):
+
+        # Get the action and basket
+        action = request.POST.get("action")
+        box_office = get_object_or_404(BoxOffice, name = 'Online')
+        basket = request.user.basket
+        alerts = init_alerts()
+
+        # Check for add to basket
+        if action == "Add to Basket":
+
+            # Get fringer types and create form
+            fringer_types = FringerType.objects.filter(is_online = True)
+            form = FringerForm(fringer_types, request.POST)
+
+            # Check for errors
+            if form.is_valid():
+
+                # Get fringer type, box office and basket
+                fringer_type_id = form.cleaned_data['type']
+                fringer_type = get_object_or_404(FringerType, pk = int(fringer_type_id))
+                name = form.cleaned_data['name']
+
+                # Create new fringer and add to basket
+                fringer = Fringer(
+                    user = request.user,
+                    name = name,
+                    box_office = box_office,
+                    date_time = datetime.now(),
+                    description = fringer_type.name,
+                    shows = fringer_type.shows,
+                    cost = fringer_type.price,
+                )
+                fringer.save()
+                if not name:
+                    fringer.name = "Fringer{0}".format(fringer.id)
+                    fringer.save()
+                basket.add_item(fringer)
+                alerts['success'].append("{0} added to basket".format(fringer_type))
+
+        else: # Must be rename
+
+            # Get the fringer id
+            fringer_id = int(action[6:])
+            fringer = get_object_or_404(Fringer, pk = fringer_id)
+            new_name = request.POST.get("fringer_name{0}".format(fringer_id))
+            if new_name:
+                old_name = fringer.name
+                fringer.name = new_name
+                fringer.save()
+                alerts['success'].append("{0} renamed to {1}".format(old_name, new_name))
+
+        # Redisplay with confirmation
+        context = {
+            'alerts': alerts,
+            'basket': basket,
+            'fringers': Fringer.objects.filter(user = request.user, basket = None),
+            'form': form,
+        }
+        return render(request, "tickets/fringers.html", context)
+
+"""
+class FringersView(LoginRequiredMixin, View):
+
+    def get(self, request):
         context = {
             'fringer_types': FringerType.objects.filter(is_online = True),
             'fringers': Fringer.objects.filter(user = request.user, basket = None),
@@ -171,8 +250,6 @@ class FringersView(LoginRequiredMixin, View):
         }
         return render(request, "tickets/fringers.html", context)
 
-"""
-from .forms import FringerForm
 
 class FringersView(View):
 

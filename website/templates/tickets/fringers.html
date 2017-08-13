@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 
@@ -37,26 +38,11 @@
                     </tbody>
                 </table>
 
-                <div class="well">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <div class="col-xs-6 col-sm-3 col-sm-offset-3">
-                                <select name="fringer_type" class="form-control">
-                                    {% for type in fringer_types %}
-                                        <option value="{{ type.name }}">{{ type.shows }} shows for {{ type.price }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-xs-4">
-                                <input class="form-control" type="text" name="name" />
-                            </div>
-                            <div class="col-xs-2">
-                                <button class="btn btn-primary" name="action" type="submit" value="add">Add to Basket</button>
-                            </div>
-                        </div>
-                </div>
-
             </form>
+
+            <div class="well">
+                {% crispy form %}
+            </div>
 
         </div>
 
