@@ -7,7 +7,7 @@
         {% include 'tickets/_basket.html' %}
     {% endif %}
 
-    <div class="form-group">
+    <div class="row">
 
         {% if formset.forms %}
             <div class="col-xs-12 col-sm-6">
@@ -33,14 +33,15 @@
                                     {% endfor %}
                                 </tbody>
                             </table>
-                            <button class="btn btn-primary" type="submit" name="action" value="Rename">Rename</button>
+                            <input type="submit" class="btn btn-primary" name="action" value="Rename" />
                         </form>
                     </div>
                 </div>
             </div>
         {% endif %}
 
-        <div class="col-xs-12 col-sm-6">
+        
+        <div class="{% if formset.forms %}col-xs-12 col-sm-6{% else %}col-xs 12 col-sm-offset-3 col-sm-6{% endif %}">
             <div class="panel panel-default">
                 <div class="panel-heading">Buy Fringers</div>
                 <div class="panel-body">

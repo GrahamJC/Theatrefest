@@ -19,5 +19,5 @@ class BuyFringerForm(forms.Form):
 
         # Add fields
         self.fields['type'] = forms.ChoiceField(label = "Type", choices = fringer_choices, initial = [fringer_choices[0][0]])
-        self.fields['name'] = forms.CharField(label = "Name", max_length = 32, required = False)
+        self.fields['name'] = forms.CharField(label = "Name", max_length = 32)
 

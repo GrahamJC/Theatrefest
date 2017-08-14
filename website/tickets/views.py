@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
@@ -11,9 +12,8 @@ from django.forms import modelformset_factory
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
-from crispy_forms.bootstrap import FormActions, StrictButton
+from crispy_forms.bootstrap import FormActions, StrictButton, FieldWithButtons
 
-from website.utils import init_alerts
 from catalog.models import Performance
 from .models import BoxOffice, Basket, FringerType, Fringer, TicketType, Ticket
 from .forms import BuyFringerForm
@@ -50,7 +50,6 @@ class BuyView(LoginRequiredMixin, View):
         basket = request.user.basket
         performance = get_object_or_404(Performance, pk = performance_id)
         ticket_types = TicketType.objects.filter(is_online = True)
-        alerts = init_alerts()
 
         # Get available fringers
         fringers = request.user.fringers.all()
@@ -75,7 +74,7 @@ class BuyView(LoginRequiredMixin, View):
                     ticket.save()
 
                     # Confirm purchase
-                    alerts['success'].append("Ticket purchased with fringer {0}".format(fringer.name))
+                    messages.success(request, "Ticket purchased with fringer {0}".format(fringer.name))
 
         # Must be add to basket
         elif action == "add":
@@ -101,7 +100,7 @@ class BuyView(LoginRequiredMixin, View):
                     basket.add_item(ticket)
 
                     # Confirm purchase
-                    alerts['success'].append("{0} x {1} tickets added to basket".format(quantity, ticket_type.name))
+                    messages.success(request, "{0} x {1} tickets added to basket".format(quantity, ticket_type.name))
 
         # Display buy page
         context = {
@@ -109,10 +108,22 @@ class BuyView(LoginRequiredMixin, View):
             'ticket_types': ticket_types,
             'performance': performance,
             'fringers': fringers,
-            'alerts': alerts,
         }
         return render(request, "tickets/buy.html", context)
 
+
+class BuyFringerFormHelper(FormHelper):
+
+    form_class = "form-horizontal"
+    label_class = "col-xs-12 col-sm-3"
+    field_class= "col-xs-12, col-sm-9"
+    layout = Layout(
+        'type',
+        'name', 
+        FormActions(
+            Submit("action", "Add to Basket")
+        ),
+    )
 
 class FringersView(LoginRequiredMixin, View):
 
@@ -125,18 +136,8 @@ class FringersView(LoginRequiredMixin, View):
         # Get fringer types and create buy form
         fringer_types = FringerType.objects.filter(is_online = True)
         buy_form = BuyFringerForm(fringer_types)
-
-        # Add helper to buy form
-        helper = FormHelper()
-        helper.form_class = "form-horizontal"
-        helper.label_class = "col-xs-12 col-xs-3"
-        helper.field_class= "col-xs-12, col-sm-9"
-        helper.Layout = Layout(
-            'type',
-            'name',
-            StrictButton('Add to Basket', name = 'action', value = 'Buy'),
-        )
-        buy_form.helper = helper
+        buy_form.use_required_attribute = False
+        buy_form.helper = BuyFringerFormHelper()
 
         # Display fringers
         context = {
@@ -152,10 +153,25 @@ class FringersView(LoginRequiredMixin, View):
         action = request.POST.get("action")
         box_office = get_object_or_404(BoxOffice, name = 'Online')
         basket = request.user.basket
-        alerts = init_alerts()
+        formset = None
+        buy_form = None
+
+        # Check for rename
+        if action == "Rename":
+
+            # Create fringer formset
+            FringerFormSet = modelformset_factory(Fringer, fields = ('name',), extra = 0)
+            formset = FringerFormSet(request.POST)
+
+            # Check for errors
+            if formset.is_valid():
+
+                # Save changes
+                for fringer in formset.save():
+                    messages.success(request, "Fringer renamed to {0}".format(fringer.name))
 
         # Check for buying
-        if action == "Buy":
+        elif action == "Add to Basket":
 
             # Get fringer types and create form
             fringer_types = FringerType.objects.filter(is_online = True)
@@ -180,153 +196,26 @@ class FringersView(LoginRequiredMixin, View):
                 )
                 fringer.save()
                 basket.add_item(fringer)
-                alerts['success'].append("{0} added to basket".format(buy_type.name))
+                messages.success(request, "{0} added to basket".format(buy_type.name))
 
-            # Create fringer formset
+        # Create formset and form if not already done
+        if not formset:
             FringerFormSet = modelformset_factory(Fringer, fields = ('name',), extra = 0)
             formset = FringerFormSet(queryset = Fringer.objects.filter(user = request.user, basket = None))
-
-        else: # Must be rename
-
-            # Create fringer formset
-            FringerFormSet = modelformset_factory(Fringer, fields = ('name',), extra = 0)
-            formset = FringerFormSet(request.POST)
-
-            # Check for errors
-            if formset.is_valid():
-
-                # Save changes
-                for fringer in formset.save():
-                    alerts['success'].append("Fringer renamed to {0}".format(fringer.name))
-
-            # Get fringer types and create form
+        if not buy_form:
             fringer_types = FringerType.objects.filter(is_online = True)
             buy_form = BuyFringerForm(fringer_types)
 
-        # Add helper to buy form
-        helper = FormHelper()
-        helper.form_class = "form-horizontal"
-        helper.label_class = "col-xs-12 col-xs-3"
-        helper.field_class= "col-xs-12, col-sm-9"
-        helper.Layout = Layout(
-            'type',
-            'name',
-            StrictButton('Add to Basket', name = 'action', value = 'Buy'),
-        )
-        buy_form.helper = helper
+        # Add crispy forms helper to buy form
+        buy_form.helper = BuyFringerFormHelper()
 
         # Redisplay with confirmation
         context = {
-            'alerts': alerts,
             'basket': basket,
             'formset': formset,
             'buy_form': buy_form,
         }
         return render(request, "tickets/fringers.html", context)
-
-"""
-class FringersView(LoginRequiredMixin, View):
-
-    def get(self, request):
-        context = {
-            'fringer_types': FringerType.objects.filter(is_online = True),
-            'fringers': Fringer.objects.filter(user = request.user, basket = None),
-            'basket': request.user.basket,
-        }
-        return render(request, "tickets/fringers.html", context)
-
-    def post(self, request):
-
-        # Get the action and basket
-        action = request.POST.get("action")
-        basket = request.user.basket
-        alerts = init_alerts()
-
-        # Check for add to basket
-        if action == "add":
-
-            # Get fringer type, box office and basket
-            fringer_type = get_object_or_404(FringerType, name = request.POST.get("fringer_type"))
-            name = request.POST.get("name")
-            box_office = get_object_or_404(BoxOffice, name = 'Online')
-
-            # Create new fringer and add to basket
-            fringer = Fringer(
-                user = request.user,
-                name = name,
-                box_office = box_office,
-                date_time = datetime.now(),
-                description = fringer_type.name,
-                shows = fringer_type.shows,
-                cost = fringer_type.price,
-            )
-            fringer.save()
-            if not name:
-                fringer.name = "Fringer{0}".format(fringer.id)
-                fringer.save()
-            basket.add_item(fringer)
-            alerts['success'].append("{0} added to basket".format(fringer_type))
-
-        else: # Must be rename
-
-            # Get the fringer id
-            fringer_id = int(action[6:])
-            fringer = get_object_or_404(Fringer, pk = fringer_id)
-            new_name = request.POST.get("fringer_name{0}".format(fringer_id))
-            if new_name:
-                old_name = fringer.name
-                fringer.name = new_name
-                fringer.save()
-                alerts['success'].append("{0} renamed to {1}".format(old_name, new_name))
-
-        # Redisplay with confirmation
-        context = {
-            'fringer_types': FringerType.objects.filter(is_online = True),
-            'fringers': Fringer.objects.filter(user = request.user, basket = None),
-            'alerts': alerts,
-            'basket': basket,
-        }
-        return render(request, "tickets/fringers.html", context)
-
-
-class FringersView(View):
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(FringersView, self).dispatch(*args, **kwargs)
-            
-    def get(self, request):
-        fringer_types = FringerType.objects.filter(is_online = True)
-        form = FringerForm(types = fringer_types)
-        context = {
-            'form': form,
-        }
-        return render(request, "tickets/fringers.html", context)
-
-    def post(self, request):
-        box_office = BoxOffice.objects.get(name = 'Online')
-        fringer_types = FringerType.objects.filter(is_online = True)
-        form = FringerForm(request.POST, types = fringer_types)
-        if form.is_valid():
-            response = ''
-            for type in fringer_types:
-                quantity = form.cleaned_data[type.name]
-                for i in range(0, quantity):
-                    fringer = Fringer(
-                        user = request.user,
-                        box_office = box_office,
-                        date_time = datetime.now(),
-                        description = type.name,
-                        shows = type.shows,
-                        cost = type.price,
-                        in_basket = None
-                    )
-                    fringer.save()
-        context = {
-            'form': form,
-        }
-        return render(request, "tickets/fringers.html", context)
-"""
 
 
 class CheckoutView(LoginRequiredMixin, View):
@@ -346,7 +235,6 @@ class CheckoutView(LoginRequiredMixin, View):
 
         # Get basket
         basket = request.user.basket
-        alerts = init_alerts()
 
         # Complete purchase of fringers (i.e. remove them from the basket)
         for fringer in basket.fringers.all():
@@ -358,11 +246,10 @@ class CheckoutView(LoginRequiredMixin, View):
         for ticket in basket.tickets.all():
             ticket.basket = None
             ticket.save()
-            alerts['success'].append("Purchase complete: {0}".format(ticket))
+            messages.succses(request, "Purchase complete: {0}".format(ticket))
 
         # Redisplay empty basket and purchase confirmation
         context = {
-            'alerts': alerts,
             'basket': basket,
         }
         return render(request, "tickets/checkout.html", context)
@@ -375,15 +262,13 @@ class RemoveFringerView(LoginRequiredMixin, View):
         # Get basket and fringer to be removed
         basket = request.user.basket
         fringer = get_object_or_404(Fringer, pk = fringer_id)
-        alerts = init_alerts()
 
         # Delete fringer
         fringer.delete()
-        alerts['success'].append("Fringer removed from basket")
+        messages.success(request, "Fringer removed from basket")
 
         # Redisplay checkout
         context = {
-            'alerts': alerts,
             'basket': basket
         }
         return render(request, "tickets/checkout.html", context)
@@ -396,15 +281,13 @@ class RemoveTicketView(LoginRequiredMixin, View):
         # Get basket and ticket to be removed
         basket = request.user.basket
         ticket = get_object_or_404(Ticket, pk = ticket_id)
-        alerts = init_alerts()
 
         # Delete ticket
         ticket.delete()
-        alerts['success'].append("Ticket removed from basket")
+        messages.success(request, "Ticket removed from basket")
 
         # Redisplay checkout
         context = {
-            'alerts': alerts,
             'basket': basket
         }
         return render(request, "tickets/checkout.html", context)

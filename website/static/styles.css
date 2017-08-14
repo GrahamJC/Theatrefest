@@ -19,13 +19,6 @@ p {
 #tf-navigator {
 }
 
-@media (min-width: 992px) {
-	#tf-content {
-		padding-left: 10px;
-		padding-right: 10px;
-	}
-}
-
 /* Show list */
 .tf-show-card {
 	margin-bottom: 10px;
