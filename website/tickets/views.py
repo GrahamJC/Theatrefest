@@ -126,6 +126,18 @@ class FringersView(LoginRequiredMixin, View):
         fringer_types = FringerType.objects.filter(is_online = True)
         buy_form = BuyFringerForm(fringer_types)
 
+        # Add helper to buy form
+        helper = FormHelper()
+        helper.form_class = "form-horizontal"
+        helper.label_class = "col-xs-12 col-xs-3"
+        helper.field_class= "col-xs-12, col-sm-9"
+        helper.Layout = Layout(
+            'type',
+            'name',
+            StrictButton('Add to Basket', name = 'action', value = 'Buy'),
+        )
+        buy_form.helper = helper
+
         # Display fringers
         context = {
             'basket': request.user.basket,
@@ -183,19 +195,25 @@ class FringersView(LoginRequiredMixin, View):
             # Check for errors
             if formset.is_valid():
 
-                # Process each form
-                for form in formset:
-                    fringer = form.instance
-                    new_name = form.cleaned_data['name']
-                    if new_name and new_name != fringer.name:
-                        old_name = fringer.name
-                        fringer.name = new_name
-                        fringer.save()
-                        alerts['success'].append("{0} renamed to {1}".format(old_name, new_name))
+                # Save changes
+                for fringer in formset.save():
+                    alerts['success'].append("Fringer renamed to {0}".format(fringer.name))
 
             # Get fringer types and create form
             fringer_types = FringerType.objects.filter(is_online = True)
             buy_form = BuyFringerForm(fringer_types)
+
+        # Add helper to buy form
+        helper = FormHelper()
+        helper.form_class = "form-horizontal"
+        helper.label_class = "col-xs-12 col-xs-3"
+        helper.field_class= "col-xs-12, col-sm-9"
+        helper.Layout = Layout(
+            'type',
+            'name',
+            StrictButton('Add to Basket', name = 'action', value = 'Buy'),
+        )
+        buy_form.helper = helper
 
         # Redisplay with confirmation
         context = {

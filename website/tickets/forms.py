@@ -15,8 +15,9 @@ class BuyFringerForm(forms.Form):
         super(BuyFringerForm, self).__init__(*args, **kwargs)
 
         # Create fringer type choices
-        fringer_choices = [(t.id, t.name) for t in fringer_types]
+        fringer_choices = [(t.id, "{0} shows for £{1:0.2}".format(t.shows, t.price)) for t in fringer_types]
 
         # Add fields
         self.fields['type'] = forms.ChoiceField(label = "Type", choices = fringer_choices, initial = [fringer_choices[0][0]])
-        self.fields['name'] = forms.CharField(label = "Name", max_length = 32) 
+        self.fields['name'] = forms.CharField(label = "Name", max_length = 32, required = False)
+
