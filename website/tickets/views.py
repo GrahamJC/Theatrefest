@@ -190,13 +190,13 @@ class FringersView(LoginRequiredMixin, View):
                     name = buy_name if buy_name else buy_type.name,
                     box_office = box_office,
                     date_time = datetime.now(),
-                    description = buy_type.name,
+                    description = buy_type.description,
                     shows = buy_type.shows,
                     cost = buy_type.price,
                 )
                 fringer.save()
                 basket.add_item(fringer)
-                messages.success(request, "{0} added to basket".format(buy_type.name))
+                messages.success(request, "Fringer ({0}) added to basket".format(fringer.description))
 
         # Create formset and form if not already done
         if not formset:
@@ -238,15 +238,13 @@ class CheckoutView(LoginRequiredMixin, View):
 
         # Complete purchase of fringers (i.e. remove them from the basket)
         for fringer in basket.fringers.all():
-            fringer.basket = None
-            fringer.save()
-            alerts['success'].append("Purchase complete: {0}".format(fringer.description))
+            basket.remove_item(fringer)
+            messages.success(request, "Purchase complete: {0}".format(fringer.description))
 
         # Complete purchase of tickets (i.e. remove them from the basket)
         for ticket in basket.tickets.all():
-            ticket.basket = None
-            ticket.save()
-            messages.succses(request, "Purchase complete: {0}".format(ticket))
+            basket.remove_item(ticket)
+            messages.success(request, "Purchase complete: {0}".format(ticket))
 
         # Redisplay empty basket and purchase confirmation
         context = {

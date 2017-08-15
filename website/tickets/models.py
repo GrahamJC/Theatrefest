@@ -20,18 +20,32 @@ class Basket(models.Model):
     user = AutoOneToOneField(User, on_delete = models.CASCADE, primary_key = True, related_name = 'basket')
     created = models.DateTimeField(default = datetime.now())
     updated = models.DateTimeField(default = datetime.now())
-    
-    def __str__(self):
-        return self.user.username
 
+    @property
+    def has_fringers(self):
+        return self.fringers.count > 0
+
+    @property
+    def has_tickets(self):
+        return self.fringers.count > 0
+
+    @property
     def is_empty(self):
-        return not(self.fringers.all() or self.tickets.all())
+        return not self.has_fringers and not self.has_tickets
 
     def add_item(self, item):
         item.basket = self
         item.save()
         self.updated = datetime.now()
         self.save()
+
+    def remove_item(self, item):
+        if item.basket == self:
+            item.basket = None
+            item.save()
+
+    def __str__(self):
+        return self.user.username
 
 
 class FringerType(models.Model):
@@ -42,23 +56,22 @@ class FringerType(models.Model):
     is_online = models.BooleanField(default = False)
     rules = models.TextField(blank = True, default = '')
 
+    def description(self):
+        return "{0} for £{1:0.2}".format(self.shows, self.price)
+
     def __str__(self):
         return self.name
-
 
 class Fringer(models.Model):
     
     user = models.ForeignKey(User, on_delete = models.PROTECT, related_name = 'fringers')
-    name = models.CharField(max_length = 32, blank = True, default = '', unique = True)
+    name = models.CharField(max_length = 32, blank = True, default = '')
     box_office = models.ForeignKey(BoxOffice, on_delete = models.PROTECT, related_name = 'fringers')
     date_time = models.DateTimeField()
     description = models.CharField(max_length = 32)
     shows = models.PositiveIntegerField()
     cost = models.DecimalField(max_digits = 4, decimal_places = 2)
     basket = models.ForeignKey(Basket, on_delete = models.CASCADE, null = True, blank = True, related_name = 'fringers')
-
-    def __str__(self):
-        return "{0}: {1}".format(self.name, self.description)
 
     @property
     def used(self):
@@ -71,6 +84,9 @@ class Fringer(models.Model):
     @property
     def has_unused(self):
         return self.unused > 0
+
+    def __str__(self):
+        return "{0}:{1}".format(self.user.username, self.name)
 
 
 class TicketType(models.Model):
@@ -97,4 +113,4 @@ class Ticket(models.Model):
     basket = models.ForeignKey(Basket, on_delete = models.CASCADE, null = True, blank = True, related_name = 'tickets')
     
     def __str__(self):
-        return "{0} fro {1}".format(self.description, self.performance)
+        return "{0}:{1}:{2}".format(self.user.username, self.description, self.performance)

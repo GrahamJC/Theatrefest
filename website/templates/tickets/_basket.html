@@ -4,25 +4,37 @@
 
     <div class="panel-body">
 
-        {% if basket.fringers.all %}
-            <h4>Fringers</h4>
-            <ul>
-                {% for fringer in basket.fringers.all %}
-                    <li>{{ fringer.name }}: {{ fringer.description }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+        <div class=" = "row">
 
-        {% if basket.tickets.all %}
-            <h4>Tickets</h4>
-            <ul>
-                {% for ticket in basket.tickets.all %}
-                    <li>{{ ticket.performance }} ({{ ticket.description }})</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+            {% if basket.has_fringers %}
+                <div class="col-xs-12 col-sm-6 {% if basket.has_tickets %}col-sm-offset-3{% endif %}">
+                    <h4>Fringers</h4>
+                    <ul>
+                        {% for fringer in basket.fringers.all %}
+                            <li>{{ fringer.name }}: {{ fringer.description }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
 
-        <a class="btn btn-primary" href="{% url 'tickets:checkout' %}">Checkout</a>
+            {% if basket.has_tickets %}
+                <div class="col-xs-12 col-sm-6 {% if basket.has_fringers %}col-sm-offset-3{% endif %}">
+                    <h4>Tickets</h4>
+                    <ul>
+                        {% for ticket in basket.tickets.all %}
+                            <li>{{ ticket.performance }} ({{ ticket.description }})</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12 cols-sm-6 {% if not basket.has_fringers or not basket.has_tickets %}col-sm-offset-3{% endif %}">
+                <a class="btn btn-primary" href="{% url 'tickets:checkout' %}">Go to Checkout</a>
+            </div>
+        </div>
 
     </div>
 </div>
