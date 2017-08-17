@@ -1,5 +1,14 @@
-p {
-	margin-bottom: 5px;
+.tf_show__name {
+    color: #1a7cf3;
+    font-weght: bold;
+    font-size: 14pt;
+    margin-bottom: 5px;
+}
+
+.tf_show__performance {
+    font-weght: bold;
+    font-size: 12pt;
+    margin-bottom: 5px;
 }
 
 #tf-container {

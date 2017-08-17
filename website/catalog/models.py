@@ -128,7 +128,7 @@ class Performance(models.Model):
     date_time = models.DateTimeField()
 
     def __str__(self):
-        return self.show.name + ' (' + self.date_time.strftime('%a %d-%b-%Y at %H:%M') + ')'
+        return self.show.name + ' (' + self.date_time.strftime('%a, %d %b at %H:%M') + ')'
 
 
 class Review(models.Model):

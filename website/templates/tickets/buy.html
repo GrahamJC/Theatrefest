@@ -1,42 +1,65 @@
 {% extends "base.html" %}
+{% load tf_filters %}
 
 {% block content %}
 
-    <h3>{{ performance }}</h3>
+    <div class="tf_show__name">Buy Tickets for {{ performance.show.name }}</div>
+    <div class="tf_show__performance">{{ performance.date_time|date:'D, j M' }} at {{ performance.date_time|date:'H:i' }}</div>
 
-    {% if not basket.is_empty %}
-        {% include 'tickets/_basket.html' %}
-    {% endif %}
+    <div class="row">
 
-    <div class="panel panel-default">
+        <div class="col-xs-12 col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">Buy Tickets</div>
+                <div class="panel-body">
+                    <form class="form-inline" method="post">
+                        {% csrf_token %}
+                        {{ ticket_formset.management_form }}
+                        <table class="table table-striped">
+                            {% for form in ticket_formset.forms %}
+                                <tr>
+                                    <td>{{ form.id }}<p class="form-control-static">{{ form.name.value }}</p></td>
+                                    <td><p class="form-control-static">&#163;{{ form.price.value|floatformat }}</p></td>
+                                    <td><p class="hidden-xs hidden-sm form-control-static">Quantity: </p>{{ form.quantity|add_css_class:'form-control' }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                        <button type="submit" class="btn btn-primary" name="action" value="add">Add to Basket</button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-        <div class="panel-heading">Buy Tickets</div>
-
-        <div class="panel-body">
-
-            <form method="post">
-                {% csrf_token %}
-
-                {% if fringers %}
-                    <h4>Fringers</h4>
-                    {% for fringer in fringers %}
-                        <input type="checkbox" name="fringer{{ fringer.id }}" /> {{ fringer.name }}<br/>
-                    {% endfor %}
-                    <button class="btn btn-primary" name="action" type="submit" value="fringer">Use Fringers</button>
-                {% endif %}
-
-                {% if ticket_types %}
-                    <h4>Tickets</h4>
-                    {% for ticket_type in ticket_types %}
-                        <input type="number" name="{{ ticket_type.name }}" /> {{ ticket_type.name }}<br/>
-                    {% endfor %}
-                    <button class="btn btn-primary" name="action" type="submit" value="add">Add to Basket</button>
-                {% endif %}
-
-            </form>
-
+        <div class="col-xs-12 col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">Use Fringers</div>
+                <div class="panel-body">
+                    {% if fringers %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="well">
+                                A fringer can only be used to purchase one ticket for each performance.
+                                Fringers that have already been use for this performance are not listed.
+                            </div>
+                            <table class="table table-striped">
+                                {% for fringer in fringers %}
+                                    <tr>
+                                        <td><input type="checkbox" name="fringer_id" value="{{ fringer.id }}" /></td>
+                                        <td style="width: 100%">{{ fringer.name }} ({{ fringer.unused }} remaining)</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                            <button type="submit" class="btn btn-primary" name="action" value="fringer">Use Fringers</button>
+                        </form>
+                    {% else %}
+                        <p>You do not have any fringers available to use.</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
 
     </div>
+
+</form>
 
 {% endblock %}

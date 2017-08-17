@@ -8,6 +8,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome-4.7.0/css/font-awesome.min.css' %}">
     <link rel="stylesheet" href="{% static 'styles.css' %}">
     <title>{% block title %}TheatreFest{% endblock %}</title>
     <script src="{% static 'jquery/jquery-3.2.1.min.js' %}" ></script>
@@ -49,7 +50,8 @@
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }} <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="{% url 'tickets:fringers' %}">Fringers</a></li>
+                                    <li><a href="{% url 'tickets:show' %}">My Tickets</a></li>
+                                    <li><a href="{% url 'tickets:fringers' %}">My Fringers</a></li>
                                     <li><a href="{% url 'tickets:checkout' %}">Checkout</a></li>
                                     {% if user.is_staff and user.is_active %}
                                         <li><a href="/admin">Admin</a></li>
@@ -66,6 +68,25 @@
         </div>    
 
         <div id="tf-content">
+
+            {% block basket %}
+                {% if request.user.is_authenticated and not request.user.basket.is_empty %}
+                    <div class="alert alert-info">
+                        <a class="btn btn-primary pull-right" style="margin-top: -7px;" href="{% url 'tickets:checkout' %}">Go to Checkout</a>
+                        <i class="fa fa-lg fa-shopping-basket" aria-hidden="true"></i>
+                        <span class="hidden-xs hidden-sm">
+                            &nbsp;&nbsp;Tickets: {{ request.user.basket.ticket_count }}
+                            &nbsp;&nbsp;Fringers: {{ request.user.basket.fringer_count }}
+                        </span>
+                        <span class="hidden-md hidden-lg">
+                            &nbsp;&nbsp;Items: {{ request.user.basket.total_count }}
+                        </span>
+                        <span class="hidden-xs">
+                            &nbsp;&nbsp;Cost: &#163;{{ request.user.basket.total_cost }}
+                        </span>
+                    </div>
+                {% endif %}
+            {% endblock %}
 
             {{ messages|bs_alert:'error'|safe }}
             {{ messages|bs_alert:'warning'|safe }}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="panel panel-default">
+
+        <div class="panel-heading">My Tickets</div>
+
+        <div class="panel-body">
+
+            <div class="row">
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+                    <div class="col-xs-12 col-md-6">
+                        {% if tickets %}
+                            <table class="table table-striped">
+                                {% for ticket in tickets %}
+                                    <tr>
+                                        <td>
+                                            {{ ticket.performance.date_time|date:'D, j M' }} at {{ ticket.performance.date_time|date:'H:i' }}
+                                            <br/>{{ ticket.performance.show.name }}
+                                            <div class="visible-xs">
+                                                {{ ticket.description }}{% if ticket.fringer %}:{{ ticket.fringer.name }}{% endif %}
+                                                {% if ticket.cost %}<br/>&#163;{{ ticket.cost }}{% endif %}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="hidden-xs">
+                                                {{ ticket.description }}{% if ticket.fringer %}:{{ ticket.fringer.name }}{% endif %}
+                                                {% if ticket.cost %}<br/>&#163;{{ ticket.cost }}{% endif %}
+                                            </div>
+                                        </td>
+                                        <td><a class="btn btn-default" href="{% url 'tickets:cancel_ticket' ticket.id %}">Cancel</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        {% else %}
+                            <p>You have no tickets.</p>
+                        {% endif %}
+                    </div>
+
+                </form>
+
+                <div class="col-xs-12 col-md-6">
+                    <div class="well">
+                        <h4>Information</h4>
+                        <ul>
+                            <li>Tickets can be cancelled until 1 hour before the performance starts (this rule is not yet enforced).</li>
+                            <li>Fringer tickets will be refunded to the fringer for use with another performance.</li>
+                            <li>Other tickets will be refunded to your credit card less an administration fee of TBD (the credit card integration is not yet available).</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}

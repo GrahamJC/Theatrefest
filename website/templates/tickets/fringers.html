@@ -3,17 +3,14 @@
 
 {% block content %}
 
-    {% if not basket.is_empty %}
-        {% include 'tickets/_basket.html' %}
-    {% endif %}
-
     <div class="row">
 
-        {% if formset.forms %}
-            <div class="col-xs-12 col-sm-6">
-                <div class="panel panel-default">
-                    <div class="panel-heading">My Fringers</div>
-                    <div class="panel-body">
+        <div class="col-xs-12 col-sm-6">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">My Fringers</div>
+                <div class="panel-body">
+                    {% if formset.forms %}
                         <form class="form-inline" method="POST">
                             {% csrf_token %}
                             {{ formset.management_form }}
@@ -35,18 +32,30 @@
                             </table>
                             <input type="submit" class="btn btn-primary" name="action" value="Rename" />
                         </form>
-                    </div>
+                    {% else %}
+                        <p>You do not have any fringers.</p>
+                    {% endif %}
                 </div>
             </div>
-        {% endif %}
 
-        
-        <div class="{% if formset.forms %}col-xs-12 col-sm-6{% else %}col-xs 12 col-sm-offset-3 col-sm-6{% endif %}">
             <div class="panel panel-default">
                 <div class="panel-heading">Buy Fringers</div>
                 <div class="panel-body">
                     {% crispy buy_form %}
                 </div>
+            </div>
+
+        </div>
+
+        <div class="col-xs-12 col-sm-6">
+            <div class="well">
+                <h4>Information</h4>
+                <ul>
+                    <li>Fringers can be used to purchase tickets for shows at a reduced price either online (up to 1 hour before a performance starts) or at a box office.</li>
+                    <li>Each fringer can only be used to purchase one ticket for each performance.</li>
+                    <li>If you buy more than one fringer you should give each of them a name to make them easier to keep track of.</li>
+                    <li>No refunds are available for unused fringers.</li>
+                </ul>
             </div>
         </div>
 

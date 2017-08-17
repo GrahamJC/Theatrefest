@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block basket %}{% endblock %}
+
 {% block content %}
 
     <div class="panel panel-default">
@@ -8,65 +10,67 @@
 
         <div class="panel-body">
 
-            <form method="POST">
+            <div class="row">
 
-                {% csrf_token %}
+                <div class="col-xs-12 col-md-6">
 
-                {% if basket.fringers.all %}
-                    <h4>Fringers</h4>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Description</th>
-                                <th>Price</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for fringer in basket.fringers.all %}
-                                <tr>
-                                    <td>{{ fringer.description }}</td>
-                                    <td>{{ fringer.cost }}</td>
-                                    <td><a class="btn btn-default" href="{% url 'tickets:remove_fringer' fringer.id %}">Remove</a></td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% endif %}
+                    <form method="POST">
 
-                {% if basket.tickets.all %}
-                    <h4>Tickets</h4>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Performance</th>
-                                <th>Type</th>
-                                <th>Price</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for ticket in basket.tickets.all %}
-                                <tr>
-                                    <td>{{ ticket.performance }}</td>
-                                    <td>{{ ticket.description }}</td>
-                                    <td>{{ ticket.cost }}</td>
-                                    <td><a class="btn btn-default" href="{% url 'tickets:remove_ticket' ticket.id %}">Remove</a></td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% endif %}
+                        {% csrf_token %}
 
-                {% if not basket.is_empty %}
-                    <button class="btn btn-primary" type="submit">Purchase</button>
-                {% else %}
-                    <p>Your basket is empty.</p>
-                {% endif %}
+                        {% if basket.has_tickets %}
+                            <h4>Tickets</h4>
+                            <table class="table table-striped">
+                                {% for ticket in basket.tickets.all %}
+                                    <tr>
+                                        <td>
+                                            {{ ticket.performance.date_time|date:'D, j M' }} at {{ ticket.performance.date_time|date:'H:i' }}
+                                            <br/>{{ ticket.performance.show.name }}
+                                        </td>
+                                        <td>
+                                            {{ ticket.description }}
+                                            <br/>&#163;{{ ticket.cost }}
+                                        </td>
+                                        <td><a class="btn btn-default" href="{% url 'tickets:remove_ticket' ticket.id %}">Remove</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        {% endif %}
 
-            </form>
+                        {% if basket.has_fringers %}
+                            <h4>Fringers</h4>
+                            <table class="table table-striped">
+                                {% for fringer in basket.fringers.all %}
+                                    <tr>
+                                        <td>{{ fringer.description }}:{{ fringer.name }}</td>
+                                        <td>&#163;{{ fringer.cost }}</td>
+                                        <td><a class="btn btn-default" href="{% url 'tickets:remove_fringer' fringer.id %}">Remove</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        {% endif %}
+
+                        {% if not basket.is_empty %}
+                            <button class="btn btn-primary" type="submit">Purchase</button>
+                        {% else %}
+                            <p>Your basket is empty.</p>
+                        {% endif %}
+
+                    </form>
+
+                </div>
+
+                <div class="col-xs-12 col-sm-6">
+                    <div class="well">
+                        <h4>Information</h4>
+                        <p>Information on checkout procedure.</p>
+                    </div>
+                </div>
+
+            </div>
 
         </div>
+
     </div>
 
 {% endblock %}

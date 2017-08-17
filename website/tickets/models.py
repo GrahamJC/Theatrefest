@@ -22,16 +22,40 @@ class Basket(models.Model):
     updated = models.DateTimeField(default = datetime.now())
 
     @property
-    def has_fringers(self):
-        return self.fringers.count > 0
+    def ticket_count(self):
+        return self.tickets.count()
 
     @property
     def has_tickets(self):
-        return self.fringers.count > 0
+        return self.ticket_count > 0
+
+    @property
+    def fringer_count(self):
+        return self.fringers.count()
+
+    @property
+    def has_fringers(self):
+        return self.fringer_count > 0
+
+    @property
+    def total_count(self):
+        return self.ticket_count + self.fringer_count
 
     @property
     def is_empty(self):
-        return not self.has_fringers and not self.has_tickets
+        return self.total_count == 0
+
+    @property
+    def ticket_cost(self):
+        return sum([t.cost for t in self.tickets.all()])
+
+    @property
+    def fringer_cost(self):
+        return sum([f.cost for f in self.fringers.all()])
+
+    @property
+    def total_cost(self):
+        return self.ticket_cost + self.fringer_cost
 
     def add_item(self, item):
         item.basket = self
@@ -56,8 +80,9 @@ class FringerType(models.Model):
     is_online = models.BooleanField(default = False)
     rules = models.TextField(blank = True, default = '')
 
+    @property
     def description(self):
-        return "{0} for £{1:0.2}".format(self.shows, self.price)
+        return "{0} shows for £{1:0.2}".format(self.shows, self.price)
 
     def __str__(self):
         return self.name
@@ -81,12 +106,14 @@ class Fringer(models.Model):
     def unused(self):
         return self.shows - self.used
 
-    @property
-    def has_unused(self):
-        return self.unused > 0
+    def is_available(self, performance = None):
+        return (self.unused > 0) and ((performance == None) or (performance not in [t.performance for t in self.tickets.all()]))
 
     def __str__(self):
         return "{0}:{1}".format(self.user.username, self.name)
+
+    def get_available(user, performance = None):
+        return filter(lambda f: f.is_available(performance), user.fringers.all())
 
 
 class TicketType(models.Model):
