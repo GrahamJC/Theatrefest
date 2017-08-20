@@ -7,6 +7,9 @@ from catalog.models import Performance
 
 
 class BoxOffice(models.Model):
+
+    class Meta:
+        ordering = ['name']
     
     name = models.CharField(max_length = 32, unique = True)
     is_online = models.BooleanField(default = False)
@@ -73,6 +76,9 @@ class Basket(models.Model):
 
 
 class FringerType(models.Model):
+
+    class Meta:
+        ordering = ['name']
     
     name = models.CharField(max_length = 32, unique = True)
     shows = models.PositiveIntegerField(blank = True, default = 0)
@@ -88,9 +94,13 @@ class FringerType(models.Model):
         return self.name
 
 class Fringer(models.Model):
-    
+
+    class Meta:
+        ordering = ['user', 'name']
+        unique_together = ('user', 'name')
+
     user = models.ForeignKey(User, on_delete = models.PROTECT, related_name = 'fringers')
-    name = models.CharField(max_length = 32, blank = True, default = '')
+    name = models.CharField(max_length = 32)
     box_office = models.ForeignKey(BoxOffice, on_delete = models.PROTECT, related_name = 'fringers')
     date_time = models.DateTimeField()
     description = models.CharField(max_length = 32)
@@ -113,14 +123,15 @@ class Fringer(models.Model):
         return "{0}:{1}".format(self.user.username, self.name)
 
     def get_available(user, performance = None):
-        return filter(lambda f: f.is_available(performance), user.fringers.all())
-
+        return list(filter(lambda f: f.is_available(performance), user.fringers.all()))
 
 class TicketType(models.Model):
+
+    class Meta:
+        ordering = ['name']
     
     name = models.CharField(max_length = 32, unique = True)
     price = models.DecimalField(max_digits = 4, decimal_places = 2, blank = True, default = 0)
-    fringers = models.PositiveIntegerField(blank = True, default = 0)
     is_online = models.BooleanField(default = False)
     rules = models.TextField(blank = True, default = '')
 
@@ -129,6 +140,9 @@ class TicketType(models.Model):
 
 
 class Ticket(models.Model):
+
+    class Meta:
+        ordering = ['user', 'performance']
 
     user = models.ForeignKey(User, on_delete = models.PROTECT, related_name = 'tickets')
     performance = models.ForeignKey(Performance, on_delete = models.PROTECT, related_name = 'tickets')

@@ -12,6 +12,9 @@ def get_paragraphs(text, num_paras):
     
 class Venue(models.Model):
 
+    class Meta:
+        ordering = ['name']
+
     name = models.CharField(max_length = 128, unique = True)
     image = models.ImageField(upload_to = 'uploads/venue/', blank = True, default = '')
     description = models.TextField(blank = True, default = '')
@@ -41,6 +44,9 @@ class Venue(models.Model):
 
 class Company(models.Model):
 
+    class Meta:
+        ordering = ['name']
+
     name = models.CharField(max_length = 128, unique = True)
     image = models.ImageField(upload_to = 'uploads/company/', blank = True, default = '')
     description = models.TextField(blank = True, default = '')
@@ -69,6 +75,9 @@ class Company(models.Model):
 
 class Genre(models.Model):
 
+    class Meta:
+        ordering = ['name']
+
     name = models.CharField(max_length = 32, unique = True)
     warning = models.BooleanField(default = False)
 
@@ -78,6 +87,9 @@ class Genre(models.Model):
 
 class PaymentType(models.Model):
 
+    class Meta:
+        ordering = ['name']
+
     name = models.CharField(max_length = 32, unique = True)
     color = models.CharField(max_length = 16, blank = True, default = '')
 
@@ -86,6 +98,9 @@ class PaymentType(models.Model):
     
 
 class Show(models.Model):
+
+    class Meta:
+        ordering = ['name']
 
     name = models.CharField(max_length = 128, unique = True)
     company = models.ForeignKey(Company, on_delete = models.CASCADE, related_name = 'shows')
@@ -124,14 +139,31 @@ class Show(models.Model):
 
 class Performance(models.Model):
 
+    class Meta:
+        ordering = ['show', 'date_time']
+        unique_together = ('show', 'date_time')
+
     show = models.ForeignKey(Show, on_delete = models.CASCADE, related_name = 'performances')
     date_time = models.DateTimeField()
+
+    @property
+    def tickets_sold(self):
+        return self.tickets.all().count()
+
+    @property
+    def tickets_available(self):
+        available = self.show.venue.capacity - self.tickets_sold if self.show.venue.capacity else 0
+        return available if available > 0 else 0
 
     def __str__(self):
         return self.show.name + ' (' + self.date_time.strftime('%a, %d %b at %H:%M') + ')'
 
 
 class Review(models.Model):
+
+    class Meta:
+        ordering = ['show', 'source']
+
     RATING_1STAR = 1
     RATING_2STAR = 2
     RATING_3STAR = 3
@@ -144,6 +176,7 @@ class Review(models.Model):
         (RATING_4STAR, '****'),
         (RATING_5STAR, '*****'),
     )
+
     show = models.ForeignKey(Show, on_delete = models.CASCADE, related_name = 'reviews')
     source = models.CharField(max_length = 128)
     rating = models.PositiveIntegerField(null = True, blank = True, choices = RATING_CHOICES)

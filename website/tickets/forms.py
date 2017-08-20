@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django import forms
 
 from crispy_forms.helper import FormHelper
@@ -13,6 +14,23 @@ class BuyTicketForm(forms.Form):
     name = forms.CharField(widget = forms.HiddenInput(), required = False)
     price = forms.DecimalField(widget = forms.HiddenInput(), required = False)
     quantity = forms.IntegerField()
+
+
+class RenameFringerForm(forms.ModelForm):
+
+    class Meta:
+        model = Fringer
+        fields = ('name',)
+
+    def validate_unique(self):
+        # Because 'user' is not included in the form it is normally excluded from
+        # validation checks but we need to add it back for the uniqueness check
+        exclude = self._get_validation_exclusions()
+        exclude.remove('user')
+        try:
+            self.instance.validate_unique(exclude=exclude)
+        except ValidationError as e:
+            self.add_error('name', 'Name already used')
 
 
 class BuyFringerForm(forms.Form):

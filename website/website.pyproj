@@ -113,7 +113,7 @@
     <Content Include="static\bootstrap\js\bootstrap.js" />
     <Content Include="static\bootstrap\js\bootstrap.min.js" />
     <Content Include="static\bootstrap\js\npm.js" />
-    <Content Include="static\Bridge.png" />
+    <Content Include="static\bridge.png" />
     <Content Include="static\font-awesome-4.7.0\css\font-awesome.css" />
     <Content Include="static\font-awesome-4.7.0\css\font-awesome.min.css" />
     <Content Include="static\font-awesome-4.7.0\fonts\fontawesome-webfont.eot" />

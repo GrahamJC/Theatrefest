@@ -24,7 +24,11 @@
                                 <tbody>
                                     {% for form in formset %}
                                         <tr>
-                                            <td>{{ form.id }}{{ form.name|add_css_class:'form-control' }}</td>
+                                            <td {% if form.name.errors %}class="has-error"{% endif %}>
+                                                {{ form.id }}
+                                                {{ form.name|add_css_class:'form-control' }}
+                                                {% for error in form.name.errors %}<p class="help-block"><strong>{{ error }}</strong></p>{% endfor %}
+                                            </td>
                                             <td>{{ form.instance.unused }}</td>
                                         </tr>
                                     {% endfor %}
