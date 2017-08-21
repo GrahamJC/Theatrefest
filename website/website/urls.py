@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^catalog/', include('catalog.urls', namespace = 'catalog')),
     url(r'^accounts/', include('accounts.urls')),
     url(r'^tickets/', include('tickets.urls', namespace = 'tickets')),
+    url(r'^boxoffice/', include('boxoffice.urls', namespace = 'boxoffice')),
     url(r'^admin/', admin.site.urls),
 ]
 

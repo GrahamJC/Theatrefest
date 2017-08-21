@@ -1,13 +1,10 @@
 from datetime import datetime
 
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.db import transaction
-from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
-from django.utils.decorators import method_decorator
 from django.views import View
 from django.forms import formset_factory, modelformset_factory
 

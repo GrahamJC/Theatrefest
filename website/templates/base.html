@@ -53,9 +53,13 @@
                                     <li><a href="{% url 'tickets:show' %}">My Tickets</a></li>
                                     <li><a href="{% url 'tickets:fringers' %}">My Fringers</a></li>
                                     <li><a href="{% url 'tickets:checkout' %}">Checkout</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="{% url 'boxoffice:select' %}">Box Office</a></li>
                                     {% if user.is_staff and user.is_active %}
+                                        <li class="divider"></li>
                                         <li><a href="/admin">Admin</a></li>
                                     {% endif %}
+                                    <li class="divider"></li>
                                     <li><a href="{% url 'auth_logout' %}">Logout</a></li>
                                 </ul>
                             </li>

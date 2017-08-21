@@ -15,24 +15,30 @@
                             {% csrf_token %}
                             {{ formset.management_form }}
                             <table class="table table-striped">
-                                <thead>
+                                {% for form in formset %}
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Unused</th>
+                                        <td>
+                                            <table width="100%">
+                                                <tr>
+                                                    <td {% if form.name.errors %}class="has-error"{% endif %}>
+                                                        {{ form.id }}
+                                                        {{ form.name|add_css_class:'form-control' }}
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-default" type="button" style="margin-left: 10px;"><span class="hidden-xs hidden-sm">Used </span>{{ form.instance.used }} of {{ form.instance.shows }} <i class="fa fa-chevron-down" aria-hidden="true"></i></button>
+                                                    </td>
+                                                </tr>
+                                                {% if form.name.errors %}
+                                                    <tr>
+                                                        <td {% if form.name.errors %}class="has-error"{% endif %} colspan="2">
+                                                            {% for error in form.name.errors %}<p class="help-block"><strong>{{ error }}</strong></p>{% endfor %}
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                            </table>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {% for form in formset %}
-                                        <tr>
-                                            <td {% if form.name.errors %}class="has-error"{% endif %}>
-                                                {{ form.id }}
-                                                {{ form.name|add_css_class:'form-control' }}
-                                                {% for error in form.name.errors %}<p class="help-block"><strong>{{ error }}</strong></p>{% endfor %}
-                                            </td>
-                                            <td>{{ form.instance.unused }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
+                                {% endfor %}
                             </table>
                             <input type="submit" class="btn btn-primary" name="action" value="Rename" />
                         </form>

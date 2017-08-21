@@ -40,6 +40,14 @@
     <Compile Include="accounts\urls.py" />
     <Compile Include="accounts\views.py" />
     <Compile Include="accounts\__init__.py" />
+    <Compile Include="boxoffice\admin.py" />
+    <Compile Include="boxoffice\apps.py" />
+    <Compile Include="boxoffice\migrations\__init__.py" />
+    <Compile Include="boxoffice\models.py" />
+    <Compile Include="boxoffice\tests.py" />
+    <Compile Include="boxoffice\urls.py" />
+    <Compile Include="boxoffice\views.py" />
+    <Compile Include="boxoffice\__init__.py" />
     <Compile Include="catalog\admin.py" />
     <Compile Include="catalog\apps.py" />
     <Compile Include="catalog\migrations\0001_initial.py" />
@@ -86,6 +94,7 @@
     <Content Include="accounts\__pycache__\urls.cpython-36.pyc" />
     <Content Include="accounts\__pycache__\views.cpython-36.pyc" />
     <Content Include="accounts\__pycache__\__init__.cpython-36.pyc" />
+    <Content Include="boxoffice\templates\index.html" />
     <Content Include="catalog\migrations\__pycache__\0001_initial.cpython-36.pyc" />
     <Content Include="catalog\migrations\__pycache__\0002_auto_20170804_1132.cpython-36.pyc" />
     <Content Include="catalog\migrations\__pycache__\0003_auto_20170805_0821.cpython-36.pyc" />
@@ -155,6 +164,8 @@
     <Content Include="static\styles.css" />
     <Content Include="templates\accounts\profile.html" />
     <Content Include="templates\base.html" />
+    <Content Include="templates\boxoffice\select.html" />
+    <Content Include="templates\boxoffice\home.html" />
     <Content Include="templates\catalog\home.html" />
     <Content Include="templates\catalog\shows.html" />
     <Content Include="templates\catalog\show_detail.html" />
@@ -199,6 +210,9 @@
     <Folder Include="accounts\migrations\" />
     <Folder Include="accounts\migrations\__pycache__\" />
     <Folder Include="accounts\__pycache__\" />
+    <Folder Include="boxoffice\" />
+    <Folder Include="boxoffice\migrations\" />
+    <Folder Include="boxoffice\templates\" />
     <Folder Include="catalog\" />
     <Folder Include="catalog\migrations\" />
     <Folder Include="catalog\migrations\__pycache__\" />
@@ -217,6 +231,7 @@
     <Folder Include="templates\" />
     <Folder Include="templates\accounts\" />
     <Folder Include="templates\catalog\" />
+    <Folder Include="templates\boxoffice\" />
     <Folder Include="templates\registration\" />
     <Folder Include="templates\tickets\" />
     <Folder Include="tickets\" />

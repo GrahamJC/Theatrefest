@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="panel panel-default">
+
+        <div class="panel-heading">Select Office</div>
+
+        <div class="panel-body">
+
+            <form method="post">
+                {% csrf_token %}
+                {% for boxoffice in boxoffices %}
+                    <p><button class="btn btn-default" type="submit" name="boxoffice_id" value="{{ boxoffice.id }}">{{ boxoffice.name }}</button></p>
+                {% endfor %}
+            </form>
+        </div>
+
+    </div>
+
+{% endblock %}
