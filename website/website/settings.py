@@ -33,6 +33,8 @@ ALLOWED_HOSTS = ['localhost', 'qnap', 'grahamc.myqnapcloud.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
+    #'django.contrib.sites',
+    'registration',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -120,13 +122,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
 LANGUAGE_CODE = 'en-uk'
-
 TIME_ZONE = 'GMT'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 
@@ -141,7 +139,26 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = "/media/"
 
+
+# Crispy forms
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+
+# Registration
+
+ACCOUNT_ACTIVATION_DAYS = 7
+REGISTRATION_AUTO_LOGIN = True
+REGISTRATION_DEFAULT_FROM_EMAIL = "grahamc@pdhi.com"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+# E-mail
+EMAIL_HOST = "mail.btinternet.com"
+EMAIL_PORT = 465
+EMAIL_HOST_USER = "graham.cockell@btinternet.com"
+EMAIL_HOST_PASSWORD = "dC2CySb9"
+EMAIL_USE_SSL = True
+
+

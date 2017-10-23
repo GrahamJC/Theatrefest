@@ -1,5 +1,14 @@
-p {
-	margin-bottom: 5px;
+.tf_show__name {
+    color: #1a7cf3;
+    font-weght: bold;
+    font-size: 14pt;
+    margin-bottom: 5px;
+}
+
+.tf_show__performance {
+    font-weght: bold;
+    font-size: 12pt;
+    margin-bottom: 5px;
 }
 
 #tf-container {
@@ -17,13 +26,6 @@ p {
 }
 
 #tf-navigator {
-}
-
-@media (min-width: 992px) {
-	#tf-content {
-		padding-left: 10px;
-		padding-right: 10px;
-	}
 }
 
 /* Show list */
@@ -158,4 +160,24 @@ p {
 .tf-show-detail__review-rating,
 .tf-show-detail__review-source  {
 	font-weight: bold;
+}
+
+/* My Fringers */
+.dropdown-menu.tf-fringer-tickets {
+    min-width: 350px;
+}
+
+@media (max-width: 992px) {
+    .dropdown-menu.tf-fringer-tickets {
+        min-width: 200px;
+    }
+}
+
+.tf-fringer-tickets__item {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.tf-fringer-tickets__item:nth-child(even) {
+    background-color: #f5f5f5;
 }

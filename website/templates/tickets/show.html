@@ -33,7 +33,10 @@
                                                 {% if ticket.cost %}<br/>&#163;{{ ticket.cost }}{% endif %}
                                             </div>
                                         </td>
-                                        <td><a class="btn btn-default" href="{% url 'tickets:cancel_ticket' ticket.id %}">Cancel</a></td>
+                                        <td>
+                                            <a class="btn btn-default" href="{% url 'tickets:cancel_ticket' ticket.id %}">Cancel</a>
+                                            <a class="btn btn-default" href="{% url 'tickets:print_ticket' ticket.id %}" target="_blank">Print</a>
+                                        </td>
                                     </tr>
                                 {% endfor %}
                             </table>

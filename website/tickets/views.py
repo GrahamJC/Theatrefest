@@ -3,6 +3,7 @@ from datetime import datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.db import transaction
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.views import View
@@ -11,6 +12,13 @@ from django.forms import formset_factory, modelformset_factory
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
 from crispy_forms.bootstrap import FormActions, StrictButton, FieldWithButtons
+
+from reportlab.pdfgen.canvas import Canvas
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.rl_config import defaultPageSize
+from reportlab.lib.units import inch
+from reportlab.lib import colors
 
 from catalog.models import Performance
 from .models import BoxOffice, Basket, FringerType, Fringer, TicketType, Ticket
@@ -357,3 +365,56 @@ class CancelTicketView(LoginRequiredMixin, View):
             'tickets': Ticket.objects.filter(user = request.user),
         }
         return render(request, "tickets/show.html", context)
+
+
+class PrintTicketView(LoginRequiredMixin, View):
+
+    PAGE_WIDTH = defaultPageSize[0]
+    PAGE_HEIGHT = defaultPageSize[1]
+    styles = getSampleStyleSheet()
+
+    TICKET_STYLE = TableStyle()
+    TICKET_STYLE.add('BOX', (0, 0), (-1, -1), 2, colors.green)
+    TICKET_STYLE.add('ALIGN', (1, 0), (-1, -1), "RIGHT")
+
+    def firstPage(canvas, doc):
+        canvas.saveState()
+        canvas.setFont('Times-Bold', 16)
+        canvas.drawCentredString(PrintTicketView.PAGE_WIDTH / 2, PrintTicketView.PAGE_HEIGHT - 100, "Hello World!")
+        canvas.setFont('Times-Roman', 9)
+        canvas.drawString(inch, 0.75 * inch, "First page")
+        canvas.restoreState()
+
+    def laterPage(canvas, doc):
+        canvas.saveState()
+        canvas.setFont('Times-Roman', 9)
+        canvas.drawString(inch, 0.75 * inch, "Page no: {0}".format(doc.page))
+        canvas.restoreState()
+
+    def add_ticket(self, story, ticket):
+        data = [
+            ["Theatrefest 2018", ticket.id],
+            [ticket.performance.show.name, "{0} {1}".format(ticket.user.first_name, ticket.user.last_name)],
+            [ticket.performance.date_time.strftime("%a, %d %b at %H:%M"), ticket.performance.show.venue.name],
+        ]
+        table = Table(data, colWidths = [(PrintTicketView.PAGE_WIDTH - 100)/ 2, (PrintTicketView.PAGE_WIDTH -100)/ 2], style = PrintTicketView.TICKET_STYLE)
+        story.append(table)
+
+    def get(self, request, ticket_id):
+
+        # Get ticket to be printed
+        ticket = get_object_or_404(Ticket, pk = ticket_id)
+
+        # Create reponse for PDF document
+        response = HttpResponse(content_type = "application/pdf")
+        response["Content-Disposition"] = "attachment; filename=ticket{0}.pdf".format(ticket.id)
+
+        # Create Platypus story
+        story = []
+        for ticket in request.user.tickets.all():
+            self.add_ticket(story, ticket)
+
+        # Create PDF document and return it
+        doc = SimpleDocTemplate(response)
+        doc.build(story)
+        return response

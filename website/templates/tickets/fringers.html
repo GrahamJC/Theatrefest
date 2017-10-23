@@ -15,30 +15,36 @@
                             {% csrf_token %}
                             {{ formset.management_form }}
                             <table class="table table-striped">
-                                {% for form in formset %}
+                                <thead>
                                     <tr>
-                                        <td>
-                                            <table width="100%">
-                                                <tr>
-                                                    <td {% if form.name.errors %}class="has-error"{% endif %}>
-                                                        {{ form.id }}
-                                                        {{ form.name|add_css_class:'form-control' }}
-                                                    </td>
-                                                    <td>
-                                                        <button class="btn btn-default" type="button" style="margin-left: 10px;"><span class="hidden-xs hidden-sm">Used </span>{{ form.instance.used }} of {{ form.instance.shows }} <i class="fa fa-chevron-down" aria-hidden="true"></i></button>
-                                                    </td>
-                                                </tr>
-                                                {% if form.name.errors %}
-                                                    <tr>
-                                                        <td {% if form.name.errors %}class="has-error"{% endif %} colspan="2">
-                                                            {% for error in form.name.errors %}<p class="help-block"><strong>{{ error }}</strong></p>{% endfor %}
-                                                        </td>
-                                                    </tr>
-                                                {% endif %}
-                                            </table>
-                                        </td>
+                                        <th>Used</th>
+                                        <th>Name</th>
                                     </tr>
-                                {% endfor %}
+                                </thead>
+                                <tbody>
+                                    {% for form in formset %}
+                                        <tr>
+                                            <td>
+                                                <div class="dropdown">
+                                                    <button class="btn dropdown-toggle" type="button" data-toggle="dropdown">{{ form.instance.used }} of {{ form.instance.shows }} <span class="caret"></span></button>
+                                                    <ul class="dropdown-menu tf-fringer-tickets">
+                                                        {% for ticket in form.instance.tickets.all %}
+                                                            <li class="tf-fringer-tickets__item">
+                                                                {{ ticket.performance.date_time|date:'D, j M' }} at {{ ticket.performance.date_time|date:'H:i' }}
+                                                                <br/>{{ ticket.performance.show.name }}
+                                                            </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                            <td {% if form.name.errors %}class="has-error"{% endif %}>
+                                                {{ form.id }}
+                                                {{ form.name|add_css_class:'form-control' }}
+                                                {% for error in form.name.errors %}<p class="help-block"><strong>{{ error }}</strong></p>{% endfor %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
                             </table>
                             <input type="submit" class="btn btn-primary" name="action" value="Rename" />
                         </form>

@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^remove/fringer/(?P<fringer_id>[0-9]+)$', views.RemoveFringerView.as_view(), name = 'remove_fringer'),
     url(r'^remove/ticket/(?P<ticket_id>[0-9]+)$', views.RemoveTicketView.as_view(), name = 'remove_ticket'),
     url(r'^cancel/ticket/(?P<ticket_id>[0-9]+)$', views.CancelTicketView.as_view(), name = 'cancel_ticket'),
+    url(r'^print/ticket/(?P<ticket_id>[0-9]+)$', views.PrintTicketView.as_view(), name = 'print_ticket'),
 ]
