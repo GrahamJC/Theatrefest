@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -21,8 +21,8 @@ class BoxOffice(models.Model):
 class Basket(models.Model):
     
     user = AutoOneToOneField(User, on_delete = models.CASCADE, primary_key = True, related_name = 'basket')
-    created = models.DateTimeField(default = datetime.now())
-    updated = models.DateTimeField(default = datetime.now())
+    created = models.DateTimeField(default = timezone.now)
+    updated = models.DateTimeField(default = timezone.now)
 
     @property
     def ticket_count(self):

@@ -42,6 +42,9 @@
     <Compile Include="accounts\__init__.py" />
     <Compile Include="boxoffice\admin.py" />
     <Compile Include="boxoffice\apps.py" />
+    <Compile Include="boxoffice\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="boxoffice\migrations\__init__.py" />
     <Compile Include="boxoffice\models.py" />
     <Compile Include="boxoffice\tests.py" />

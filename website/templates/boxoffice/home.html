@@ -1,15 +1,81 @@
 {% extends "base.html" %}
+{% load tf_filters %}
 
 {% block content %}
 
-    <div class="panel panel-default">
+    <h2>Box Office: {{ boxoffice.name }}</h2>
 
-        <div class="panel-heading">Box Office: {{ boxoffice.name }}</div>
+    <div class="row">
 
-        <div class="panel-body">
+        <div class="col-xs-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">Sell Tickets</div>
+                <div class="panel-body">
+                    <form action="/boxoffice/tickets" method="post">
+                        <div class="form-group">
+                            {{ form.show.label_tag }}
+                            {{ form.show | add_css_class:'form-control' }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.performance_id.label_tag }}
+                            {{ form.performance_id }}
+                            <select id="{{ form.performance_id.auto_id }}_select" class="form-control">
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
+        <div class="col-xs-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">Front of House</div>
+                <div class="panel-body">
+                </div>
+            </div>
         </div>
 
     </div>
+
+{% endblock %}
+
+{% block javascript %}
+
+    <script language="javascript">
+
+        $( function() {
+            $('#{{ form.show.auto_id }}').on('change', onShowChange );
+            $('#{{ form.performance_id.auto_id }}_select').on('change', onPerformanceChange );
+        });
+
+        function onShowChange() {
+            var show_id = $(this).val();
+            $.ajax({
+                url: '/boxoffice/ajax/get_performances',
+                data: { 'show_id': show_id },
+                dataType: 'json',
+                success: function(response) {
+                    var select = $('#{{ form.performance_id.auto_id }}_select');
+                    select.empty();
+                    $.each(response.performances, function(n, performance) {
+                        select.append($("<option></option>").attr("value", performance.id).text(performance.date_time));
+                    });
+                }
+            });
+        }
+
+        function onPerformanceChange() {
+            var performance_id = $(this).val();
+            $.ajax({
+                url: '/boxoffice/ajax/get_ticket_types',
+                data: { 'performance_id': performance_id },
+                dataType: 'json',
+                success: function(response) {
+                    ;
+                }
+            });
+        }
+
+    </script>
 
 {% endblock %}
