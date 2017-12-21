@@ -27,10 +27,10 @@ from accounts.forms import MyAuthenticationForm
 
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url = '/catalog/', permanent = True)),
-    url(r'^catalog/', include('catalog.urls', namespace = 'catalog')),
+    url(r'^catalog/', include('catalog.urls')),
     url(r'^accounts/', include('accounts.urls')),
-    url(r'^tickets/', include('tickets.urls', namespace = 'tickets')),
-    url(r'^boxoffice/', include('boxoffice.urls', namespace = 'boxoffice')),
+    url(r'^tickets/', include('tickets.urls')),
+    url(r'^boxoffice/', include('boxoffice.urls')),
     url(r'^admin/', admin.site.urls),
 ]
 

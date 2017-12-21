@@ -2,6 +2,8 @@ from django.conf.urls import url
 
 from . import views
 
+app_name = "catalog"
+
 urlpatterns = [
     url(r'^$', views.home, name = 'home'),
     url(r'^show$', views.shows, name = 'shows'),
