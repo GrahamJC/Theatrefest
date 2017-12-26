@@ -26,7 +26,12 @@ SECRET_KEY = 'u9k_-$f31!i)(6#3f&6a6f&#9pykr^$6mq5tu120$sb)vgmlpi'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'qnap', 'grahamc.myqnapcloud.com']
+ALLOWED_HOSTS = [
+    'localhost',
+    'qnap',
+    'grahamc.myqnapcloud.com',
+    'theatrefestwebsite.azurewebsites.net'
+]
 
 
 # Application definition
@@ -87,13 +92,14 @@ WSGI_APPLICATION = 'website.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Theatrefest',
-        'USER': 'Theatrefest',
-        'PASSWORD': 'barnum',
-        'HOST': 'localhost',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'theatrefest',
+        'USER': 'graham@theatrefestdb',
+        'PASSWORD': 'Theatrefest18',
+#        'HOST': 'localhost',
 #        'HOST': 'qnap',
 #        'HOST': 'db',
+        'HOST': 'theatrefestdb.postgres.database.azure.com',
         'PORT': '5432',
     }
 }

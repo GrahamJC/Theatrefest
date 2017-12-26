@@ -165,6 +165,7 @@
     <Content Include="static\font-awesome-4.7.0\scss\_variables.scss" />
     <Content Include="static\jquery\jquery-3.2.1.min.js" />
     <Content Include="static\styles.css" />
+    <Content Include="static\web.config" />
     <Content Include="templates\accounts\profile.html" />
     <Content Include="templates\base.html" />
     <Content Include="templates\boxoffice\select.html" />
@@ -194,6 +195,8 @@
     <Content Include="templates\tickets\checkout.html" />
     <Content Include="templates\tickets\buy.html" />
     <Content Include="templates\tickets\fringers.html" />
+    <None Include="TheatrefestWebSite - FTP.pubxml" />
+    <None Include="TheatrefestWebSite - Web Deploy.pubxml" />
     <Content Include="tickets\migrations\__pycache__\0001_initial.cpython-36.pyc" />
     <Content Include="tickets\migrations\__pycache__\0002_auto_20170807_1551.cpython-36.pyc" />
     <Content Include="tickets\migrations\__pycache__\0003_auto_20170808_0701.cpython-36.pyc" />
@@ -207,6 +210,7 @@
     <Content Include="tickets\__pycache__\views.cpython-36.pyc" />
     <Content Include="tickets\__pycache__\__init__.cpython-36.pyc" />
     <Content Include="uploads\show\AbiRoberts.jpg" />
+    <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="accounts\" />
