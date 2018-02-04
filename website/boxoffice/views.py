@@ -64,8 +64,19 @@ def get_performances(request):
             "id": performance.id,
             "date_time": performance.date_time,
             "tickets_available": performance.tickets_available,
-        });
+        })
     data = {
         "performances": performances,
     }
     return JsonResponse(data)
+
+def get_ticket_info(request):
+
+    performance = Performance.objects.get(pk = request.GET.get('performance_id', 0))
+    data = {
+        "capacity": performance.show.venue.capacity,
+        "sold": performance.tickets_sold,
+        "available": performance.tickets_available,
+    }
+    return JsonResponse(data)
+

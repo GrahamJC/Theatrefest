@@ -30,7 +30,7 @@ ALLOWED_HOSTS = [
     'localhost',
     'qnap',
     'grahamc.myqnapcloud.com',
-    'theatrefestwebsite.azurewebsites.net'
+    'theatrefest.ukwest.cloudapp.azure.com'
 ]
 
 
@@ -94,12 +94,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'theatrefest',
-        'USER': 'graham@theatrefestdb',
-        'PASSWORD': 'Theatrefest18',
-#        'HOST': 'localhost',
+        'USER': 'theatrefest',
+        'PASSWORD': 'barnum',
+        'HOST': 'localhost',
 #        'HOST': 'qnap',
 #        'HOST': 'db',
-        'HOST': 'theatrefestdb.postgres.database.azure.com',
+#        'HOST': 'theatrefest.ukwest.cloudapp.azure.com',
         'PORT': '5432',
     }
 }

@@ -22,6 +22,11 @@
                             <select id="{{ form.performance_id.auto_id }}_select" class="form-control">
                             </select>
                         </div>
+                        <div class="form_group">
+                            Capacity: <span id="tickets_capacity"></span><br/>
+                            Sold: <span id="tickets_sold"></span><br/>
+                            Available: <span id="tickets_available"></span><br/>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -57,6 +62,7 @@
                 success: function(response) {
                     var select = $('#{{ form.performance_id.auto_id }}_select');
                     select.empty();
+                    select.append($("<option></option>").attr("value", 0).text("-- Select performnce --"));
                     $.each(response.performances, function(n, performance) {
                         select.append($("<option></option>").attr("value", performance.id).text(performance.date_time));
                     });
@@ -65,15 +71,22 @@
         }
 
         function onPerformanceChange() {
+            $("#tickets_capacity").text("");
+            $("#tickets_sold").text("");
+            $("#tickets_available").text("");
             var performance_id = $(this).val();
-            $.ajax({
-                url: '/boxoffice/ajax/get_ticket_types',
-                data: { 'performance_id': performance_id },
-                dataType: 'json',
-                success: function(response) {
-                    ;
-                }
-            });
+            if (performance_id > 0) {
+                $.ajax({
+                    url: '/boxoffice/ajax/get_ticket_info',
+                    data: { 'performance_id': performance_id },
+                    dataType: 'json',
+                    success: function(response) {
+                        $("#tickets_capacity").text(response.capacity);
+                        $("#tickets_sold").text(response.sold);
+                        $("#tickets_available").text(response.available);
+                    }
+                });
+            }
         }
 
     </script>

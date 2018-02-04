@@ -92,6 +92,7 @@ class PaymentType(models.Model):
 
     name = models.CharField(max_length = 32, unique = True)
     color = models.CharField(max_length = 16, blank = True, default = '')
+    #is_ticketed = models.BooleanField(default = False)
 
     def __str__(self):
         return self.name
