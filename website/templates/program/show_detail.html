@@ -7,7 +7,7 @@
         <div class="row">
             
             <div class="col-xs-12 col-sm-3">
-                <p class="visible-xs-block tf-show-detail__title"><a href="{% url 'catalog:show_detail' show.id %}">{{ show.name }}</a></p>
+                <p class="visible-xs-block tf-show-detail__title"><a href="{% url 'program:show_detail' show.id %}">{{ show.name }}</a></p>
                 <p class="visible-xs-block tf-show-detail__company">{{ show.company.name }}</p>
                 {% if show.image %}
                     <block class="tf-show-detail__image">
@@ -30,7 +30,7 @@
                 {% if show.duration %}
                     <p class="tf-show-detail__duration">{{ show.duration }} mins</p>
                 {% endif %}
-                <div class="tf-show-detail__venue" style="border-color: {{ show.payment_type_color }};">
+                <div class="tf-show-detail__venue" style="border-color: {{ show.venue.color }}">
                     <p class="tf-show-detail__venue-name">{{ show.venue.name }}</p>
                     {% if show.performances.all %}
                         <ul class="tf-show-detail-performances">

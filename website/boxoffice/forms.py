@@ -1,6 +1,6 @@
 from django import forms
 
-from catalog.models import Show, Performance
+from program.models import Show, Performance
 
 class TicketsForm( forms.Form ):
 

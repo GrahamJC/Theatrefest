@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 
 from crispy_forms.helper import FormHelper
@@ -19,11 +20,18 @@ class MyAuthenticationForm(AuthenticationForm):
 
 class MyRegistrationForm(RegistrationForm):
 
-    def __init__(self, *args, **kwargs):
-        super(MyRegistrationForm, self).__init__(*args,**kwargs)
-        self.use_required_attribute = False
-        self.helper = FormHelper()
-        self.helper.form_class = "form-horizontal"
-        self.helper.label_class = "col-sm-2"
-        self.helper.field_class = "col-sm-10"
-        self.helper.add_input(Submit('submit', 'Register'))
+    username = forms.CharField(max_length = 150, required = False, widget = forms.HiddenInput())
+
+    #def __init__(self, *args, **kwargs):
+    #    super(MyRegistrationForm, self).__init__(*args,**kwargs)
+    #    self.use_required_attribute = False
+    #    self.helper = FormHelper()
+    #    self.helper.form_class = "form-horizontal"
+    #    self.helper.label_class = "col-sm-2"
+    #    self.helper.field_class = "col-sm-10"
+    #    self.helper.add_input(Submit("submit", "Register"))
+
+    def clean_email(self):
+        email = self.cleaned_data["email"]
+        self.cleaned_data["username"] = email
+        return email

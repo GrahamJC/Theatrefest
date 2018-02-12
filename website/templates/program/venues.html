@@ -6,7 +6,7 @@
 
     <ul>
         {% for venue in venues %}
-            <li><a href="{% url 'catalog:venue_detail' venue.id %}">{{ venue.name }}</a></li>
+            <li><a href="{% url 'program:venue_detail' venue.id %}">{{ venue.name }}</a></li>
         {% endfor %}
     </ul>
 

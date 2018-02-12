@@ -11,7 +11,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
 from crispy_forms.bootstrap import FormActions, StrictButton, FieldWithButtons
 
-from catalog.models import Show, Performance
+from program.models import Show, Performance
 from tickets.models import BoxOffice
 
 from .forms import TicketsForm

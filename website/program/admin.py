@@ -1,24 +1,18 @@
 from django.contrib import admin
 
-from .models import Venue, Company, Genre, PaymentType, Show, Performance, Review
+from .models import Venue, Company, Genre, Show, Performance, Review
 
-admin.site.register(Venue)
 admin.site.register(Genre)
-admin.site.register(PaymentType)
 admin.site.register(Performance)
 admin.site.register(Review)
 
-@admin.register(Company)
-class CompanyAdmin(admin.ModelAdmin):
+@admin.register(Venue)
+class VenueAdmin(admin.ModelAdmin):
     
-    model = Company
+    model = Venue
     fieldsets = [
         (None, {
-            'fields': ('name', 'image', 'description', 'email', 'telno'),
-        }),
-        ('Social media', {
-            'classes': ('collapse',),
-            'fields': ('website', 'facebook', 'twitter', 'instagram'),
+            'fields': ('name', 'image', 'description', 'capacity', 'email', 'telno', 'color'),
         }),
         ('Address', {
             'classes': ('collapse',),
@@ -31,6 +25,36 @@ class CompanyAdmin(admin.ModelAdmin):
         ('Secondary contact', {
             'classes': ('collapse',),
             'fields': ('secondary_contact', 'secondary_telno', 'secondary_mobile', 'secondary_email'),
+        }),
+        ('Social media', {
+            'classes': ('collapse',),
+            'fields': ('website', 'facebook', 'twitter', 'instagram'),
+        }),
+    ]
+
+@admin.register(Company)
+class CompanyAdmin(admin.ModelAdmin):
+    
+    model = Company
+    fieldsets = [
+        (None, {
+            'fields': ('name', 'image', 'description', 'email', 'telno'),
+        }),
+        ('Address', {
+            'classes': ('collapse',),
+            'fields': ('address1', 'address2', 'city', 'post_code'),
+        }),
+        ('Primary contact', {
+            'classes': ('collapse',),
+            'fields': ('primary_contact', 'primary_telno', 'primary_mobile', 'primary_email'),
+        }),
+        ('Secondary contact', {
+            'classes': ('collapse',),
+            'fields': ('secondary_contact', 'secondary_telno', 'secondary_mobile', 'secondary_email'),
+        }),
+        ('Social media', {
+            'classes': ('collapse',),
+            'fields': ('website', 'facebook', 'twitter', 'instagram'),
         }),
     ]
     
@@ -55,15 +79,15 @@ class ShowAdmin(admin.ModelAdmin):
     model = Show
     fieldsets = [
         (None, {
-            'fields': ('name', 'image', 'company', 'venue', 'description', 'payment_type', 'age_range', 'duration'),
-        }),
-        ('Social media', {
-            'classes': ('collapse',),
-            'fields': ('website', 'facebook', 'twitter', 'instagram'),
+            'fields': ('name', 'image', 'company', 'venue', 'description', 'age_range', 'duration', 'ticketed'),
         }),
         ('Genres', {
             'classes': ('collapse',),
             'fields': ('genres',),
+        }),
+        ('Social media', {
+            'classes': ('collapse',),
+            'fields': ('website', 'facebook', 'twitter', 'instagram'),
         }),
     ]
     filter_horizontal = ['genres']

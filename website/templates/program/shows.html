@@ -6,7 +6,7 @@
         
         {% for show in shows %}
 
-            <div class="row tf-show-card" style="border-color: {{ show.payment_type_color }};">
+            <div class="row tf-show-card" style="border-color: {{ show.venue.color }};">
 
                 <div class="tf-show-card__image col-xs-4 col-md-2">
                     {% if show.image %}
@@ -14,7 +14,7 @@
                     {% endif %}
                 </div>
                 <div class="col-xs-8 col-md-10">
-                    <div class="tf-show-card__title"><a href="{% url 'catalog:show_detail' show.id %}">{{ show.name }}</a></div>
+                    <div class="tf-show-card__title"><a href="{% url 'program:show_detail' show.id %}">{{ show.name }}</a></div>
                     <div class="tf-show-card__company">{{ show.company.name }}</div>
                     <div class="tf-show-card__description hidden-xs">{{ show.list_description | linebreaks }}</div>
                     <div class="tf-show-card__description visible-xs-block">{{ show.list_short_description | linebreaks }}</div>

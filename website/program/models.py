@@ -1,5 +1,7 @@
 from django.db import models
 
+from common.models import TimeStampedModel
+
 def get_paragraphs(text, num_paras):
     paras = []
     for para in text.splitlines():
@@ -10,7 +12,7 @@ def get_paragraphs(text, num_paras):
                 break
     return '\n'.join(paras)
     
-class Venue(models.Model):
+class Venue(TimeStampedModel):
 
     class Meta:
         ordering = ['name']
@@ -19,6 +21,7 @@ class Venue(models.Model):
     image = models.ImageField(upload_to = 'uploads/venue/', blank = True, default = '')
     description = models.TextField(blank = True, default = '')
     capacity = models.IntegerField(null = True, blank = True)
+    color = models.CharField(max_length = 16, blank = True, default = '')
     address1 = models.CharField(max_length = 64, blank = True, default = '')
     address2 = models.CharField(max_length = 64, blank = True, default = '')
     city = models.CharField(max_length = 32, blank = True, default = '')
@@ -42,7 +45,7 @@ class Venue(models.Model):
         return self.name
 
 
-class Company(models.Model):
+class Company(TimeStampedModel):
 
     class Meta:
         ordering = ['name']
@@ -73,7 +76,7 @@ class Company(models.Model):
         return self.name
 
 
-class Genre(models.Model):
+class Genre(TimeStampedModel):
 
     class Meta:
         ordering = ['name']
@@ -85,20 +88,7 @@ class Genre(models.Model):
         return self.name
 
 
-class PaymentType(models.Model):
-
-    class Meta:
-        ordering = ['name']
-
-    name = models.CharField(max_length = 32, unique = True)
-    color = models.CharField(max_length = 16, blank = True, default = '')
-    #is_ticketed = models.BooleanField(default = False)
-
-    def __str__(self):
-        return self.name
-    
-
-class Show(models.Model):
+class Show(TimeStampedModel):
 
     class Meta:
         ordering = ['name']
@@ -115,7 +105,7 @@ class Show(models.Model):
     age_range = models.CharField(max_length = 16, blank = True, default = '')
     duration = models.PositiveIntegerField(null = True, blank = True)
     venue = models.ForeignKey(Venue, on_delete = models.PROTECT, related_name = 'shows')
-    payment_type = models.ForeignKey(PaymentType, on_delete = models.PROTECT, related_name = 'shows')
+    ticketed = models.BooleanField(default = False)
     
     def __str__(self):
         return self.name
@@ -125,11 +115,6 @@ class Show(models.Model):
 
     def list_short_description(self):
         return get_paragraphs(self.description, 1)
-                
-    def payment_type_color(self):
-        if self.payment_type and self.payment_type.color:
-            return self.payment_type.color
-        return '#cccccc'
 
     def display_genres(self):
         return ", ".join([genre.name for genre in self.genres.filter(warning = False)])
@@ -138,7 +123,7 @@ class Show(models.Model):
         return ", ".join([genre.name for genre in self.genres.filter(warning = True)])
 
 
-class Performance(models.Model):
+class Performance(TimeStampedModel):
 
     class Meta:
         ordering = ['show', 'date_time']
@@ -147,11 +132,12 @@ class Performance(models.Model):
     show = models.ForeignKey(Show, on_delete = models.CASCADE, related_name = 'performances')
     date_time = models.DateTimeField()
 
-    @property
+    def ticketed(self):
+        return self.show.ticketed
+
     def tickets_sold(self):
         return self.tickets.all().count()
 
-    @property
     def tickets_available(self):
         available = self.show.venue.capacity - self.tickets_sold if self.show.venue.capacity else 0
         return available if available > 0 else 0
@@ -160,7 +146,7 @@ class Performance(models.Model):
         return self.show.name + ' (' + self.date_time.strftime('%a, %d %b at %H:%M') + ')'
 
 
-class Review(models.Model):
+class Review(TimeStampedModel):
 
     class Meta:
         ordering = ['show', 'source']

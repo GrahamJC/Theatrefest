@@ -20,7 +20,7 @@ from reportlab.rl_config import defaultPageSize
 from reportlab.lib.units import inch
 from reportlab.lib import colors
 
-from catalog.models import Performance
+from program.models import Performance
 from .models import BoxOffice, Basket, FringerType, Fringer, TicketType, Ticket
 from .forms import BuyTicketForm, RenameFringerForm, BuyFringerForm
 

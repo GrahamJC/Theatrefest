@@ -1,12 +1,13 @@
+from django.conf import settings
 from django.utils import timezone
-from django.contrib.auth.models import User
 from django.db import models
 
+from common.models import TimeStampedModel
 from website.utils import AutoOneToOneField
-from catalog.models import Performance
+from program.models import Performance
 
 
-class BoxOffice(models.Model):
+class BoxOffice(TimeStampedModel):
 
     class Meta:
         ordering = ['name']
@@ -18,9 +19,9 @@ class BoxOffice(models.Model):
         return self.name
 
 
-class Basket(models.Model):
+class Basket(TimeStampedModel):
     
-    user = AutoOneToOneField(User, on_delete = models.CASCADE, primary_key = True, related_name = 'basket')
+    user = AutoOneToOneField(settings.AUTH_USER_MODEL, on_delete = models.CASCADE, primary_key = True, related_name = 'basket')
     created = models.DateTimeField(default = timezone.now)
     updated = models.DateTimeField(default = timezone.now)
 
@@ -75,7 +76,7 @@ class Basket(models.Model):
         return self.user.username
 
 
-class FringerType(models.Model):
+class FringerType(TimeStampedModel):
 
     class Meta:
         ordering = ['name']
@@ -93,13 +94,13 @@ class FringerType(models.Model):
     def __str__(self):
         return self.name
 
-class Fringer(models.Model):
+class Fringer(TimeStampedModel):
 
     class Meta:
         ordering = ['user', 'name']
         unique_together = ('user', 'name')
 
-    user = models.ForeignKey(User, on_delete = models.PROTECT, related_name = 'fringers')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.PROTECT, related_name = 'fringers')
     name = models.CharField(max_length = 32)
     box_office = models.ForeignKey(BoxOffice, on_delete = models.PROTECT, related_name = 'fringers')
     date_time = models.DateTimeField()
@@ -125,7 +126,7 @@ class Fringer(models.Model):
     def get_available(user, performance = None):
         return list(filter(lambda f: f.is_available(performance), user.fringers.all()))
 
-class TicketType(models.Model):
+class TicketType(TimeStampedModel):
 
     class Meta:
         ordering = ['name']
@@ -139,12 +140,12 @@ class TicketType(models.Model):
         return self.name
 
 
-class Ticket(models.Model):
+class Ticket(TimeStampedModel):
 
     class Meta:
         ordering = ['user', 'performance']
 
-    user = models.ForeignKey(User, on_delete = models.PROTECT, related_name = 'tickets')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.PROTECT, related_name = 'tickets')
     performance = models.ForeignKey(Performance, on_delete = models.PROTECT, related_name = 'tickets')
     box_office = models.ForeignKey(BoxOffice, on_delete = models.PROTECT, related_name = 'tickets')
     date_time = models.DateTimeField()
