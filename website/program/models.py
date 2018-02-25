@@ -2,23 +2,13 @@ from django.db import models
 
 from common.models import TimeStampedModel
 
-def get_paragraphs(text, num_paras):
-    paras = []
-    for para in text.splitlines():
-        if para:
-            paras += [para]
-            num_paras -= 1
-            if num_paras == 0:
-                break
-    return '\n'.join(paras)
-    
 class Venue(TimeStampedModel):
 
     class Meta:
         ordering = ['name']
 
     name = models.CharField(max_length = 128, unique = True)
-    image = models.ImageField(upload_to = 'uploads/venue/', blank = True, default = '')
+    image = models.ImageField(upload_to = 'uploads/program/venue/', blank = True, default = '')
     description = models.TextField(blank = True, default = '')
     capacity = models.IntegerField(null = True, blank = True)
     color = models.CharField(max_length = 16, blank = True, default = '')
@@ -51,7 +41,7 @@ class Company(TimeStampedModel):
         ordering = ['name']
 
     name = models.CharField(max_length = 128, unique = True)
-    image = models.ImageField(upload_to = 'uploads/company/', blank = True, default = '')
+    image = models.ImageField(upload_to = 'uploads/program/company/', blank = True, default = '')
     description = models.TextField(blank = True, default = '')
     address1 = models.CharField(max_length = 64, blank = True, default = '')
     address2 = models.CharField(max_length = 64, blank = True, default = '')
@@ -95,8 +85,9 @@ class Show(TimeStampedModel):
 
     name = models.CharField(max_length = 128, unique = True)
     company = models.ForeignKey(Company, on_delete = models.CASCADE, related_name = 'shows')
-    image = models.ImageField(upload_to = 'uploads/show/', blank = True, default = '')
+    image = models.ImageField(upload_to = 'uploads/program/show/', blank = True, default = '')
     description = models.TextField(blank = True, default = '')
+    long_description = models.TextField(blank = True, default = '')
     website = models.URLField(max_length = 128, blank = True, default = '')
     facebook = models.CharField(max_length = 64, blank = True, default = '')
     twitter = models.CharField(max_length = 64, blank = True, default = '')
@@ -110,11 +101,14 @@ class Show(TimeStampedModel):
     def __str__(self):
         return self.name
 
-    def list_description(self):
-        return get_paragraphs(self.description, 2)
-
     def list_short_description(self):
-        return get_paragraphs(self.description, 1)
+        return self.description
+
+    def list_long_description(self):
+        return self.long_description or self.description
+
+    def display_days(self):
+        return ", ".join([performance.date_time.strftime("%a") for performance in self.performances.all()])
 
     def display_genres(self):
         return ", ".join([genre.name for genre in self.genres.filter(warning = False)])
@@ -139,7 +133,7 @@ class Performance(TimeStampedModel):
         return self.tickets.all().count()
 
     def tickets_available(self):
-        available = self.show.venue.capacity - self.tickets_sold if self.show.venue.capacity else 0
+        available = self.show.venue.capacity - self.tickets_sold() if self.show.venue.capacity else 0
         return available if available > 0 else 0
 
     def __str__(self):

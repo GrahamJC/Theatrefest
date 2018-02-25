@@ -79,7 +79,7 @@ class ShowAdmin(admin.ModelAdmin):
     model = Show
     fieldsets = [
         (None, {
-            'fields': ('name', 'image', 'company', 'venue', 'description', 'age_range', 'duration', 'ticketed'),
+            'fields': ('name', 'image', 'company', 'venue', 'description', 'long_description', 'age_range', 'duration', 'ticketed'),
         }),
         ('Genres', {
             'classes': ('collapse',),

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     
     'accounts.apps.AccountsConfig',
+    'content.apps.ContentConfig',
     'program.apps.ProgramConfig',
     'tickets.apps.TicketsConfig',
 ]

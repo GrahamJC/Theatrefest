@@ -1,0 +1,167 @@
+// Shows
+#tf-program-shows {
+
+    .search {
+    }
+
+    .results {
+        @media (min-width: $screen-md) {
+            margin-left: 75px;
+            margin-right: 75px;
+        }
+
+        .show {
+            margin-bottom: 10px;
+            border-bottom: 5px solid #cccccc;
+            padding-top: 5px;
+            padding-bottom: 10px;
+
+            .image {
+                img {
+                    width: 100%;
+                }
+            }
+
+            .title {
+            }
+
+            .company {
+            }
+
+            .description {
+            }
+
+            .info1 {
+                color: $primary-color;
+
+                .venue {
+                    font-weight: bold;
+                    margin-right: 5px;
+                }
+
+                .days {
+                    margin-right: 5px;
+                }
+            }
+
+            .info2 {
+                @media (min-width: $screen-md) {
+                    font-weight: bold;
+                }
+
+                .genres {
+                    color: $secondary-color;
+                    margin-right: 5px;
+                }
+
+                .genre-warnings {
+                    color: $warning-color;
+                    margin-right: 5px;
+                }
+
+                .age-range {
+                    color: $primary-color;
+                    margin-right: 5px;
+                }
+
+                .duration {
+                    color: $secondary-color;
+                    margin-right: 5px;
+                }
+            }
+        }
+    }
+}
+
+// Show detail
+#tf-program-show-detail {
+
+    .title {
+    }
+
+    .company {
+    }
+
+    .image {
+        margin-bottom: 10px;
+
+        img {
+            width: 100%;
+        }
+    }
+
+    .info1 {
+        color: $secondary-color;
+
+        @media (min-width: $screen-md) {
+            font-weight: bold;
+        }
+
+        .genres {
+        }
+
+        .genre-warnings {
+            color: $warning-color;
+        }
+
+        .age-range {
+        }
+
+        .duration {
+        }
+    }
+
+    .info2 {
+        margin-top: 10px;
+        color: $primary-color;
+
+        .venue {
+            font-weight: bold;
+        }
+
+        .performances {
+            .performance {
+            }
+        }
+    }
+
+
+    .description {
+    }
+
+    .social-media {
+        .website {
+        }
+
+        .twitter {
+        }
+
+        .instagram {
+        }
+
+        .facebook {
+        }
+    }
+
+    .reviews {
+        margin-top: 10px;
+
+        .review {
+            .head {
+                font-weight: bold;
+
+                .rating {
+                }
+
+                .source {
+                }
+
+                .url {
+                }
+            }
+
+            .body {
+            }
+        }
+    }
+}

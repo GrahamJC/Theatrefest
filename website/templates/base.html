@@ -22,8 +22,8 @@
     <div id="tf-container" class="container">
 
         <div id="tf-header" class="row">
-            <div class="col-xs-12 col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
-                <img src="{% static 'bridge.png' %}" /> 
+            <div class="col-xs-12 col-md-12 col-lg-10 col-lg-offset-1">
+                <img src="{% static 'BridgeBanner.png' %}" /> 
             </div>
         </div>
 
@@ -40,6 +40,7 @@
                 <div id="tf-navbar-collapse-1" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
                         <li class="{% if 'program:home' == request.resolver_match.url_name %}active{% endif %}"><a href="{% url 'program:home' %}">Home</a></li>
+                        <li><a href="/content/page/home">CHome</a></li>
                         <li class="{% if 'program:show' in request.resolver_match.url_name %}active{% endif %}"><a href="{% url 'program:shows' %}">Shows</a></li>
                         <li><a href="#">Times</a></li>
                         <li><a href="#">Tickets</a></li>

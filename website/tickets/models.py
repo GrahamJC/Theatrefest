@@ -2,8 +2,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.db import models
 
-from common.models import TimeStampedModel
-from website.utils import AutoOneToOneField
+from common.models import TimeStampedModel, AutoOneToOneField
 from program.models import Performance
 
 
@@ -22,8 +21,6 @@ class BoxOffice(TimeStampedModel):
 class Basket(TimeStampedModel):
     
     user = AutoOneToOneField(settings.AUTH_USER_MODEL, on_delete = models.CASCADE, primary_key = True, related_name = 'basket')
-    created = models.DateTimeField(default = timezone.now)
-    updated = models.DateTimeField(default = timezone.now)
 
     @property
     def ticket_count(self):

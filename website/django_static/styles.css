@@ -31,7 +31,7 @@
 /* Show list */
 .tf-show-card {
 	margin-bottom: 10px;
-	border: 10px solid #cccccc;
+	border-bottom: 10px solid #cccccc;
 	padding-top: 5px;
 	padding-bottom: 5px;
 }

@@ -4,7 +4,7 @@ from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
 import django.utils.timezone
-import website.utils
+import common
 
 
 class Migration(migrations.Migration):
@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Basket',
             fields=[
-                ('user', website.utils.AutoOneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, related_name='basket', serialize=False, to=settings.AUTH_USER_MODEL)),
+                ('user', common.models.AutoOneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, related_name='basket', serialize=False, to=settings.AUTH_USER_MODEL)),
                 ('created', models.DateTimeField(default=django.utils.timezone.now)),
                 ('updated', models.DateTimeField(default=django.utils.timezone.now)),
             ],

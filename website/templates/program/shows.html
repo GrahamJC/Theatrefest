@@ -2,45 +2,57 @@
 
 {% block content %}
 
-    <div id="tf-show-list">
-        
-        {% for show in shows %}
+    <div id="tf-program-shows">
 
-            <div class="row tf-show-card" style="border-color: {{ show.venue.color }};">
+        <div class="search">
+            <p>what are you looking for?</p>
+        </div>
 
-                <div class="tf-show-card__image col-xs-4 col-md-2">
-                    {% if show.image %}
-                        <img src="{{ MEDIA_ROOT }}{{ show.image.url }}" />
-                    {% endif %}
-                </div>
-                <div class="col-xs-8 col-md-10">
-                    <div class="tf-show-card__title"><a href="{% url 'program:show_detail' show.id %}">{{ show.name }}</a></div>
-                    <div class="tf-show-card__company">{{ show.company.name }}</div>
-                    <div class="tf-show-card__description hidden-xs">{{ show.list_description | linebreaks }}</div>
-                    <div class="tf-show-card__description visible-xs-block">{{ show.list_short_description | linebreaks }}</div>
-                    <div class="tf-show-card__info">
-                        {% if show.display_genres %}
-                            <span class="tf-show-card__genres hidden-xs">
-                                {{ show.display_genres }}
-                            </span>
-                        {% endif %}
-                        {% if show.display_genre_warnings %}
-                            <span class="tf-show-card__genre-warnings">
-                                {{ show.display_genre_warnings }}
-                            </span>
-                        {% endif %}
-                        {% if show.age_range %}
-                            <span class="tf-show-card__age-range">Age {{ show.age_range }}</span>
-                        {% endif %}
-                        {% if show.duration %}
-                            <span class="tf-show-card__duration">{{ show.duration }} mins</span>
+        <div class="results">
+            {% for show in shows %}
+                <div class="show row">
+
+                    <div class="image col-xs-4 col-md-3 col-lg-2">
+                        {% if show.image %}
+                            <img src="{{ MEDIA_ROOT }}{{ show.image.url }}" />
                         {% endif %}
                     </div>
-                </div>
+                    <div class="col-xs-8 col-md-9 col-lg-10">
+                        <div class="title tf-show-name"><a href="{% url 'program:show_detail' show.id %}">{{ show.name }}</a></div>
+                        <div class="company tf-company-name">{{ show.company.name }}</div>
+                        <div class="description hidden-xs">{{ show.list_long_description | linebreaks }}</div>
+                        <div class="description visible-xs-block">{{ show.list_short_description | linebreaks }}</div>
+                        <div class="info1">
+                            <span class="venue">
+                                {{ show.venue.name }}
+                            </span>
+                            <span class="days">
+                                {{ show.display_days }}
+                            </span>
+                        </div>
+                        <div class="info2">
+                            {% if show.display_genres %}
+                                <span class="genres hidden-xs">
+                                    {{ show.display_genres }}
+                                </span>
+                            {% endif %}
+                            {% if show.display_genre_warnings %}
+                                <span class="genre-warnings">
+                                    {{ show.display_genre_warnings }}
+                                </span>
+                            {% endif %}
+                            {% if show.age_range %}
+                                <span class="age-range">Age {{ show.age_range }}</span>
+                            {% endif %}
+                            {% if show.duration %}
+                                <span class="duration">{{ show.duration }} mins</span>
+                            {% endif %}
+                        </div>
+                    </div>
             
-            </div>
-
-        {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
 
     </div>
 
