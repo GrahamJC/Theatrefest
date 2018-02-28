@@ -48,6 +48,7 @@
     <Compile Include="boxoffice\models.py" />
     <Compile Include="boxoffice\tests.py" />
     <Compile Include="boxoffice\urls.py" />
+    <Compile Include="boxoffice\apis.py" />
     <Compile Include="boxoffice\views.py" />
     <Compile Include="boxoffice\__init__.py" />
     <Compile Include="content\admin.py" />
@@ -170,6 +171,7 @@
     <Content Include="static\font-awesome-4.7.0\scss\_stacked.scss" />
     <Content Include="static\font-awesome-4.7.0\scss\_variables.scss" />
     <Content Include="static\jquery\jquery-3.2.1.min.js" />
+    <Content Include="static\moment\moment.min.js" />
     <Content Include="static\_tickets.scss" />
     <Content Include="static\_program.scss" />
     <Content Include="static\styles.css">
@@ -259,6 +261,7 @@
     <Folder Include="static\font-awesome-4.7.0\less\" />
     <Folder Include="static\font-awesome-4.7.0\scss\" />
     <Folder Include="static\jquery\" />
+    <Folder Include="static\moment\" />
     <Folder Include="templates\" />
     <Folder Include="templates\accounts\" />
     <Folder Include="D:\Git\Theatrefest\website\templates\program\" />

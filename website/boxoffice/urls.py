@@ -1,12 +1,14 @@
 from django.urls import path
 
 from . import views
+from . import apis
 
 app_name = "boxoffice"
 
 urlpatterns = [
     path('', views.SelectView.as_view(), name = 'select'),
     path('home', views.HomeView.as_view(), name = 'home'),
-    path('ajax/get_performances', views.get_performances, name = 'get_performances'),
-    path('ajax/get_ticket_info', views.get_ticket_info, name = 'get_ticket_info'),
+    # AJAX helpers
+    path('api/get_performances', apis.get_performances, name = 'api_get_performances'),
+    path('api/get_ticket_info', apis.get_ticket_info, name = 'api_get_ticket_info'),
 ]

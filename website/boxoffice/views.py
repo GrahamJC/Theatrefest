@@ -41,7 +41,7 @@ class SelectView(LoginRequiredMixin, View):
 
         # Let user select a box office
         context = {
-            'boxoffices': BoxOffice.objects.exclude(is_online = True),
+            'boxoffices': BoxOffice.objects.all(),
         }
         return render(request, 'boxoffice/select.html', context)
 
@@ -53,31 +53,3 @@ class SelectView(LoginRequiredMixin, View):
 
         # Go to box office home page
         return redirect(reverse('boxoffice:home'))
-
-# AJAX helpers
-def get_performances(request):
-
-    show = Show.objects.get(pk = request.GET.get('show_id', 0))
-    performances = []
-    for performance in show.performances.all():
-        performances.append({
-            "id": performance.id,
-            "date": performance.date,
-            "time": performance.time,
-            "tickets_available": performance.tickets_available,
-        })
-    data = {
-        "performances": performances,
-    }
-    return JsonResponse(data)
-
-def get_ticket_info(request):
-
-    performance = Performance.objects.get(pk = request.GET.get('performance_id', 0))
-    data = {
-        "capacity": performance.show.venue.capacity,
-        "sold": performance.tickets_sold,
-        "available": performance.tickets_available,
-    }
-    return JsonResponse(data)
-

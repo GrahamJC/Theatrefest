@@ -56,7 +56,7 @@
         function onShowChange() {
             var show_id = $(this).val();
             $.ajax({
-                url: '/boxoffice/ajax/get_performances',
+                url: '/boxoffice/api/get_performances',
                 data: { 'show_id': show_id },
                 dataType: 'json',
                 success: function(response) {
@@ -64,7 +64,7 @@
                     select.empty();
                     select.append($("<option></option>").attr("value", 0).text("-- Select performnce --"));
                     $.each(response.performances, function(n, performance) {
-                        select.append($("<option></option>").attr("value", performance.id).text(performance.date));
+                        select.append($("<option></option>").attr("value", performance.id).text(moment(performance.date, 'yyyy-MM-DD').format('ddd, MMM Do') + ' at ' + moment(performance.time, 'hh:mm:ss').format('hh:mma')));
                     });
                 }
             });
@@ -77,7 +77,7 @@
             var performance_id = $(this).val();
             if (performance_id > 0) {
                 $.ajax({
-                    url: '/boxoffice/ajax/get_ticket_info',
+                    url: '/boxoffice/api/get_ticket_info',
                     data: { 'performance_id': performance_id },
                     dataType: 'json',
                     success: function(response) {
