@@ -12,7 +12,7 @@ class VenueAdmin(admin.ModelAdmin):
     model = Venue
     fieldsets = [
         (None, {
-            'fields': ('name', 'image', 'description', 'capacity', 'email', 'telno', 'color'),
+            'fields': ('name', 'image', 'description', 'capacity', 'box_office', 'email', 'telno', 'color'),
         }),
         ('Address', {
             'classes': ('collapse',),

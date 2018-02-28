@@ -60,6 +60,9 @@
     <Compile Include="content\__init__.py" />
     <Compile Include="program\admin.py" />
     <Compile Include="program\apps.py" />
+    <Compile Include="program\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="program\migrations\__init__.py" />
     <Compile Include="program\models.py" />
     <Compile Include="program\tests.py" />
@@ -175,7 +178,6 @@
     </Content>
     <Content Include="static\styles.min.css" />
     <Content Include="static\styles.scss" />
-    <Content Include="static\styles_old.css" />
     <Content Include="templates\accounts\profile.html" />
     <Content Include="templates\base.html" />
     <Content Include="templates\boxoffice\select.html" />
@@ -264,6 +266,7 @@
     <Folder Include="D:\Git\Theatrefest\website\templates\registrationX\" />
     <Folder Include="templates\content\" />
     <Folder Include="templates\program\" />
+    <Folder Include="templates\registrationX\" />
     <Folder Include="templates\registration\" />
     <Folder Include="templates\tickets\" />
     <Folder Include="tickets\" />

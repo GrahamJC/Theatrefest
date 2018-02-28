@@ -2,6 +2,18 @@ from django.db import models
 
 from common.models import TimeStampedModel
 
+
+class BoxOffice(TimeStampedModel):
+
+    class Meta:
+        ordering = ['name']
+    
+    name = models.CharField(max_length = 32, unique = True)
+    
+    def __str__(self):
+        return self.name
+
+
 class Venue(TimeStampedModel):
 
     class Meta:
@@ -30,6 +42,7 @@ class Venue(TimeStampedModel):
     secondary_telno = models.CharField(max_length = 32, blank = True, default = '')
     secondary_mobile = models.CharField(max_length = 32, blank = True, default = '')
     secondary_email = models.EmailField(max_length = 64, blank = True, default = '')
+    box_office = models.ForeignKey(BoxOffice, null = True, blank = True, on_delete = models.SET_NULL, related_name = 'venues')
 
     def __str__(self):
         return self.name
@@ -108,7 +121,7 @@ class Show(TimeStampedModel):
         return self.long_description or self.description
 
     def display_days(self):
-        return ", ".join([performance.date_time.strftime("%a") for performance in self.performances.all()])
+        return ", ".join([performance.date.strftime("%a") for performance in self.performances.all()])
 
     def display_genres(self):
         return ", ".join([genre.name for genre in self.genres.filter(warning = False)])
@@ -120,11 +133,12 @@ class Show(TimeStampedModel):
 class Performance(TimeStampedModel):
 
     class Meta:
-        ordering = ['show', 'date_time']
-        unique_together = ('show', 'date_time')
+        ordering = ['show', 'date', 'time']
+        unique_together = ('show', 'date', 'time')
 
     show = models.ForeignKey(Show, on_delete = models.CASCADE, related_name = 'performances')
-    date_time = models.DateTimeField()
+    date = models.DateField(null = True)
+    time = models.TimeField(null = True)
 
     def ticketed(self):
         return self.show.ticketed
@@ -137,7 +151,7 @@ class Performance(TimeStampedModel):
         return available if available > 0 else 0
 
     def __str__(self):
-        return self.show.name + ' (' + self.date_time.strftime('%a, %d %b at %H:%M') + ')'
+        return self.show.name + ' (' + self.date.strftime('%a, %d %b') + ' at ' + self.time.strftime('%H:%M') + ')'
 
 
 class Review(TimeStampedModel):

@@ -1,15 +1,35 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 
     <div id="tf-program-shows">
 
         <div class="search">
-            <p>what are you looking for?</p>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" href="#search-expand">What are you looking for (click to search)?</a>
+                    </h4>
+                </div>
+                <div id="search-expand" class="panel-body panel-collapse collapse">
+                    <p class="tf-instructions">Check days, venues and/or genres to restrict the search (leave all boxes unchecked to see everything).</p>
+                    <form class="row" method="GET">
+                        {% csrf_token %}
+                        <div class="col-xs-1 visible-lg">{{ search.days.label_tag }}</div>
+                        <div class="col-xs-3 col-lg-2">{{ search.days }}</div>
+                        <div class="col-xs-1 visible-lg">{{ search.venues.label_tag }}</div>
+                        <div class="col-xs-3 col-lg-3">{{ search.venues }}</div>
+                        <div class="col-xs-1 visible-lg">{{ search.genres.label_tag }}</div>
+                        <div class="col-xs-4 col-lg-3">{{ search.genres }}</div>
+                        <div class="col-xs-2 col-lg-1"><input class="btn btn-default" type="submit" value="search"/></div>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <div class="results">
-            {% for show in shows %}
+            {% for show in results %}
                 <div class="show row">
 
                     <div class="image col-xs-4 col-md-3 col-lg-2">
@@ -51,6 +71,8 @@
                     </div>
             
                 </div>
+            {% empty %}
+                <p>There are no shows that meet your search criteria.</p>
             {% endfor %}
         </div>
 

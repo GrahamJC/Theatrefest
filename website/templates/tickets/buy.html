@@ -6,7 +6,7 @@
     <div id="tf-tickets-buy">
 
         <p class="tf-page-title">Buy Tickets for: <a class="tf-show-name" href="{% url 'program:show_detail' performance.show.id %}">{{ performance.show.name }}</a></p>
-        <p class="performance">{{ performance.date_time|date:'D, j M' }} at {{ performance.date_time|date:'H:i' }}</p>
+        <p class="performance">{{ performance.date|date:'D, j M' }} at {{ performance.time|time:'P' }}</p>
         <p>Tickets available: {{ performance.tickets_available }}</p>
 
         {% if performance.tickets_available %}

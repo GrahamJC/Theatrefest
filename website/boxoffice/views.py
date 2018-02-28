@@ -62,7 +62,8 @@ def get_performances(request):
     for performance in show.performances.all():
         performances.append({
             "id": performance.id,
-            "date_time": performance.date_time,
+            "date": performance.date,
+            "time": performance.time,
             "tickets_available": performance.tickets_available,
         })
     data = {

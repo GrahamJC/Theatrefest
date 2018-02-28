@@ -38,6 +38,12 @@
   .tf-company-name a {
     color: #fd7f02; }
 
+#tf-program-shows .search ul {
+  list-style-type: none;
+  padding: 0; }
+  #tf-program-shows .search ul label {
+    font-weight: normal; }
+
 @media (min-width: 992px) {
   #tf-program-shows .results {
     margin-left: 75px;
@@ -51,6 +57,7 @@
   #tf-program-shows .results .show .image img {
     width: 100%; }
   #tf-program-shows .results .show .info1 {
+    margin-top: 15px;
     color: #1a7cf3; }
     #tf-program-shows .results .show .info1 .venue {
       font-weight: bold;

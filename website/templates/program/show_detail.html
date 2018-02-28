@@ -37,7 +37,7 @@
                     {% if show.performances.all %}
                         <div class="performances">
                             {% for performance in show.performances.all %}
-                                <p class="performance"><a href="{% url 'tickets:buy' performance.id %}">{{ performance.date_time|date:'l P' }}</a></p>
+                                <p class="performance"><a href="{% url 'tickets:buy' performance.id %}">{{ performance.date|date:'l' }} at {{ performance.time|time:'P'}}</a></p>
                             {% endfor %}
                         </div>
                     {% endif %}

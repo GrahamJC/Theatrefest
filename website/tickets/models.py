@@ -3,19 +3,7 @@ from django.utils import timezone
 from django.db import models
 
 from common.models import TimeStampedModel, AutoOneToOneField
-from program.models import Performance
-
-
-class BoxOffice(TimeStampedModel):
-
-    class Meta:
-        ordering = ['name']
-    
-    name = models.CharField(max_length = 32, unique = True)
-    is_online = models.BooleanField(default = False)
-    
-    def __str__(self):
-        return self.name
+from program.models import BoxOffice, Performance
 
 
 class Basket(TimeStampedModel):
@@ -99,7 +87,7 @@ class Fringer(TimeStampedModel):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.PROTECT, related_name = 'fringers')
     name = models.CharField(max_length = 32)
-    box_office = models.ForeignKey(BoxOffice, on_delete = models.PROTECT, related_name = 'fringers')
+    box_office = models.ForeignKey(BoxOffice, null = True, on_delete = models.PROTECT, related_name = 'fringers')
     date_time = models.DateTimeField()
     description = models.CharField(max_length = 32)
     shows = models.PositiveIntegerField()
@@ -144,7 +132,7 @@ class Ticket(TimeStampedModel):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.PROTECT, related_name = 'tickets')
     performance = models.ForeignKey(Performance, on_delete = models.PROTECT, related_name = 'tickets')
-    box_office = models.ForeignKey(BoxOffice, on_delete = models.PROTECT, related_name = 'tickets')
+    box_office = models.ForeignKey(BoxOffice, null = True, on_delete = models.PROTECT, related_name = 'tickets')
     date_time = models.DateTimeField()
     description = models.CharField(max_length = 32)
     cost = models.DecimalField(max_digits = 4, decimal_places = 2)

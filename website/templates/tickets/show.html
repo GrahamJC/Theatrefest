@@ -20,7 +20,7 @@
                                 {% for ticket in tickets %}
                                     <tr>
                                         <td>
-                                            {{ ticket.performance.date_time|date:'D, j M' }} at {{ ticket.performance.date_time|date:'H:i' }}
+                                            {{ ticket.performance.date|date:'D, j M' }} at {{ ticket.performance.time|date:'H:i' }}
                                             <br/>{{ ticket.performance.show.name }}
                                             <div class="visible-xs">
                                                 {{ ticket.description }}{% if ticket.fringer %}:{{ ticket.fringer.name }}{% endif %}

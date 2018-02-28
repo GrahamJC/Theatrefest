@@ -76,9 +76,6 @@ class BuyView(LoginRequiredMixin, View):
         performance = get_object_or_404(Performance, pk = performance_id)
         ticket_types = TicketType.objects.filter(is_online = True)
 
-        # Get online box office
-        box_office = get_object_or_404(BoxOffice, name = 'Online')
-
         # Check if using fringers
         action = request.POST.get("action")
         if action == "fringer":
@@ -93,7 +90,6 @@ class BuyView(LoginRequiredMixin, View):
                     # Create ticket
                     ticket = Ticket(
                         user = request.user,
-                        box_office = box_office,
                         performance = performance,
                         date_time = datetime.now(),
                         description = "Fringer",
@@ -136,7 +132,6 @@ class BuyView(LoginRequiredMixin, View):
                         for i in range(0, quantity):
                             ticket = Ticket(
                                 user = request.user,
-                                box_office = box_office,
                                 performance = performance,
                                 date_time = datetime.now(),
                                 description = ticket_type.name,
@@ -204,7 +199,6 @@ class FringersView(LoginRequiredMixin, View):
 
         # Get the action, box-office and basket
         action = request.POST.get("action")
-        box_office = get_object_or_404(BoxOffice, name = 'Online')
         basket = request.user.basket
         formset = None
         buy_form = None
@@ -241,7 +235,6 @@ class FringersView(LoginRequiredMixin, View):
                 fringer = Fringer(
                     user = request.user,
                     name = buy_name if buy_name else buy_type.name,
-                    box_office = box_office,
                     date_time = datetime.now(),
                     description = buy_type.description,
                     shows = buy_type.shows,
@@ -395,7 +388,7 @@ class PrintTicketView(LoginRequiredMixin, View):
         data = [
             ["Theatrefest 2018", ticket.id],
             [ticket.performance.show.name, "{0} {1}".format(ticket.user.first_name, ticket.user.last_name)],
-            [ticket.performance.date_time.strftime("%a, %d %b at %H:%M"), ticket.performance.show.venue.name],
+            [ticket.performance.date.strftime("%a, %d %b") + " at " + ticket.performance.time.strftime("%H:%M"), ticket.performance.show.venue.name],
         ]
         table = Table(data, colWidths = [(PrintTicketView.PAGE_WIDTH - 100)/ 2, (PrintTicketView.PAGE_WIDTH -100)/ 2], style = PrintTicketView.TICKET_STYLE)
         story.append(table)

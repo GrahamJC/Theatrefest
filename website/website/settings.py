@@ -87,7 +87,7 @@ WSGI_APPLICATION = 'website.wsgi.application'
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'theatrefest',
         'USER': 'theatrefest',
         'PASSWORD': 'barnum',
@@ -136,6 +136,7 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = posixpath.join(*(BASE_DIR.split(os.path.sep) + ['django_static']))
 STATIC_URL = '/static/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
 # Crispy forms

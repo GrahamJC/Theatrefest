@@ -30,7 +30,7 @@
                                                     <ul class="dropdown-menu tf-fringer-tickets">
                                                         {% for ticket in form.instance.tickets.all %}
                                                             <li class="tf-fringer-tickets__item">
-                                                                {{ ticket.performance.date_time|date:'D, j M' }} at {{ ticket.performance.date_time|date:'H:i' }}
+                                                                {{ ticket.performance.date|date:'D, j M' }} at {{ ticket.performance.time|date:'H:i' }}
                                                                 <br/>{{ ticket.performance.show.name }}
                                                             </li>
                                                         {% endfor %}

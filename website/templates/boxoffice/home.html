@@ -64,7 +64,7 @@
                     select.empty();
                     select.append($("<option></option>").attr("value", 0).text("-- Select performnce --"));
                     $.each(response.performances, function(n, performance) {
-                        select.append($("<option></option>").attr("value", performance.id).text(performance.date_time));
+                        select.append($("<option></option>").attr("value", performance.id).text(performance.date));
                     });
                 }
             });

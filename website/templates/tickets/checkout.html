@@ -24,7 +24,7 @@
                                 {% for ticket in basket.tickets.all %}
                                     <tr>
                                         <td>
-                                            {{ ticket.performance.date_time|date:'D, j M' }} at {{ ticket.performance.date_time|date:'H:i' }}
+                                            {{ ticket.performance.date|date:'D, j M' }} at {{ ticket.performance.time|date:'H:i' }}
                                             <br/>{{ ticket.performance.show.name }}
                                         </td>
                                         <td>

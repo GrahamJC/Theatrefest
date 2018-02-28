@@ -2,6 +2,14 @@
 #tf-program-shows {
 
     .search {
+        ul {
+            list-style-type: none;
+            padding: 0;
+
+            label {
+                font-weight: normal;
+            }
+        }
     }
 
     .results {
@@ -32,6 +40,7 @@
             }
 
             .info1 {
+                margin-top: 15px;
                 color: $primary-color;
 
                 .venue {
