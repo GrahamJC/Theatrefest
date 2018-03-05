@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from django.views import View
+from django.urls import reverse
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -39,6 +40,7 @@ def venue_detail(request, venue_id):
     }
     return render(request, 'program/venue_detail.html', context)
 
+
 class ShowsView(View):
 
     def get(self, request):
@@ -60,13 +62,20 @@ class ShowsView(View):
         # If valid add search results to context
         if search.is_valid():
             shows = Show.objects
-            #if search.days:
-            #    shows = shows.filter(name)
+            if search.cleaned_data['days']:
+                shows = shows.filter(performances__date__in = search.cleaned_data['days'])
             if search.cleaned_data['venues']:
                 shows = shows.filter(venue_id__in = search.cleaned_data['venues'] )
             if search.cleaned_data['genres']:
                 shows = shows.filter(genres__id__in = search.cleaned_data['genres'] )
-            context['results'] = shows.all()
+            results = []
+            for show in shows.distinct():
+                if show.theatrefest_ID:
+                    show.details_url = show.theatrefest_ID.format("http:theatrefest.co.uk/18/Companies/{0}.htm")
+                else:
+                    show_details = reverse("program:show_detail", args = [show.id])
+                results.append(show)
+            context['results'] = results
 
         # Render search results
         return render(request, 'program/shows.html', context)

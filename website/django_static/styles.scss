@@ -1,0 +1,74 @@
+// Variables
+$primary-color:#1a7cf3;
+$secondary-color: #fd7f02;
+$warning-color: #ff4040;
+$font-size-xs: 8pt;
+$font-size-sm: 10pt;
+$font-size-md: 12pt;
+$font-size-lg: 14pt;
+$font-size-xl: 16pt;
+$font-size-xxl: 18pt;
+
+$screen-xs: 480px;
+$screen-sm: 768px;
+$screen-md: 992px;
+$screen-lg: 1200px;
+
+// Override Bootstrap defaults
+p {
+    margin-bottom: 3px;
+}
+
+// Main layout
+#tf-container {
+    background-color: white;
+    box-shadow: 0 0 75px;
+}
+
+#tf-header {
+    text-align: center;
+}
+
+#tf-header img {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#tf-navigator {
+}
+
+#tf-content {
+    font-size: $font-size-md;
+    @media (max-width: $screen-xs) { font-size: $font-size-sm; }
+}
+
+.tf-page-title {
+    font-size: $font-size-lg;
+    font-weight: bold;
+}
+
+.tf-show-name {
+    font-size: $font-size-lg;
+    @media (max-width: $screen-xs) {
+        font-size: $font-size-md;
+    }
+    font-weight: bold;
+    color: $primary-color;
+
+    a {
+        color: $primary-color;
+    }
+}
+
+.tf-company-name {
+    color: $secondary-color;
+    font-weight: bold;
+
+    a {
+        color: $secondary-color;
+    }
+}
+
+// Import app stylesheets
+@import 'program';
+@import 'tickets';

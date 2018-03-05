@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 import posixpath
+from decimal import Decimal
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -34,6 +35,7 @@ ALLOWED_HOSTS = [
 
 # Application definition
 INSTALLED_APPS = [
+    'django.contrib.sites',
     'registration',
     'django.contrib.auth',
     'django.contrib.admin',
@@ -49,6 +51,8 @@ INSTALLED_APPS = [
     'program.apps.ProgramConfig',
     'tickets.apps.TicketsConfig',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -145,15 +149,25 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 # Registration
 ACCOUNT_ACTIVATION_DAYS = 7
 REGISTRATION_AUTO_LOGIN = True
-REGISTRATION_DEFAULT_FROM_EMAIL = "grahamc@pdhi.com"
+REGISTRATION_DEFAULT_FROM_EMAIL = "noreply@theatrefest.co.uk"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
 # E-mail
-EMAIL_HOST = "mail.btinternet.com"
+#EMAIL_HOST = "mail.btinternet.com"
+#EMAIL_PORT = 465
+#EMAIL_HOST_USER = "graham.cockell@btinternet.com"
+#EMAIL_HOST_PASSWORD = "dC2CySb9"
+#EMAIL_USE_SSL = True
+EMAIL_HOST = "smtp.sendgrid.net"
 EMAIL_PORT = 465
-EMAIL_HOST_USER = "graham.cockell@btinternet.com"
-EMAIL_HOST_PASSWORD = "dC2CySb9"
+EMAIL_HOST_USER = "apikey"
+EMAIL_HOST_PASSWORD = "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"
 EMAIL_USE_SSL = True
 
+# Stripe
+STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY", "pk_test_c3FvgRcdkFHYxEmg6KB1vIYJ")
+STRIPE_PRIVATE_KEY = os.environ.get("STRIPE_PRIVATE_KEY", "sk_test_b3W57jWFmfNRpgKZnehP7tje")
+STRIPE_FEE_FIXED = Decimal(0.2)
+STRIPE_FEE_PERCENT = Decimal(0.014)
 

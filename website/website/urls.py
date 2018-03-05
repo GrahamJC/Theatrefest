@@ -7,7 +7,7 @@ from django.views.generic import RedirectView
 from registration import views
 
 urlpatterns = [
-    path('', RedirectView.as_view(url = '/program/', permanent = True)),
+    path('', RedirectView.as_view(url = '/program/show', permanent = True)),
     path('content/', include('content.urls')),
     path('program/', include('program.urls')),
     path('accounts/', include('accounts.urls')),

@@ -1,10 +1,11 @@
 from django.conf import settings
 from django.utils import timezone
 from django.db import models
+from decimal import Decimal, ROUND_05UP
 
 from common.models import TimeStampedModel, AutoOneToOneField
 from program.models import BoxOffice, Performance
-
+from website import settings
 
 class Basket(TimeStampedModel):
     
@@ -46,10 +47,21 @@ class Basket(TimeStampedModel):
     def total_cost(self):
         return self.ticket_cost + self.fringer_cost
 
+    @property
+    def stripe_charge(self):
+        return ((self.total_cost + settings.STRIPE_FEE_FIXED) / (1 - settings.STRIPE_FEE_PERCENT)).quantize(Decimal('.01'), rounding = ROUND_05UP)
+
+    @property
+    def stripe_charge_pence(self):
+        return int(self.stripe_charge * 100)
+
+    @property
+    def stripe_fee(self):
+        return self.stripe_charge - self.total_cost
+
     def add_item(self, item):
         item.basket = self
         item.save()
-        self.updated = datetime.now()
         self.save()
 
     def remove_item(self, item):
@@ -58,7 +70,7 @@ class Basket(TimeStampedModel):
             item.save()
 
     def __str__(self):
-        return self.user.username
+        return self.user.email
 
 
 class FringerType(TimeStampedModel):
@@ -140,4 +152,4 @@ class Ticket(TimeStampedModel):
     basket = models.ForeignKey(Basket, on_delete = models.CASCADE, null = True, blank = True, related_name = 'tickets')
     
     def __str__(self):
-        return "{0}:{1}:{2}".format(self.user.username, self.description, self.performance)
+        return "{0}:{1}:{2}".format(self.user.email, self.description, self.performance)

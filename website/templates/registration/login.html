@@ -6,6 +6,8 @@
 
 {% block content %}
 
+    <p class="tf-page-title">Login</p>
+
     <form class="form-horizontal" method="post" action="{% url 'auth_login' %}">
         <input type="hidden" name="next" value="{{ next }}" />
         {% crispy form form_helper %}

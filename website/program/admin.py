@@ -12,7 +12,7 @@ class VenueAdmin(admin.ModelAdmin):
     model = Venue
     fieldsets = [
         (None, {
-            'fields': ('name', 'image', 'description', 'capacity', 'box_office', 'email', 'telno', 'color'),
+            'fields': ('name', 'image', 'description', 'capacity', 'box_office', 'email', 'telno', 'color', 'is_ticketed'),
         }),
         ('Address', {
             'classes': ('collapse',),
@@ -79,7 +79,7 @@ class ShowAdmin(admin.ModelAdmin):
     model = Show
     fieldsets = [
         (None, {
-            'fields': ('name', 'image', 'company', 'venue', 'description', 'long_description', 'age_range', 'duration', 'ticketed'),
+            'fields': ('name', 'image', 'company', 'venue', 'description', 'long_description', 'age_range', 'duration', 'theatrefest_ID'),
         }),
         ('Genres', {
             'classes': ('collapse',),
@@ -95,3 +95,9 @@ class ShowAdmin(admin.ModelAdmin):
         PerformanceInline,
         ReviewInline,
     ]
+
+    def get_form(self, request, obj = None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields['description'].widget.attrs['rows'] = 2
+        return form
+

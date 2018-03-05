@@ -51,10 +51,39 @@
                         {% endif %}
 
                         {% if not basket.is_empty %}
-                            <button class="btn btn-primary" type="submit">Purchase</button>
+                            <h4>Summary</h4>
+                            <table class="table">
+                                <tr>
+                                    <td>Tickets</td>
+                                    <td>&#163;{{ basket.ticket_cost }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Fringers</td>
+                                    <td>&#163;{{ basket.fringer_cost }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Booking fee</td>
+                                    <td>&#163;{{ basket.stripe_fee }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Total</strong></td>
+                                    <td><strong>&#163;{{ basket.stripe_charge }}</strong></td>
+                                </tr>
+                            </table>
+                            <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                                data-key="{{ stripe_key }}"
+                                data-email="{{ basket.user.email }}"
+                                data-allow-remember-me="false"
+                                data-amount="{{ basket.stripe_charge_pence }}"
+                                data-name="Theatrefest"
+                                data-description="Buy tickets"
+                                data-image=""
+                                data-currency="GBP">
+                            </script>
                         {% else %}
                             <p>Your basket is empty.</p>
                         {% endif %}
+
 
                     </form>
 

@@ -5,7 +5,7 @@ from django.contrib.auth.views import LoginView as BaseLoginView
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
-from registration.backends.simple.views import RegistrationView as BaseRegistrationView
+from registration.backends.default.views import RegistrationView as BaseRegistrationView
 
 class LoginView(BaseLoginView):
 

@@ -4,10 +4,11 @@
 
     <div id="tf-program-show-detail">
         
+        <p class="tf-page-title">{{ show.name }}</p>
+
         <div class="row">
             
             <div class="col-xs-12 col-sm-3">
-                <p class="visible-xs-block title tf-show-name"><a href="{% url 'program:show_detail' show.id %}">{{ show.name }}</a></p>
                 <p class="visible-xs-block company tf-company-name">{{ show.company.name }}</p>
                 {% if show.image %}
                     <div class="image">
@@ -45,7 +46,6 @@
             </div>
 
             <div class="col-xs-12 col-sm-9">
-                <p class="hidden-xs title tf-show-name">{{ show.name }}</p>
                 <p class="hidden-xs company tf-company-name">{{ show.company.name }}</p>
                 <p class="description">{{ show.long_description | linebreaks }}</p>
                 <div class="social-media">

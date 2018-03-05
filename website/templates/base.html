@@ -23,86 +23,95 @@
     <div id="tf-container" class="container">
 
         <div id="tf-header" class="row">
-            <div class="col-xs-12 col-md-12 col-lg-10 col-lg-offset-1">
+            <div class="col-xs-12 col-lg-10 col-lg-offset-1">
                 <img src="{% static 'BridgeBanner.png' %}" /> 
             </div>
         </div>
 
-        <div id="tf_navigator">
-            <nav class="navbar navbar-default">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#tf-navbar-collapse-1">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="#">TheatreFest</a>
-                </div>
-                <div id="tf-navbar-collapse-1" class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav">
-                        <li class="{% if 'program:home' == request.resolver_match.url_name %}active{% endif %}"><a href="{% url 'program:home' %}">Home</a></li>
-                        <li><a href="/content/page/home">CHome</a></li>
-                        <li class="{% if 'program:show' in request.resolver_match.url_name %}active{% endif %}"><a href="{% url 'program:shows' %}">Shows</a></li>
-                        <li><a href="#">Times</a></li>
-                        <li><a href="#">Tickets</a></li>
-                        <li class="{% if 'program:venue' in request.resolver_match.url_name %}active{% endif %}"><a href="{% url 'program:venues' %}">Venues</a></li>
-                        <li><a href="#">Volunteer</a></li>
-                        <li><a href="#">Contact</a></li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-                        {% if user.is_authenticated %}
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.email }} <span class="caret"></span></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="{% url 'tickets:show' %}">My Tickets</a></li>
-                                    <li><a href="{% url 'tickets:fringers' %}">My Fringers</a></li>
-                                    <li><a href="{% url 'tickets:checkout' %}">Checkout</a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="{% url 'boxoffice:select' %}">Box Office</a></li>
-                                    {% if user.is_staff and user.is_active %}
+        <div id="tf-navigator" class="row">
+            <div class="col-xs-12 col-lg-10 col-lg-offset-1">
+                <nav class="navbar">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#tf-navbar-collapse-1">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                    </div>
+                    <div id="tf-navbar-collapse-1" class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="http://theatrefest.co.uk/index.htm">home</a></li>
+                            <li><a href="{% url 'program:shows' %}">shows</a></li>
+                            <li><a href="http://theatrefest.co.uk/18/scheduleindex.htm">times</a></li>
+                            <li><a href="http://theatrefest.co.uk/18/venues.htm">venues</a></li>
+                            <li><a href="http://theatrefest.co.uk/18/booking.htm">tickets</a></li>
+                            <li><a href="http://theatrefest.co.uk/performers.htm">performers</a></li>
+                            <li><a href="http://theatrefest.co.uk/vulunteers.htm">volunteer</a></li>
+                            <li><a href="http://theatrefest.co.uk/contact.htm">contact</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            {% if user.is_authenticated %}
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.email }} <span class="caret"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="{% url 'tickets:show' %}">My Tickets</a></li>
+                                        <li><a href="{% url 'tickets:fringers' %}">My Fringers</a></li>
+                                        <li><a href="{% url 'tickets:checkout' %}">Checkout</a></li>
                                         <li class="divider"></li>
-                                        <li><a href="/admin">Admin</a></li>
-                                    {% endif %}
-                                    <li class="divider"></li>
-                                    <li><a href="{% url 'auth_logout' %}">Logout</a></li>
-                                </ul>
-                            </li>
-                        {% else %}
-                            <li><a href="{% url 'auth_login' %}">Login</a></li>
-                        {% endif %}
-                    </ul>
+                                        <li><a href="{% url 'boxoffice:select' %}">Box Office</a></li>
+                                        {% if user.is_staff and user.is_active %}
+                                            <li class="divider"></li>
+                                            <li><a href="/admin">Admin</a></li>
+                                        {% endif %}
+                                        <li class="divider"></li>
+                                        <li><a href="{% url 'auth_logout' %}">Logout</a></li>
+                                    </ul>
+                                </li>
+                            {% else %}
+                                <li><a href="{% url 'auth_login' %}">Login</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </nav>
+                <div id="tf-social-media">
+                    <a href="https://www.facebook.com/TheatreFestND/" target="_blank"><img src="{% static 'facebook.png' %}"></a>
+                    <a href="https://twitter.com/@theatrefestND" target="_blank"><img src="{% static 'twitter.png' %}"></a>
+                    <a href="https://www.instagram.com/theatrefestND" target="_blank"><img src="{% static 'instagram.png' %}"></a>
                 </div>
-            </nav>
+            </div>
         </div>    
 
-        <div id="tf-content">
+        <p></p>
 
-            {% block basket %}
-                {% if request.user.is_authenticated and not request.user.basket.is_empty %}
-                    <div class="alert alert-info">
-                        <a class="btn btn-primary pull-right" style="margin-top: -7px;" href="{% url 'tickets:checkout' %}">Go to Checkout</a>
-                        <i class="fa fa-lg fa-shopping-basket" aria-hidden="true"></i>
-                        <span class="hidden-xs hidden-sm">
-                            &nbsp;&nbsp;Tickets: {{ request.user.basket.ticket_count }}
-                            &nbsp;&nbsp;Fringers: {{ request.user.basket.fringer_count }}
-                        </span>
-                        <span class="hidden-md hidden-lg">
-                            &nbsp;&nbsp;Items: {{ request.user.basket.total_count }}
-                        </span>
-                        <span class="hidden-xs">
-                            &nbsp;&nbsp;Cost: &#163;{{ request.user.basket.total_cost }}
-                        </span>
-                    </div>
-                {% endif %}
-            {% endblock %}
+        <div id="tf-content" class="row">
+            <div class="col-xs-12 col-lg-10 col-lg-offset-1">
 
-            {{ messages|bs_alert:'error'|safe }}
-            {{ messages|bs_alert:'warning'|safe }}
-            {{ messages|bs_alert:'success'|safe }}
-            {{ messages|bs_alert:'info'|safe }}
+                {% block basket %}
+                    {% if request.user.is_authenticated and not request.user.basket.is_empty %}
+                        <div class="alert alert-info">
+                            <a class="btn btn-primary pull-right" style="margin-top: -7px;" href="{% url 'tickets:checkout' %}">Go to Checkout</a>
+                            <i class="fa fa-lg fa-shopping-basket" aria-hidden="true"></i>
+                            <span class="hidden-xs hidden-sm">
+                                &nbsp;&nbsp;Tickets: {{ request.user.basket.ticket_count }}
+                                &nbsp;&nbsp;Fringers: {{ request.user.basket.fringer_count }}
+                            </span>
+                            <span class="hidden-md hidden-lg">
+                                &nbsp;&nbsp;Items: {{ request.user.basket.total_count }}
+                            </span>
+                            <span class="hidden-xs">
+                                &nbsp;&nbsp;Cost: &#163;{{ request.user.basket.total_cost }}
+                            </span>
+                        </div>
+                    {% endif %}
+                {% endblock %}
 
-            {% block content %}{% endblock %}
+                {{ messages|bs_alert:'error'|safe }}
+                {{ messages|bs_alert:'warning'|safe }}
+                {{ messages|bs_alert:'success'|safe }}
+                {{ messages|bs_alert:'info'|safe }}
 
+                {% block content %}{% endblock %}
+            </div>
         </div>
         
     </div>  

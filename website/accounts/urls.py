@@ -2,7 +2,7 @@ from django.urls import path, include, reverse_lazy
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import TemplateView
 
-from registration.views import ActivationView, ResendActivationView
+from registration.backends.default.views import ActivationView, ResendActivationView
 
 from .views import LoginView, RegistrationView, ProfileView
 

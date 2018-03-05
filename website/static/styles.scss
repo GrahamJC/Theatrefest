@@ -1,4 +1,5 @@
 // Variables
+$background-color: #fffaee;
 $primary-color:#1a7cf3;
 $secondary-color: #fd7f02;
 $warning-color: #ff4040;
@@ -20,30 +21,68 @@ p {
 }
 
 // Main layout
-#tf-container {
-    background-color: white;
-    box-shadow: 0 0 75px;
+body {
+    background-color: $background-color;
 }
 
+#tf-container {
+    @media (min-width: $screen-md) {
+        padding-left: 65px;
+        padding-right: 65px;
+    }
+}
+
+// Header
 #tf-header {
     text-align: center;
+
+    img {
+        width: 100%;
+    }
 }
 
-#tf-header img {
-    width: 100%;
-    margin-bottom: 10px;
-}
 
+// Navigator
 #tf-navigator {
+    .navbar {
+        background-color: $secondary-color;
+        margin-bottom: 3px;
+        min-height: 0;
+
+        ul.navbar-nav > li > a {
+            color: #fff06d;
+            font-weight: bold;
+            padding-top: 3px;
+            padding-bottom: 3px;
+
+            &:hover, &:focus, &:focus-within {
+                color: white;
+                background-color: inherit;
+            }
+        }
+    }
 }
 
+// Social media links
+#tf-social-media {
+    position: absolute;
+    right: 15px;
+
+    img {
+        width: 35px;
+    }
+}
+
+// Content area
 #tf-content {
     font-size: $font-size-md;
     @media (max-width: $screen-xs) { font-size: $font-size-sm; }
 }
 
+// General styles
 .tf-page-title {
-    font-size: $font-size-lg;
+    margin-top: 10px;
+    font-size: $font-size-xl;
     font-weight: bold;
 }
 

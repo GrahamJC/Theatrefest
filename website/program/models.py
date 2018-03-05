@@ -42,6 +42,7 @@ class Venue(TimeStampedModel):
     secondary_telno = models.CharField(max_length = 32, blank = True, default = '')
     secondary_mobile = models.CharField(max_length = 32, blank = True, default = '')
     secondary_email = models.EmailField(max_length = 64, blank = True, default = '')
+    is_ticketed = models.BooleanField(default = False)
     box_office = models.ForeignKey(BoxOffice, null = True, blank = True, on_delete = models.SET_NULL, related_name = 'venues')
 
     def __str__(self):
@@ -109,16 +110,22 @@ class Show(TimeStampedModel):
     age_range = models.CharField(max_length = 16, blank = True, default = '')
     duration = models.PositiveIntegerField(null = True, blank = True)
     venue = models.ForeignKey(Venue, on_delete = models.PROTECT, related_name = 'shows')
-    ticketed = models.BooleanField(default = False)
-    
+    theatrefest_ID = models.CharField(max_length = 16, blank = True, default = '')    
+
     def __str__(self):
         return self.name
 
+    @property
     def list_short_description(self):
         return self.description
 
+    @property
     def list_long_description(self):
         return self.long_description or self.description
+
+    @property
+    def is_ticketed(self):
+        return venue.is_ticketed
 
     def display_days(self):
         return ", ".join([performance.date.strftime("%a") for performance in self.performances.all()])
@@ -140,14 +147,17 @@ class Performance(TimeStampedModel):
     date = models.DateField(null = True)
     time = models.TimeField(null = True)
 
-    def ticketed(self):
-        return self.show.ticketed
+    @property
+    def is_ticketed(self):
+        return self.show.is_ticketed
 
+    @property
     def tickets_sold(self):
         return self.tickets.all().count()
 
+    @property
     def tickets_available(self):
-        available = self.show.venue.capacity - self.tickets_sold() if self.show.venue.capacity else 0
+        available = self.show.venue.capacity - self.tickets_sold if self.show.venue.capacity else 0
         return available if available > 0 else 0
 
     def __str__(self):

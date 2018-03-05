@@ -1,0 +1,16 @@
+/env/
+/obj/
+/media/
+/django_static/
+__pycache__/
+migrations/
+*.bak
+*.scss
+*.sh
+/website/settings.py
+Dockerfile
+compilerconfig.*
+sudo service apache2 stop
+website.pyproj
+website.pyproj.user
+rsync-*

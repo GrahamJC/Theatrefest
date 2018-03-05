@@ -5,6 +5,8 @@
 
     <div id="tf-program-shows">
 
+        <p class="tf-page-title">Shows</p>
+
         <div class="search">
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -16,13 +18,10 @@
                     <p class="tf-instructions">Check days, venues and/or genres to restrict the search (leave all boxes unchecked to see everything).</p>
                     <form class="row" method="GET">
                         {% csrf_token %}
-                        <div class="col-xs-1 visible-lg">{{ search.days.label_tag }}</div>
-                        <div class="col-xs-3 col-lg-2">{{ search.days }}</div>
-                        <div class="col-xs-1 visible-lg">{{ search.venues.label_tag }}</div>
-                        <div class="col-xs-3 col-lg-3">{{ search.venues }}</div>
-                        <div class="col-xs-1 visible-lg">{{ search.genres.label_tag }}</div>
-                        <div class="col-xs-4 col-lg-3">{{ search.genres }}</div>
-                        <div class="col-xs-2 col-lg-1"><input class="btn btn-default" type="submit" value="search"/></div>
+                        <div class="col-xs-12 col-sm-3">{{ search.days.label_tag }}<br/>{{ search.days }}</div>
+                        <div class="col-xs-12 col-sm-3">{{ search.venues.label_tag }}<br/>{{ search.venues }}</div>
+                        <div class="col-xs-12 col-sm-3">{{ search.genres.label_tag }}<br/>{{ search.genres }}</div>
+                        <div class="col-xs-12 col-sm-3 text-right"><input class="btn btn-primary" type="submit" value="search"/></div>
                     </form>
                 </div>
             </div>
@@ -38,7 +37,7 @@
                         {% endif %}
                     </div>
                     <div class="col-xs-8 col-md-9 col-lg-10">
-                        <div class="title tf-show-name"><a href="{% url 'program:show_detail' show.id %}">{{ show.name }}</a></div>
+                        <div class="title tf-show-name"><a href="{% if show.theatrefest_ID %}http://theatrefest.co.uk/18/Companies/{{ show.theatrefest_ID }}.htm{% else %}{% url 'program:show_detail' show.id %}{% endif %}">{{ show.name }}</a></div>
                         <div class="company tf-company-name">{{ show.company.name }}</div>
                         <div class="description hidden-xs">{{ show.list_long_description | linebreaks }}</div>
                         <div class="description visible-xs-block">{{ show.list_short_description | linebreaks }}</div>

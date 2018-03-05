@@ -6,6 +6,8 @@
 
 {% block content %}
 
+    <p class="tf-page-title">Register</p>
+
     <form class="form-horizontal" method="post" action="{% url 'registration_register' %}">
         {% crispy form form_helper %}
     </form>

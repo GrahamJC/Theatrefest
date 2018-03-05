@@ -1,0 +1,12 @@
+website/accounts/
+website/boxoffice/
+website/common/
+website/content/
+website/program/
+website/static/
+website/templates/
+website/tickets/
+website/website/
+website/manage.py
+
+

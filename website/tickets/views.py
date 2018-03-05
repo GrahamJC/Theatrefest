@@ -5,7 +5,6 @@ from django.contrib import messages
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
-from django.urls import reverse
 from django.views import View
 from django.forms import formset_factory, modelformset_factory
 
@@ -20,10 +19,13 @@ from reportlab.rl_config import defaultPageSize
 from reportlab.lib.units import inch
 from reportlab.lib import colors
 
-from program.models import Performance
 from .models import BoxOffice, Basket, FringerType, Fringer, TicketType, Ticket
 from .forms import BuyTicketForm, RenameFringerForm, BuyFringerForm
+from program.models import Performance
+from website import settings
 
+import stripe
+stripe.api_key = settings.STRIPE_PRIVATE_KEY
 
 class ShowView(LoginRequiredMixin, View):
 
@@ -273,7 +275,8 @@ class CheckoutView(LoginRequiredMixin, View):
 
         # Display basket
         context = {
-            'basket': basket
+            'basket': basket,
+            "stripe_key": settings.STRIPE_PUBLIC_KEY,
         }
         return render(request, "tickets/checkout.html", context)
 
@@ -283,21 +286,44 @@ class CheckoutView(LoginRequiredMixin, View):
         # Get basket
         basket = request.user.basket
 
-        # Complete purchase of fringers (i.e. remove them from the basket)
-        for fringer in basket.fringers.all():
-            basket.remove_item(fringer)
-            messages.success(request, "Purchase complete: {0}".format(fringer.description))
+        try:
+            # Create Stripe charge
+            charge = stripe.Charge.create(
+                source = request.POST.get("stripeToken"),
+                amount = basket.stripe_charge_pence,
+                currency = "GBP",
+                description = "Theatrefest tickets",
+                receipt_email = basket.user.email
+            )
 
-        # Complete purchase of tickets (i.e. remove them from the basket)
-        for ticket in basket.tickets.all():
-            basket.remove_item(ticket)
-            messages.success(request, "Purchase complete: {0}".format(ticket))
+            # Complete purchase of fringers (i.e. remove them from the basket)
+            for fringer in basket.fringers.all():
+                basket.remove_item(fringer)
+                messages.success(request, "Purchase complete: {0}".format(fringer.description))
 
-        # Redisplay empty basket and purchase confirmation
+            # Complete purchase of tickets (i.e. remove them from the basket)
+            for ticket in basket.tickets.all():
+                basket.remove_item(ticket)
+                messages.success(request, "Purchase complete: {0} for {1}".format(ticket.description, ticket.performance))
+
+        except stripe.error.CardError as ce:
+            return False, ce
+
+        else:
+            # Redisplay empty basket and purchase confirmation
+            context = {
+                'basket': basket,
+            }
+            return render(request, "tickets/checkout.html", context)
+
+
+class PaymentView(LoginRequiredMixin, View):
+
+    def get(self, request):
+
         context = {
-            'basket': basket,
         }
-        return render(request, "tickets/checkout.html", context)
+        return render(request, "tickets/payment.html", context)
 
 
 class RemoveFringerView(LoginRequiredMixin, View):
