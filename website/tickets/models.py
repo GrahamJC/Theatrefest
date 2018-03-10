@@ -5,7 +5,6 @@ from decimal import Decimal, ROUND_05UP
 
 from common.models import TimeStampedModel, AutoOneToOneField
 from program.models import BoxOffice, Performance
-from website import settings
 
 class Basket(TimeStampedModel):
     

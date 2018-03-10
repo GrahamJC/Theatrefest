@@ -16,7 +16,7 @@
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <LaunchProvider>Django launcher</LaunchProvider>
-    <DjangoSettingsModule>website.settings</DjangoSettingsModule>
+    <DjangoSettingsModule>website.settings.development</DjangoSettingsModule>
     <WebBrowserUrl>http://localhost</WebBrowserUrl>
     <OutputPath>.</OutputPath>
     <SuppressCollectPythonCloudServiceFiles>true</SuppressCollectPythonCloudServiceFiles>
@@ -73,6 +73,10 @@
     <Compile Include="common\models.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="website\settings\base.py" />
+    <Compile Include="website\settings\azure.py" />
+    <Compile Include="website\settings\development.py" />
+    <Compile Include="website\settings\__init__.py" />
     <Compile Include="website\tf_filters.py">
       <SubType>Code</SubType>
     </Compile>
@@ -90,7 +94,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="website\__init__.py" />
-    <Compile Include="website\settings.py" />
     <Compile Include="website\urls.py" />
     <Compile Include="website\wsgi.py" />
   </ItemGroup>
@@ -103,6 +106,7 @@
     <Content Include="accounts\__pycache__\views.cpython-36.pyc" />
     <Content Include="accounts\__pycache__\__init__.cpython-36.pyc" />
     <Content Include="boxoffice\templates\index.html" />
+    <Content Include="secrets.json" />
     <None Include="compilerconfig.json" />
     <Content Include="compilerconfig.json.defaults">
       <SubType>Content</SubType>
@@ -279,6 +283,7 @@
     <Folder Include="uploads\show\" />
     <Folder Include="uploads\venue\" />
     <Folder Include="website\" />
+    <Folder Include="website\settings\" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">

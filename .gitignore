@@ -265,3 +265,6 @@ env/
 
 # Docker image files
 theatrefest.tar
+
+# Secrets file
+secrets.json

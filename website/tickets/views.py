@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.db import transaction
@@ -22,7 +23,6 @@ from reportlab.lib import colors
 from .models import BoxOffice, Basket, FringerType, Fringer, TicketType, Ticket
 from .forms import BuyTicketForm, RenameFringerForm, BuyFringerForm
 from program.models import Performance
-from website import settings
 
 import stripe
 stripe.api_key = settings.STRIPE_PRIVATE_KEY

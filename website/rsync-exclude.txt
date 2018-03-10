@@ -7,10 +7,9 @@ migrations/
 *.bak
 *.scss
 *.sh
-/website/settings.py
+secrets.json
 Dockerfile
 compilerconfig.*
-sudo service apache2 stop
 website.pyproj
 website.pyproj.user
 rsync-*
