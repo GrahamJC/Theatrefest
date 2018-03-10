@@ -268,3 +268,7 @@ theatrefest.tar
 
 # Secrets file
 secrets.json
+
+website/django_static/
+website/media/
+website/obj/
