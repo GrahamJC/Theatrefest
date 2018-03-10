@@ -1,9 +1,12 @@
 from .base import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
+    'localhost',
+    'qnap',
+    'grahamc.myqnapcloud.com',
     'theatrefest.ukwest.cloudapp.azure.com'
 ]
 
@@ -14,7 +17,7 @@ DATABASES = {
         'NAME': 'theatrefest',
         'USER': 'theatrefest',
         'PASSWORD': 'barnum',
-        'HOST': 'theatrefest.ukwest.cloudapp.azure.com',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }

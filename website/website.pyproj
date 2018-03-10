@@ -93,6 +93,7 @@
     <Compile Include="website\utils.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="website\azure_wsgi.py" />
     <Compile Include="website\__init__.py" />
     <Compile Include="website\urls.py" />
     <Compile Include="website\wsgi.py" />
