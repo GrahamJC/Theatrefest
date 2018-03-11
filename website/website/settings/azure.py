@@ -4,9 +4,6 @@ from .base import *
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'localhost',
-    'qnap',
-    'grahamc.myqnapcloud.com',
     'theatrefest.ukwest.cloudapp.azure.com'
 ]
 
@@ -20,5 +17,43 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '5432',
     }
+}
+
+# Logging
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "simple": {
+            "format": "%(asctime)s - %(message)s",
+        }
+    },
+    "handlers": {
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": r"/var/log/theatrefest/theatrefest.log",
+            "when": "midnight",
+            "interval": 1,
+            "backupCount": 30,
+            "formatter": "simple",
+        },
+    },
+    "loggers": {
+        "django": {
+            "level": "INFO",
+            "handlers": ["file"],
+            "propogate": False,
+        },
+        "django.server": {
+            "level": "INFO",
+            "handlers": ["file"],
+            "propogate": False,
+        },
+    },
+    "root": {
+        "level": "DEBUG",
+        "handlers": ["file"],
+    },
 }
 
