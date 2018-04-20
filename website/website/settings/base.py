@@ -132,3 +132,10 @@ STRIPE_PRIVATE_KEY = get_secret("STRIPE_PRIVATE_KEY")
 STRIPE_FEE_FIXED = Decimal(0.2)
 STRIPE_FEE_PERCENT = Decimal(0.014)
 
+# Debug toolbar
+DEBUG_TOOLBAR_CONFIG = {
+    'DISABLE_PANELS': [
+        'debug_toolbar.panels.sql.SQLPanel',
+        'debug_toolbar.panels.redirects.RedirectsPanel',
+    ],
+}
