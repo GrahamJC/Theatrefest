@@ -1,11 +1,14 @@
 {% extends "base.html" %}
+{% load tf_filters %}
+
+{% block pagetitle %}
+    {{ show.name }}
+{% endblock %}
 
 {% block content %}
 
     <div id="tf-program-show-detail">
         
-        <p class="tf-page-title">{{ show.name }}</p>
-
         <div class="row">
             
             <div class="col-xs-12 col-sm-3">
@@ -21,11 +24,6 @@
                             {{ show.display_genres }}
                         </p>
                     {% endif %}
-                    {% if show.display_genre_warnings %}
-                        <p class="genre-warnings">
-                            {{ show.display_genre_warnings }}
-                        </p>
-                    {% endif %}
                     {% if show.age_range %}
                         <p class="age-range">Age {{ show.age_range }}</p>
                     {% endif %}
@@ -38,28 +36,47 @@
                     {% if show.performances.all %}
                         <div class="performances">
                             {% for performance in show.performances.all %}
-                                <p class="performance"><a href="{% url 'tickets:buy' performance.id %}">{{ performance.date|date:'l' }} at {{ performance.time|time:'P'}}</a></p>
+                                <p class="performance">
+                                    {% if show.venue.is_ticketed %}
+                                        <a href="{% url 'tickets:buy' performance.id %}">{{ performance.date|date:'l' }} at {{ performance.time|time:'P'}}</a>
+                                    {% else %}
+                                        {{ performance.date|date:'l' }} at {{ performance.time|time:'P'}}
+                                    {% endif %}
+                                </p>
                             {% endfor %}
                         </div>
+                        {% if show.venue.is_ticketed %}
+                            <p>Select a performance to buy tickets online.</p>
+                        {% else %}
+                            <p>Tickets are not required for this show.</p>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
 
             <div class="col-xs-12 col-sm-9">
                 <p class="hidden-xs company tf-company-name">{{ show.company.name }}</p>
-                <p class="description">{{ show.long_description | linebreaks }}</p>
-                <div class="social-media">
-                    {% if show.website %}
-                        <p class="website"><a href="{{ show.website }}" target="_blank">{{ show.website }}</a></p>
-                    {% endif %}
-                    {% if show.twitter %}
-                        <p class="twitter"><a href="https://twitter.com/{{ show.twitter }}" target="_blank">Twitter: {{ show.twitter }}</a></p>
-                    {% endif %}
-                    {% if show.instagram %}
-                        <p class="instagram"><a href="https://www.instagram.com/{{ show.instagram }}" target="_blank">Instagram: {{ show.instagram }}</a></p>
-                    {% endif %}
-                    {% if show.facebook %}
-                        <p class="facebook"><a href="https://www.facebook.com/{{ show.facebook }}" target="_blank">Facebook: {{ show.facebook }}</a></p>
+                <div class="description">
+                    {% if html %}
+                        <div class="html">
+                            {{ html | safe }}
+                        </div>
+                    {% else %}
+                        {{ show.detail_description | linebreaks }}
+                        <div class="social-media">
+                            {% if show.website %}
+                                <p class="website"><a href="{{ show.website }}" target="_blank">{{ show.website }}</a></p>
+                            {% endif %}
+                            {% if show.twitter %}
+                                <p class="twitter"><a href="https://twitter.com/{{ show.twitter }}" target="_blank">Twitter: {{ show.twitter }}</a></p>
+                            {% endif %}
+                            {% if show.instagram %}
+                                <p class="instagram"><a href="https://www.instagram.com/{{ show.instagram }}" target="_blank">Instagram: {{ show.instagram }}</a></p>
+                            {% endif %}
+                            {% if show.facebook %}
+                                <p class="facebook"><a href="https://www.facebook.com/{{ show.facebook }}" target="_blank">Facebook: {{ show.facebook }}</a></p>
+                            {% endif %}
+                        </div>
                     {% endif %}
                 </div>
                 {% if show.reviews.all %}

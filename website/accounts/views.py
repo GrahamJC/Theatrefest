@@ -6,6 +6,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
 from registration.backends.default.views import RegistrationView as BaseRegistrationView
+#from registration.backends.simple.views import RegistrationView as BaseRegistrationView
 
 class LoginView(BaseLoginView):
 
@@ -26,6 +27,8 @@ class LoginView(BaseLoginView):
 
 
 class RegistrationView(BaseRegistrationView):
+
+#    success_url = "/shows"
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

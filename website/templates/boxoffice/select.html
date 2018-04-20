@@ -1,21 +1,16 @@
 {% extends "base.html" %}
 
+{% block pagetitle %}
+    Select Box Office
+{% endblock %}
+
 {% block content %}
 
-    <div class="panel panel-default">
-
-        <div class="panel-heading">Select Office</div>
-
-        <div class="panel-body">
-
-            <form method="post">
-                {% csrf_token %}
-                {% for boxoffice in boxoffices %}
-                    <p><button class="btn btn-default" type="submit" name="boxoffice_id" value="{{ boxoffice.id }}">{{ boxoffice.name }}</button></p>
-                {% endfor %}
-            </form>
-        </div>
-
-    </div>
+    <form method="post">
+        {% csrf_token %}
+        {% for box_office in box_offices %}
+            <p><button class="btn btn-default" type="submit" name="box_office_id" value="{{ box_office.id }}">{{ box_office.name }}</button></p>
+        {% endfor %}
+    </form>
 
 {% endblock %}

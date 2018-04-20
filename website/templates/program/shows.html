@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 
+{% block pagetitle %}
+    Shows
+{% endblock %}
+
 {% block content %}
 
     <div id="tf-program-shows">
-
-        <p class="tf-page-title">Shows</p>
 
         <div class="search">
             <div class="panel panel-default">
@@ -37,7 +39,7 @@
                         {% endif %}
                     </div>
                     <div class="col-xs-8 col-md-9 col-lg-10">
-                        <div class="title tf-show-name"><a href="{% if show.theatrefest_ID %}http://theatrefest.co.uk/18/Companies/{{ show.theatrefest_ID }}.htm{% else %}{% url 'program:show_detail' show.id %}{% endif %}">{{ show.name }}</a></div>
+                        <div class="title tf-show-name"><a href="{% url 'program:show_detail' show.id %}">{{ show.name }}</a></div>
                         <div class="company tf-company-name">{{ show.company.name }}</div>
                         <div class="description hidden-xs">{{ show.list_long_description | linebreaks }}</div>
                         <div class="description visible-xs-block">{{ show.list_short_description | linebreaks }}</div>
@@ -55,10 +57,8 @@
                                     {{ show.display_genres }}
                                 </span>
                             {% endif %}
-                            {% if show.display_genre_warnings %}
-                                <span class="genre-warnings">
-                                    {{ show.display_genre_warnings }}
-                                </span>
+                            {% if show.has_warnings %}
+                                <a class="warnings" href="{% url 'program:show_detail' show.id %}">(content)</a>
                             {% endif %}
                             {% if show.age_range %}
                                 <span class="age-range">Age {{ show.age_range }}</span>

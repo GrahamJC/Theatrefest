@@ -1,14 +1,15 @@
 // Variables
 $background-color: #fffaee;
-$primary-color:#1a7cf3;
+$text-color: #333333;
+$primary-color: #1a7cf3;
 $secondary-color: #fd7f02;
 $warning-color: #ff4040;
-$font-size-xs: 8pt;
-$font-size-sm: 10pt;
-$font-size-md: 12pt;
-$font-size-lg: 14pt;
-$font-size-xl: 16pt;
-$font-size-xxl: 18pt;
+$font-size-xs: 10px;
+$font-size-sm: 11px;
+$font-size-md: 14px;
+$font-size-lg: 16px;
+$font-size-xl: 18px;
+$font-size-xxl: 20px;
 
 $screen-xs: 480px;
 $screen-sm: 768px;
@@ -16,8 +17,25 @@ $screen-md: 992px;
 $screen-lg: 1200px;
 
 // Override Bootstrap defaults
+a {
+    color: $primary-color;
+}
+
 p {
     margin-bottom: 3px;
+}
+
+.table {
+    margin-bottom: 10px;
+}
+
+.alert {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.panel-heading .panel-title {
+    color: $text-color;
 }
 
 // Main layout
@@ -32,8 +50,8 @@ body {
     }
 }
 
-// Header
-#tf-header {
+// Banner
+#tf-banner {
     text-align: center;
 
     img {
@@ -63,13 +81,20 @@ body {
     }
 }
 
-// Social media links
-#tf-social-media {
-    position: absolute;
-    right: 15px;
+// Header
+#tf-header {
+    .tf-social-media {
+        float: right;
 
-    img {
-        width: 35px;
+        img {
+            width: 35px;
+        }
+    }
+
+    .tf-page-title {
+        font-size: $font-size-xl;
+        font-weight: bold;
+        line-height: 40px;
     }
 }
 
@@ -80,12 +105,6 @@ body {
 }
 
 // General styles
-.tf-page-title {
-    margin-top: 10px;
-    font-size: $font-size-xl;
-    font-weight: bold;
-}
-
 .tf-show-name {
     font-size: $font-size-lg;
     @media (max-width: $screen-xs) {
@@ -93,10 +112,6 @@ body {
     }
     font-weight: bold;
     color: $primary-color;
-
-    a {
-        color: $primary-color;
-    }
 }
 
 .tf-company-name {
@@ -105,6 +120,37 @@ body {
 
     a {
         color: $secondary-color;
+    }
+}
+
+.panel-heading .tf-icons {
+    float: right;
+}
+
+.well ul {
+    margin-bottom: 0;
+    padding-left: 10px;
+}
+
+form .tf-actions {
+    text-align: right;
+}
+
+.tf-form-actions {
+    text-align: right;
+}
+
+.tf-rows-striped {
+    padding-left: 10px;
+    padding-right: 10px;
+
+    & > .row {
+        padding: 5px;
+        border-bottom: 1px solid #eeeeee;
+
+        &:nth-of-type(odd) {
+            background-color: #f9f9f9;
+        }
     }
 }
 

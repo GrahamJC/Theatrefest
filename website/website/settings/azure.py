@@ -23,37 +23,68 @@ DATABASES = {
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "filters": {
+        'request': {
+            '()': 'django_requestlogging.logging_filters.RequestFilter',
+        }
+    },
     "formatters": {
-        "simple": {
-            "format": "%(asctime)s - %(message)s",
+        "basic": {
+            "format": "%(asctime)s %(levelname)-8s %(name)-32s %(message)s",
+        },
+        "request": {
+            "format": "%(asctime)s %(username)-32s %(levelname)-8s %(name)-32s %(message)s",
         }
     },
     "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "basic",
+        },
         "file": {
-            "level": "DEBUG",
             "class": "logging.handlers.TimedRotatingFileHandler",
             "filename": r"/var/log/theatrefest/theatrefest.log",
             "when": "midnight",
             "interval": 1,
-            "backupCount": 30,
-            "formatter": "simple",
+            "backupCount": 10,
+            "filters": ['request'],
+            "formatter": "request",
+        },
+        "django": {
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": r"/var/log/theatrefest/django.log",
+            "when": "midnight",
+            "interval": 1,
+            "backupCount": 10,
+            "formatter": "basic",
         },
     },
     "loggers": {
         "django": {
             "level": "INFO",
-            "handlers": ["file"],
-            "propogate": False,
+            "handlers": ["django"],
+            "propagate": False,
         },
         "django.server": {
-            "level": "INFO",
-            "handlers": ["file"],
-            "propogate": False,
+            "level": "WARNING",
+            "handlers": ["django"],
+            "propagate": False,
+        },
+        "tickets": {
+            "level": "DEBUG",
+            "handlers": ["console", "file"],
+            "propagate": False,
         },
     },
     "root": {
-        "level": "DEBUG",
-        "handlers": ["file"],
+        "level": "INFO",
+        "handlers": ["console", "file"],
     },
 }
 
+# E-mail
+EMAIL_HOST = "smtp.sendgrid.net"
+EMAIL_PORT = 465
+EMAIL_HOST_USER = "apikey"
+EMAIL_HOST_PASSWORD = get_secret("SENDGRID_EMAIL_HOST_PASSWORD")
+EMAIL_USE_SSL = True

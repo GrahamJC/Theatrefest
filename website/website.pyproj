@@ -33,6 +33,9 @@
     <Compile Include="accounts\admin.py" />
     <Compile Include="accounts\apps.py" />
     <Compile Include="accounts\forms.py" />
+    <Compile Include="accounts\signals.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="accounts\migrations\__init__.py" />
     <Compile Include="accounts\models.py" />
     <Compile Include="accounts\tests.py" />
@@ -188,9 +191,10 @@
     <Content Include="templates\accounts\profile.html" />
     <Content Include="templates\base.html" />
     <Content Include="templates\boxoffice\select.html" />
-    <Content Include="templates\boxoffice\home.html" />
+    <Content Include="templates\boxoffice\sale.html" />
     <Content Include="templates\content\page.html" />
     <Content Include="templates\program\home.html" />
+    <Content Include="templates\program\schedule.html" />
     <Content Include="templates\program\shows.html" />
     <Content Include="templates\program\show_detail.html" />
     <Content Include="templates\program\venues.html" />

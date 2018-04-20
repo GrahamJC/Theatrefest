@@ -1,12 +1,15 @@
 {% extends "base.html" %}
 {% load tf_filters %}
 
+{% block pagetitle %}
+    Buy Tickets for: <a class="tf-show-name" href="{% url 'program:show_detail' performance.show.id %}">{{ performance.show.name }}</a>
+{% endblock %}
+
 {% block content %}
 
     <div id="tf-tickets-buy">
 
-        <p class="tf-page-title">Buy Tickets for: <a class="tf-show-name" href="{% url 'program:show_detail' performance.show.id %}">{{ performance.show.name }}</a></p>
-        <p class="performance">{{ performance.date|date:'D, j M' }} at {{ performance.time|time:'P' }}</p>
+        <p class="tf-performance">{{ performance.date|date:'D, j M' }} at {{ performance.time|time:'P' }}</p>
         <p>Tickets available: {{ performance.tickets_available }}</p>
 
         {% if performance.tickets_available %}
@@ -15,50 +18,74 @@
 
                 <div class="col-xs-12 col-sm-6">
                     <div class="panel panel-default">
-                        <div class="panel-heading">Buy Tickets</div>
-                        <div class="panel-body">
-                            <form class="form-inline" method="post">
-                                {% csrf_token %}
-                                {{ ticket_formset.management_form }}
-                                <table class="table table-striped">
-                                    {% for form in ticket_formset.forms %}
-                                        <tr>
-                                            <td>{{ form.id }}<p class="form-control-static">{{ form.name.value }}</p></td>
-                                            <td><p class="form-control-static">&#163;{{ form.price.value|floatformat }}</p></td>
-                                            <td><p class="hidden-xs hidden-sm form-control-static">Quantity: </p>{{ form.quantity|add_css_class:'form-control' }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </table>
-                                <button type="submit" class="btn btn-primary" name="action" value="add">Add to Basket</button>
-                            </form>
+                        <div class="panel-heading">
+                            <div class="tf-icons"><a data-toggle="collapse" href="#tf-tickets-buy-creditcard-help"><i class="fa fa-info-circle"></i></a></div>
+                            <a data-toggle="collapse" href="#tf-tickets-buy-creditcard"><h4 class="panel-title">Buy with Credit Card</h4></a>
+                        </div>
+                        <div id="tf-tickets-buy-creditcard" class="panel-collapse collapse in">
+                            <div class="panel-body">
+                                <form class="form-inline" method="post">
+                                    {% csrf_token %}
+                                    {{ ticket_formset.management_form }}
+                                    <div id="tf-tickets-buy-creditcard-help" class="well collapse">
+                                        <ul>
+                                            <li>Tickets are added to your basket but are not confirmed until they have been paid for at the checkout.</li>
+                                            <li>A booking fee of 1.4% plus 20p will be added to your total when you checkout.</li>
+                                            <li>You can add tickets for multiple performances and pay for them all together to minimise the total booking fee.</li>
+                                        </ul>
+                                    </div>
+                                    <table class="table table-striped">
+                                        {% for form in ticket_formset.forms %}
+                                            <tr>
+                                                <td>{{ form.id }}<p class="form-control-static">{{ form.name.value }}</p></td>
+                                                <td><p class="form-control-static">&#163;{{ form.price.value|floatformat }}</p></td>
+                                                <td>{{ form.quantity|add_css_class:'form-control' }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
+                                    <div class="tf-actions">
+                                        <button type="submit" class="btn btn-primary" name="action" value="add">Add to Basket</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-xs-12 col-sm-6">
                     <div class="panel panel-default">
-                        <div class="panel-heading">Use Fringers</div>
-                        <div class="panel-body">
-                            {% if fringers %}
-                                <form method="post">
-                                    {% csrf_token %}
-                                    <div class="well">
-                                        A fringer can only be used to purchase one ticket for each performance.
-                                        Fringers that have already been use for this performance are not listed.
-                                    </div>
-                                    <table class="table table-striped">
-                                        {% for fringer in fringers %}
-                                            <tr>
-                                                <td><input type="checkbox" name="fringer_id" value="{{ fringer.id }}" /></td>
-                                                <td style="width: 100%">{{ fringer.name }} ({{ fringer.unused }} remaining)</td>
-                                            </tr>
-                                        {% endfor %}
-                                    </table>
-                                    <button type="submit" class="btn btn-primary" name="action" value="fringer">Use Fringers</button>
-                                </form>
-                            {% else %}
-                                <p>You do not have any fringers available to use.</p>
-                            {% endif %}
+                        <div class="panel-heading">
+                            <div class="tf-icons"><a data-toggle="collapse" href="#tf-tickets-buy-efringer-help"><i class="fa fa-info-circle"></i></a></div>
+                            <a data-toggle="collapse" href="#tf-tickets-buy-efringer"><h4 class="panel-title">Buy with eFringers</h4></a>
+                        </div>
+                        <div id="tf-tickets-buy-efringer" class="panel-collapse collapse in">
+                            <div class="panel-body">
+                                {% if fringers %}
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <div id="tf-tickets-buy-efringer-help" class="well collapse">
+                                            <ul>
+                                                <li>Tickets purchased with an eFringer are confirmed immediately.</li>
+                                                <li>Each eFringer can only be used to purchase one ticket for each performance.</li>
+                                                <li>eFringers that have already been used for this performance are not listed.</li>
+                                            </ul>
+                                        </div>
+                                        <table class="table table-striped">
+                                            {% for fringer in fringers %}
+                                                <tr>
+                                                    <td><input type="checkbox" name="fringer_id" value="{{ fringer.id }}" /></td>
+                                                    <td style="width: 100%">{{ fringer.name }} ({{ fringer.unused }} remaining)</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </table>
+                                        <div class="tf-actions">
+                                            <button type="submit" class="btn btn-primary" name="action" value="fringer">Use eFringers</button>
+                                        </div>
+                                    </form>
+                                {% else %}
+                                    <p>You do not have any eFringers available to use.</p>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>

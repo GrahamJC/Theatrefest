@@ -32,12 +32,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
+    'debug_toolbar',
     'crispy_forms',
-    
+
     'accounts.apps.AccountsConfig',
     'content.apps.ContentConfig',
     'program.apps.ProgramConfig',
     'tickets.apps.TicketsConfig',
+    'boxoffice.apps.BoxOfficeConfig',
 ]
 
 SITE_ID = 1
@@ -50,6 +52,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+
+    'django_requestlogging.middleware.LogSetupMiddleware',
 ]
 
 ROOT_URLCONF = 'website.urls'
@@ -119,13 +125,6 @@ REGISTRATION_AUTO_LOGIN = True
 REGISTRATION_DEFAULT_FROM_EMAIL = "noreply@theatrefest.co.uk"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
-
-# E-mail
-EMAIL_HOST = "smtp.sendgrid.net"
-EMAIL_PORT = 465
-EMAIL_HOST_USER = "apikey"
-EMAIL_HOST_PASSWORD = get_secret("EMAIL_HOST_PASSWORD")
-EMAIL_USE_SSL = True
 
 # Stripe
 STRIPE_PUBLIC_KEY = get_secret("STRIPE_PUBLIC_KEY")

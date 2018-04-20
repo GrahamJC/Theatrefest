@@ -22,7 +22,7 @@
 
     <div id="tf-container" class="container">
 
-        <div id="tf-header" class="row">
+        <div id="tf-banner" class="row">
             <div class="col-xs-12 col-lg-10 col-lg-offset-1">
                 <img src="{% static 'BridgeBanner.png' %}" /> 
             </div>
@@ -30,24 +30,24 @@
 
         <div id="tf-navigator" class="row">
             <div class="col-xs-12 col-lg-10 col-lg-offset-1">
-                <nav class="navbar">
+                <nav class="navbar navbar-default">
                     <div class="navbar-header">
-                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#tf-navbar-collapse-1">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#tf-navbar-collapse">
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
                     </div>
-                    <div id="tf-navbar-collapse-1" class="collapse navbar-collapse">
+                    <div id="tf-navbar-collapse" class="collapse navbar-collapse">
                         <ul class="nav navbar-nav">
-                            <li><a href="http://theatrefest.co.uk/index.htm">home</a></li>
+                            <li><a href="http://theatrefest.co.uk/index.htm" onclick="return confirm_mainsite()">home</a></li>
                             <li><a href="{% url 'program:shows' %}">shows</a></li>
-                            <li><a href="http://theatrefest.co.uk/18/scheduleindex.htm">times</a></li>
-                            <li><a href="http://theatrefest.co.uk/18/venues.htm">venues</a></li>
-                            <li><a href="http://theatrefest.co.uk/18/booking.htm">tickets</a></li>
-                            <li><a href="http://theatrefest.co.uk/performers.htm">performers</a></li>
-                            <li><a href="http://theatrefest.co.uk/vulunteers.htm">volunteer</a></li>
-                            <li><a href="http://theatrefest.co.uk/contact.htm">contact</a></li>
+                            <li><a href="{% url 'program:schedule' %}">times</a></li>
+                            <li><a href="{% url 'program:venues' %}">venues</a></li>
+                            <li><a href="http://theatrefest.co.uk/18/booking.htm" onclick="return confirm_mainsite()">tickets</a></li>
+                            <li><a href="http://theatrefest.co.uk/performers.htm" onclick="return confirm_mainsite()">performers</a></li>
+                            <li><a href="http://theatrefest.co.uk/vulunteers.htm" onclick="return confirm_mainsite()">volunteer</a></li>
+                            <li><a href="http://theatrefest.co.uk/contact.htm" onclick="return confirm_mainsite()">contact</a></li>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
                             {% if user.is_authenticated %}
@@ -57,9 +57,11 @@
                                         <li><a href="{% url 'tickets:show' %}">My Tickets</a></li>
                                         <li><a href="{% url 'tickets:fringers' %}">My Fringers</a></li>
                                         <li><a href="{% url 'tickets:checkout' %}">Checkout</a></li>
-                                        <li class="divider"></li>
-                                        <li><a href="{% url 'boxoffice:select' %}">Box Office</a></li>
                                         {% if user.is_staff and user.is_active %}
+                                            <li class="divider"></li>
+                                            <li><a href="{% url 'boxoffice:select' %}">Box Office</a></li>
+                                        {% endif %}
+                                        {% if user.is_superuser and user.is_active %}
                                             <li class="divider"></li>
                                             <li><a href="/admin">Admin</a></li>
                                         {% endif %}
@@ -68,24 +70,28 @@
                                     </ul>
                                 </li>
                             {% else %}
-                                <li><a href="{% url 'auth_login' %}">Login</a></li>
+                                <li><a href="{% url 'auth_login' %}">Login/Register</a></li>
                             {% endif %}
                         </ul>
                     </div>
                 </nav>
-                <div id="tf-social-media">
-                    <a href="https://www.facebook.com/TheatreFestND/" target="_blank"><img src="{% static 'facebook.png' %}"></a>
-                    <a href="https://twitter.com/@theatrefestND" target="_blank"><img src="{% static 'twitter.png' %}"></a>
-                    <a href="https://www.instagram.com/theatrefestND" target="_blank"><img src="{% static 'instagram.png' %}"></a>
-                </div>
             </div>
         </div>    
 
-        <p></p>
-
-        <div id="tf-content" class="row">
+        <div id="tf-header" class="row">
             <div class="col-xs-12 col-lg-10 col-lg-offset-1">
-
+                <div class="alert alert-warning">
+                    <i class="fa fa-lg fa-exclamation-circle"></i>
+                    This is the Theatrefest ticketing web site which is currently under construction.
+                    You can register and explore the site including the trial purchase of tickets and eFringers.
+                    Tickets and eFringers purchased during this trial period are not valid and will be deleted when the site goes live.
+                </div>
+                <!-- Messages -->
+                {{ messages|bs_alert:'error'|safe }}
+                {{ messages|bs_alert:'warning'|safe }}
+                {{ messages|bs_alert:'success'|safe }}
+                {{ messages|bs_alert:'info'|safe }}
+                <!-- Basket -->
                 {% block basket %}
                     {% if request.user.is_authenticated and not request.user.basket.is_empty %}
                         <div class="alert alert-info">
@@ -93,7 +99,7 @@
                             <i class="fa fa-lg fa-shopping-basket" aria-hidden="true"></i>
                             <span class="hidden-xs hidden-sm">
                                 &nbsp;&nbsp;Tickets: {{ request.user.basket.ticket_count }}
-                                &nbsp;&nbsp;Fringers: {{ request.user.basket.fringer_count }}
+                                &nbsp;&nbsp;eFringers: {{ request.user.basket.fringer_count }}
                             </span>
                             <span class="hidden-md hidden-lg">
                                 &nbsp;&nbsp;Items: {{ request.user.basket.total_count }}
@@ -104,19 +110,35 @@
                         </div>
                     {% endif %}
                 {% endblock %}
+                <!-- Social media links -->
+                <div class="tf-social-media">
+                    <a href="https://www.facebook.com/TheatreFestND/" target="_blank"><img src="{% static 'facebook.png' %}"></a>
+                    <a href="https://twitter.com/@theatrefestND" target="_blank"><img src="{% static 'twitter.png' %}"></a>
+                    <a href="https://www.instagram.com/theatrefestND" target="_blank"><img src="{% static 'instagram.png' %}"></a>
+                </div>
+                <!-- Page title -->
+                <p class="tf-page-title">{% block pagetitle %}{% endblock %}</p>
+            </div>
+        </div>
 
-                {{ messages|bs_alert:'error'|safe }}
-                {{ messages|bs_alert:'warning'|safe }}
-                {{ messages|bs_alert:'success'|safe }}
-                {{ messages|bs_alert:'info'|safe }}
-
+        <div id="tf-content" class="row">
+            <div class="col-xs-12 col-lg-10 col-lg-offset-1">
                 {% block content %}{% endblock %}
             </div>
         </div>
         
     </div>  
 
-    {% block javascript %}{% endblock %}
+    <script language="javascript">
+
+        function confirm_mainsite() {
+            return confirm("This link will take you to the main Theatrefest web site. Do you want to continue?");
+        }
+
+    </script>
+
+    {% block javascript %}
+    {% endblock %}
 
 </body>
 

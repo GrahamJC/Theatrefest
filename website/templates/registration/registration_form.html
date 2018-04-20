@@ -4,9 +4,11 @@
 
 {% block title %}{% trans "Register for an account" %}{% endblock %}
 
-{% block content %}
+{% block pagetitle %}
+    Register
+{% endblock %}
 
-    <p class="tf-page-title">Register</p>
+{% block content %}
 
     <form class="form-horizontal" method="post" action="{% url 'registration_register' %}">
         {% crispy form form_helper %}

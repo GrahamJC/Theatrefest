@@ -1,8 +1,27 @@
 // Buy
 #tf-tickets-buy {
 
-    .performance {
+    .tf-performance {
         font-weight: bold;
+    }
+}
+
+#tf-tickets-checkout {
+
+    .tf-show-name {
+        font-size: $font-size-md;
+        font-weight: normal;
+    }
+
+    .tf-stripe {
+        text-align: right;
+    }
+}
+
+#tf-tickets-fringers-rename-form {
+
+    .tf-name {
+        width: 150px;
     }
 
 }

@@ -1,6 +1,12 @@
+import uuid
+from django.conf import settings
 from django.db import models
 
 from common.models import TimeStampedModel
+
+def get_image_filename(instance, filename):
+    ext = filename.split('.')[-1]
+    return os.path.join('uploads', 'images', f'{uuid.uuid4()}.{ext}')
 
 
 class BoxOffice(TimeStampedModel):
@@ -20,7 +26,7 @@ class Venue(TimeStampedModel):
         ordering = ['name']
 
     name = models.CharField(max_length = 128, unique = True)
-    image = models.ImageField(upload_to = 'uploads/program/venue/', blank = True, default = '')
+    image = models.ImageField(upload_to = get_image_filename, blank = True, default = '')
     description = models.TextField(blank = True, default = '')
     capacity = models.IntegerField(null = True, blank = True)
     color = models.CharField(max_length = 16, blank = True, default = '')
@@ -55,7 +61,7 @@ class Company(TimeStampedModel):
         ordering = ['name']
 
     name = models.CharField(max_length = 128, unique = True)
-    image = models.ImageField(upload_to = 'uploads/program/company/', blank = True, default = '')
+    image = models.ImageField(upload_to = get_image_filename, blank = True, default = '')
     description = models.TextField(blank = True, default = '')
     address1 = models.CharField(max_length = 64, blank = True, default = '')
     address2 = models.CharField(max_length = 64, blank = True, default = '')
@@ -86,7 +92,6 @@ class Genre(TimeStampedModel):
         ordering = ['name']
 
     name = models.CharField(max_length = 32, unique = True)
-    warning = models.BooleanField(default = False)
 
     def __str__(self):
         return self.name
@@ -99,14 +104,17 @@ class Show(TimeStampedModel):
 
     name = models.CharField(max_length = 128, unique = True)
     company = models.ForeignKey(Company, on_delete = models.CASCADE, related_name = 'shows')
-    image = models.ImageField(upload_to = 'uploads/program/show/', blank = True, default = '')
+    image = models.ImageField(upload_to = get_image_filename, blank = True, default = '')
     description = models.TextField(blank = True, default = '')
     long_description = models.TextField(blank = True, default = '')
+    html_description = models.TextField(blank = True, default = '')
     website = models.URLField(max_length = 128, blank = True, default = '')
     facebook = models.CharField(max_length = 64, blank = True, default = '')
     twitter = models.CharField(max_length = 64, blank = True, default = '')
     instagram = models.CharField(max_length = 64, blank = True, default = '')
     genres = models.ManyToManyField(Genre, related_name = 'shows', blank = True)
+    genre_display = models.CharField(max_length = 64, blank = True, default = '')
+    has_warnings = models.BooleanField(blank = True, default = False)
     age_range = models.CharField(max_length = 16, blank = True, default = '')
     duration = models.PositiveIntegerField(null = True, blank = True)
     venue = models.ForeignKey(Venue, on_delete = models.PROTECT, related_name = 'shows')
@@ -124,6 +132,10 @@ class Show(TimeStampedModel):
         return self.long_description or self.description
 
     @property
+    def detail_description(self):
+        return self.long_description or self.description
+
+    @property
     def is_ticketed(self):
         return venue.is_ticketed
 
@@ -131,11 +143,18 @@ class Show(TimeStampedModel):
         return ", ".join([performance.date.strftime("%a") for performance in self.performances.all()])
 
     def display_genres(self):
-        return ", ".join([genre.name for genre in self.genres.filter(warning = False)])
+        return self.genre_display or ", ".join([genre.name for genre in self.genres.all()])
 
-    def display_genre_warnings(self):
-        return ", ".join([genre.name for genre in self.genres.filter(warning = True)])
 
+class ShowImage(TimeStampedModel):
+
+    class Meta:
+        ordering = ['show', 'name']
+        unique_together = ('show', 'name')
+
+    show = models.ForeignKey(Show, on_delete = models.CASCADE, related_name = 'images')
+    name = models.CharField(max_length = 32)
+    image = models.ImageField(upload_to = get_image_filename, blank = True, default = '')
 
 class Performance(TimeStampedModel):
 
@@ -153,7 +172,7 @@ class Performance(TimeStampedModel):
 
     @property
     def tickets_sold(self):
-        return self.tickets.all().count()
+        return self.tickets.filter(basket__isnull = True).count()
 
     @property
     def tickets_available(self):

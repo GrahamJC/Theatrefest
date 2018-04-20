@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class boxofficeConfig(AppConfig):
+class BoxOfficeConfig(AppConfig):
     name = 'boxoffice'

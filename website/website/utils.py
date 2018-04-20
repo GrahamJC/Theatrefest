@@ -5,5 +5,3 @@ def init_alerts():
         'success': [],
         'info': [],
     }
-
-

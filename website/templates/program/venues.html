@@ -1,14 +1,30 @@
 {% extends "base.html" %}
 
+{% block pagetitle %}
+    Venues
+{% endblock %}
+
 {% block content %}
 
-    <h1>Venues</h1>
+    <div id="tf-program-venues">
 
-    <ul>
         {% for venue in venues %}
-            <li><a href="{% url 'program:venue_detail' venue.id %}">{{ venue.name }}</a></li>
+            <h3>{{ venue.name }}</h3>
+            <div class="sponsor">Here is where your company logo and message will be if you sponsor the programme in the {{ venues.name }}.</div>
+            <div class="row">
+                <div class="col-xs-2">
+                    {% if venue.image %}
+                        <img class="thumbnail" src="{{ MEDIA_ROOT }}{{ venue.image.url }}" />
+                    {% endif %}
+                </div>
+                <div class="description col-xs-10">
+                    <p>{{ venue.description }}</p>
+                    <p><a href="{% url 'program:venue_detail' venue.id %}">shows</a></p>
+                </div>
+            </div>
         {% endfor %}
-    </ul>
+
+    </div>
 
 {% endblock %}
 

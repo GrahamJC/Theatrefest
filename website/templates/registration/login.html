@@ -4,17 +4,19 @@
 
 {% block title %}{% trans "Log in" %}{% endblock %}
 
-{% block content %}
+{% block pagetitle %}
+    Login
+{% endblock %}
 
-    <p class="tf-page-title">Login</p>
+{% block content %}
 
     <form class="form-horizontal" method="post" action="{% url 'auth_login' %}">
         <input type="hidden" name="next" value="{{ next }}" />
         {% crispy form form_helper %}
     </form>
 
-    <p>{% trans "Forgot your password?" %} <a href="{% url 'auth_password_reset' %}">{% trans "Reset it" %}</a>.</p>
-    <p>{% trans "Not a member?" %} <a href="{% url 'registration_register' %}">{% trans "Register" %}</a>.</p>
+    <p>{% trans "Forgotten your password?" %} <a href="{% url 'auth_password_reset' %}">{% trans "Reset it" %}</a></p>
+    <p>{% trans "First time here?" %} <a href="{% url 'registration_register' %}">{% trans "Register now" %}</a></p>
 
 {% endblock %}
 

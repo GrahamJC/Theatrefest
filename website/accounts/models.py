@@ -60,6 +60,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     objects = UserManager()
 
+    @property
+    def username(self):
+        return self.email
+
     class Meta:
         verbose_name = _('user')
         verbose_name_plural = _('users')

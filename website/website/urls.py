@@ -4,6 +4,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import RedirectView
 
+import debug_toolbar
+
 from registration import views
 
 urlpatterns = [
@@ -13,6 +15,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('tickets/', include('tickets.urls')),
     path('boxoffice/', include('boxoffice.urls')),
+    path('debug/', include(debug_toolbar.urls)),
     path('admin/', admin.site.urls),
 ]
 

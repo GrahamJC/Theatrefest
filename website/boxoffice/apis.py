@@ -17,20 +17,10 @@ def get_performances(request):
             "id": performance.id,
             "date": performance.date,
             "time": performance.time,
-            "tickets_available": performance.tickets_available(),
+            "tickets_available": performance.tickets_available,
         })
     data = {
         "performances": performances,
-    }
-    return JsonResponse(data)
-
-def get_ticket_info(request):
-
-    performance = get_object_or_404(Performance, pk = request.GET.get('performance_id', 0))
-    data = {
-        "capacity": performance.show.venue.capacity,
-        "sold": performance.tickets_sold(),
-        "available": performance.tickets_available(),
     }
     return JsonResponse(data)
 

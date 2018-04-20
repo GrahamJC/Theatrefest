@@ -1,78 +1,86 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags tf_filters %}
 
+{% block pagetitle %}
+    My eFringers
+{% endblock %}
+
 {% block content %}
 
-    <div class="row">
+    <div id="tf-tickets-fringers">
 
-        <div class="col-xs-12 col-sm-6">
+        <div class="row">
 
-            <div class="panel panel-default">
-                <div class="panel-heading">My Fringers</div>
-                <div class="panel-body">
-                    {% if formset.forms %}
-                        <form class="form-inline" method="POST">
-                            {% csrf_token %}
-                            {{ formset.management_form }}
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Used</th>
-                                        <th>Name</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for form in formset %}
-                                        <tr>
-                                            <td>
-                                                <div class="dropdown">
-                                                    <button class="btn dropdown-toggle" type="button" data-toggle="dropdown">{{ form.instance.used }} of {{ form.instance.shows }} <span class="caret"></span></button>
-                                                    <ul class="dropdown-menu tf-fringer-tickets">
-                                                        {% for ticket in form.instance.tickets.all %}
-                                                            <li class="tf-fringer-tickets__item">
-                                                                {{ ticket.performance.date|date:'D, j M' }} at {{ ticket.performance.time|date:'H:i' }}
-                                                                <br/>{{ ticket.performance.show.name }}
-                                                            </li>
-                                                        {% endfor %}
-                                                    </ul>
+            <div class="col-xs-12 col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="tf-icons"><a data-toggle="collapse" href="#tf-tickets-fringers-list-help"><i class="fa fa-info-circle"></i></a></div>
+                        <a data-toggle="collapse" href="#tf-tickets-fringers-list"><h4 class="panel-title">Current eFringers</h4></a>
+                    </div>
+                    <div id="tf-tickets-fringers-list" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                            <div id="tf-tickets-fringers-list-help" class="well collapse">
+                                <ul>
+                                    <li>eFringers can be named to make it easier to keep track of them.</li>
+                                    <li>An eFringer cannot be used to purchase multiple tickets for the same performance.</li>
+                                    <li>There are no refunds for unused eFringers.</li>
+                                </ul>
+                            </div>
+                            {% if formset.forms %}
+                                <form id="tf-tickets-fringers-rename-form" class="form-inline" method="POST">
+                                    {% csrf_token %}
+                                    {{ formset.management_form }}
+                                    <table class="table table-striped">
+                                        {% for form in formset %}
+                                            <tr><td class="form-group {% if form.name.errors %}has-error{% endif %}">
+                                                <div class="col-xs-7">{{ form.id }} {{ form.name | add_css_class:'form-control tf-name' }}</div>
+                                                <div class="col-xs-4"><p class="form-control-static">{{ form.instance.available }} available</p></div>
+                                                <div class="col-xs-1">
+                                                    {% if form.instance.used %}
+                                                        <a class="form-control-static" data-toggle="collapse" href="#tf-tickets-fringers-list-{{ form.id.value }}"><i class="fa fa-info-circle"></i></a>
+                                                    {% endif %}
                                                 </div>
-                                            </td>
-                                            <td {% if form.name.errors %}class="has-error"{% endif %}>
-                                                {{ form.id }}
-                                                {{ form.name|add_css_class:'form-control' }}
-                                                {% for error in form.name.errors %}<p class="help-block"><strong>{{ error }}</strong></p>{% endfor %}
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                            <input type="submit" class="btn btn-primary" name="action" value="Rename" />
+                                                <div class="col-xs-12">{% for error in form.name.errors %}<p class="help-block">{{ error }}</p>{% endfor %}</div>
+                                                <div class="col-xs-12">
+                                                    <div id="tf-tickets-fringers-list-{{ form.id.value }}" class="collapse">
+                                                        {% for ticket in form.instance.tickets.all %}
+                                                            <div>
+                                                                {{ ticket.performance.show.name }}<br/>
+                                                                {{ ticket.performance.date|date:'D, j M' }} at {{ ticket.performance.time|date:'H:i' }}
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </td></tr>
+                                        {% endfor %}
+                                    </table>
+                                    <div class="tf-actions">
+                                        <button type="submit" class="btn btn-primary" name="action" value="Rename">Rename</button>
+                                    </div>
+                                </form>
+                            {% else %}
+                                <p>You do not have any eFringers.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Buy eFringers</div>
+                    <div class="panel-body">
+                        <form class="form-horizontal" method="POST">
+                            {% crispy buy_form %}
+                            <div class="tf-actions">
+                                <button type="submit" class="btn btn-primary" name="action" value="Add">Add to Basket</button>
+                            </div>
                         </form>
-                    {% else %}
-                        <p>You do not have any fringers.</p>
-                    {% endif %}
+                    </div>
                 </div>
+
             </div>
 
-            <div class="panel panel-default">
-                <div class="panel-heading">Buy Fringers</div>
-                <div class="panel-body">
-                    {% crispy buy_form %}
-                </div>
-            </div>
-
-        </div>
-
-        <div class="col-xs-12 col-sm-6">
-            <div class="well">
-                <h4>Information</h4>
-                <ul>
-                    <li>Fringers can be used to purchase tickets for shows at a reduced price either online (up to 1 hour before a performance starts) or at a box office.</li>
-                    <li>Each fringer can only be used to purchase one ticket for each performance.</li>
-                    <li>If you buy more than one fringer you should give each of them a name to make them easier to keep track of.</li>
-                    <li>No refunds are available for unused fringers.</li>
-                </ul>
-            </div>
         </div>
 
     </div>

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block pagetitle %}
+    Schedule
+{% endblock %}
+
+{% block content %}
+
+    <div id="tf-program-schedule">
+
+        <div class="row">
+            <div class="col-xs-12">
+                <ul class="nav nav-tabs">
+                    {% for day in days %}
+                        <li class="{% if forloop.first %}active{% endif %}"><a href="#tab{{ forloop.counter }}" data-toggle="tab">{{ day.date | date:"l" }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="tab-content">
+            {% for day in days %}
+                <div id="tab{{ forloop.counter }}"class="tab-pane {% if forloop.first %}active{% endif %}">
+                    <div class="row">
+                        {% for venue in day.venues %}
+                            <div class="col-xs-4">
+                                <h4>{{ venue.name }}</h4>
+                                {% for performance in venue.performances %}
+                                    {{ performance.time | time:"H:i" }} {{ performance.show }}<br/>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+{% endblock %}
+

@@ -7,7 +7,6 @@ migrations/
 *.bak
 *.scss
 *.sh
-secrets.json
 Dockerfile
 compilerconfig.*
 website.pyproj

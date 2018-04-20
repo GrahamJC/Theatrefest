@@ -1,11 +1,15 @@
+import os
+
+from django.conf import settings
 from django.shortcuts import get_object_or_404, render
+from django.template import Template, Context
 from django.views import View
 from django.urls import reverse
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
-from .models import Show, Venue
+from .models import Show, Venue, Performance
 from .forms import SearchForm
 
 def home(request):
@@ -20,15 +24,30 @@ def shows(request):
     return render(request, 'program/shows.html', context)
 
 def show_detail(request, show_id):
+
+    # Get show
     show = get_object_or_404(Show, pk = show_id)
+
+    # Check for HTML description
+    html = None
+    if show.html_description:
+        context = { 'show': show }
+        media_url = getattr(settings, 'MEDIA_URL', '/')
+        for image in show.images.all():
+            context[f"image_{image.name}_url"] = os.path.join(media_url, image.image.url)
+        template = Template(show.html_description)
+        html = template.render(Context(context))
+
+    # Render show details
     context ={
         'show': show,
+        'html': html,
     }
     return render(request, 'program/show_detail.html', context)
 
 def venues(request):
     venues = Venue.objects.all()
-    context ={
+    context = {
         'venues': venues,
     }
     return render(request, 'program/venues.html', context)
@@ -79,4 +98,71 @@ class ShowsView(View):
 
         # Render search results
         return render(request, 'program/shows.html', context)
+
+
+class ScheduleView(View):
+
+    def get(self, request):
+
+        # Generate the schedule
+        #pages = []
+        #for date_dict in Performance.objects.order_by('date').values('date').distinct():
+        #    date = date_dict["date"]
+        #    venues = []
+        #    for venue_dict in Show.objects.filter(performances__date = date).order_by().values('venue_id').distinct():
+        #        venue = Venue.objects.get(pk = venue_dict["venue_id"])
+        #        venues.append({
+        #            'name': venue.name,
+        #        })
+        #    pages.append({
+        #        'date': date,
+        #        'venues': venues,
+        #    })
+
+        # Build the schedule
+        days = []
+        day = None
+        for performance in Performance.objects.order_by('date', 'show__venue__name', 'time').values('date', 'show__venue__name', 'time', 'show__name'):
+            
+            # If the date has changed start a new day
+            if day and performance['date'] != day['date']:
+                days.append(day)
+                day = None
+            if not day:
+                day = {
+                    'date': performance['date'],
+                    'venues': [],
+                }
+                venue = None
+
+            # If the venue has changed add it to the page and start a new one
+            if venue and performance['show__venue__name'] != venue['name']:
+                day['venues'].append(venue)
+                venue = None
+            if not venue:
+                venue = {
+                    'name': performance['show__venue__name'],
+                    'performances': [],
+                }
+
+            # Add performance to venue
+            venue['performances'].append(
+                {
+                    'show': performance['show__name'],
+                    'time': performance['time'],
+                }
+            )
+
+        # Add final day and venue
+        if day:
+            if venue:
+                day['venues'].append(venue)
+            days.append(day)
+
+        # Render schedule
+        context = {
+            'days': days,
+        }
+        return render(request, 'program/schedule.html', context)
+
 

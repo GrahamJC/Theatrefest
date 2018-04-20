@@ -35,10 +35,13 @@ class RenameFringerForm(forms.ModelForm):
 
 class BuyFringerForm(forms.Form):
 
-    def __init__(self, fringer_types, *args, **kwargs):
+    def __init__(self, user, fringer_types, *args, **kwargs):
 
         #Call base constructor
         super(BuyFringerForm, self).__init__(*args, **kwargs)
+
+        # Save user
+        self.user = user
 
         # Create fringer type choices
         fringer_choices = [(t.id, "{0} shows for £{1:0.2}".format(t.shows, t.price)) for t in fringer_types]
@@ -47,3 +50,8 @@ class BuyFringerForm(forms.Form):
         self.fields['type'] = forms.ChoiceField(label = "Type", choices = fringer_choices, initial = [fringer_choices[0][0]])
         self.fields['name'] = forms.CharField(label = "Name", max_length = 32, required = False, help_text = "Keep track of your fringers by giving each a name.")
 
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        if Fringer.objects.filter(user = self.user, name = name).exists():
+            raise forms.ValidationError("Name has already been used")
+        return name

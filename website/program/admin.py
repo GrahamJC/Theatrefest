@@ -1,10 +1,8 @@
 from django.contrib import admin
 
-from .models import Venue, Company, Genre, Show, Performance, Review
+from .models import Venue, Company, Genre, Show, ShowImage, Performance, Review
 
 admin.site.register(Genre)
-admin.site.register(Performance)
-admin.site.register(Review)
 
 @admin.register(Venue)
 class VenueAdmin(admin.ModelAdmin):
@@ -59,6 +57,13 @@ class CompanyAdmin(admin.ModelAdmin):
     ]
     
     
+class ShowImageInline(admin.TabularInline):
+    
+    model = ShowImage
+    extra = 0
+    classes = ['collapse']
+    
+    
 class PerformanceInline(admin.TabularInline):
     
     model = Performance
@@ -79,11 +84,15 @@ class ShowAdmin(admin.ModelAdmin):
     model = Show
     fieldsets = [
         (None, {
-            'fields': ('name', 'image', 'company', 'venue', 'description', 'long_description', 'age_range', 'duration', 'theatrefest_ID'),
+            'fields': ('name', 'image', 'company', 'venue', 'description', 'long_description', 'age_range', 'duration'),
+        }),
+        ('HTML Description', {
+            'classes': ('collapse',),
+            'fields': ('html_description',),
         }),
         ('Genres', {
             'classes': ('collapse',),
-            'fields': ('genres',),
+            'fields': ('genres', 'genre_display', 'has_warnings',),
         }),
         ('Social media', {
             'classes': ('collapse',),
@@ -92,6 +101,7 @@ class ShowAdmin(admin.ModelAdmin):
     ]
     filter_horizontal = ['genres']
     inlines = [
+        ShowImageInline,
         PerformanceInline,
         ReviewInline,
     ]
@@ -99,5 +109,7 @@ class ShowAdmin(admin.ModelAdmin):
     def get_form(self, request, obj = None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         form.base_fields['description'].widget.attrs['rows'] = 2
+        form.base_fields['long_description'].widget.attrs['rows'] = 4
+        form.base_fields['html_description'].widget.attrs['rows'] = 25
         return form
 

@@ -63,8 +63,8 @@
                     margin-right: 5px;
                 }
 
-                .genre-warnings {
-                    color: $warning-color;
+                .warnings {
+                    font-weight: normal;
                     margin-right: 5px;
                 }
 
@@ -122,20 +122,54 @@
 
     .info2 {
         margin-top: 10px;
-        color: $primary-color;
 
         .venue {
             font-weight: bold;
+            color: $primary-color;
         }
 
         .performances {
             .performance {
+                color: $primary-color;
             }
         }
     }
 
 
     .description {
+
+        .html {
+            img {
+                margin-top: 10px;
+                margin-bottom: 10px;
+                width: 100%;
+            }
+
+            .youtube {
+
+                margin-top: 10px;
+                margin-bottom: 10px;
+                width: 100%;
+                height: 153px;
+
+                @media (min-width: $screen-sm) {
+                    height: 299px;
+                }
+
+                @media (min-width: $screen-md) {
+                    height: 349px;
+                }
+
+                @media (min-width: $screen-lg) {
+                    height: 358px;
+                }
+
+                iframe {
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+        }
     }
 
     .social-media {
@@ -170,6 +204,99 @@
             }
 
             .body {
+            }
+        }
+    }
+}
+
+// Venues
+#tf-program-venues {
+
+    .sponsor {
+        border: 1px solid #f6dd96;
+        color: #E19B03;
+        background-color: white;
+        padding: 5px;
+        margin-bottom: 10px;
+    }
+
+    img.thumbnail {
+        width: 100%;
+    }
+}
+
+// Venue detail
+#tf-program-venue-detail {
+
+    .sponsor {
+        border: 1px solid #f6dd96;
+        color: #E19B03;
+        background-color: white;
+        padding: 5px;
+        margin-bottom: 10px;
+    }
+
+    .shows {
+
+        .show {
+            margin-bottom: 10px;
+            border-bottom: 5px solid #cccccc;
+            padding-top: 5px;
+            padding-bottom: 10px;
+
+            .image {
+                img {
+                    width: 100%;
+                }
+            }
+
+            .title {
+            }
+
+            .company {
+            }
+
+            .description {
+            }
+
+            .info1 {
+                margin-top: 15px;
+                color: $primary-color;
+
+                .venue {
+                    font-weight: bold;
+                    margin-right: 5px;
+                }
+
+                .days {
+                    margin-right: 5px;
+                }
+            }
+
+            .info2 {
+                @media (min-width: $screen-md) {
+                    font-weight: bold;
+                }
+
+                .genres {
+                    color: $secondary-color;
+                    margin-right: 5px;
+                }
+
+                .warnings {
+                    font-weight: normal;
+                    margin-right: 5px;
+                }
+
+                .age-range {
+                    color: $primary-color;
+                    margin-right: 5px;
+                }
+
+                .duration {
+                    color: $secondary-color;
+                    margin-right: 5px;
+                }
             }
         }
     }

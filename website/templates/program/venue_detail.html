@@ -1,8 +1,63 @@
 {% extends "base.html" %}
 
+{% block pagetitle %}
+    {{ venue.name }}
+{% endblock %}
+
 {% block content %}
 
-    <h1>Venue: {{ venue.name }}</h1>
+    <div id="tf-program-venue-detail">
+
+        <div class="sponsor">Here is where your company logo and message will be if you sponsor the programme in the {{ venues.name }}.</div>
+
+        <div class="shows">
+            {% for show in venue.shows.all %}
+                <div class="show row">
+
+                    <div class="image col-xs-4 col-md-3 col-lg-2">
+                        {% if show.image %}
+                            <img src="{{ MEDIA_ROOT }}{{ show.image.url }}" />
+                        {% endif %}
+                    </div>
+                    <div class="col-xs-8 col-md-9 col-lg-10">
+                        <div class="title tf-show-name"><a href="{% url 'program:show_detail' show.id %}">{{ show.name }}</a></div>
+                        <div class="company tf-company-name">{{ show.company.name }}</div>
+                        <div class="description hidden-xs">{{ show.list_long_description | linebreaks }}</div>
+                        <div class="description visible-xs-block">{{ show.list_short_description | linebreaks }}</div>
+                        <div class="info1">
+                            <span class="venue">
+                                {{ show.venue.name }}
+                            </span>
+                            <span class="days">
+                                {{ show.display_days }}
+                            </span>
+                        </div>
+                        <div class="info2">
+                            {% if show.display_genres %}
+                                <span class="genres hidden-xs">
+                                    {{ show.display_genres }}
+                                </span>
+                            {% endif %}
+                            {% if show.has_warnings %}
+                                <a class="warnings" href="{% url 'program:show_detail' show.id %}">(content)</a>
+                            {% endif %}
+                            {% if show.age_range %}
+                                <span class="age-range">Age {{ show.age_range }}</span>
+                            {% endif %}
+                            {% if show.duration %}
+                                <span class="duration">{{ show.duration }} mins</span>
+                            {% endif %}
+                        </div>
+                    </div>
+            
+                </div>
+            {% empty %}
+                <p>There are no shows at this venue.</p>
+            {% endfor %}
+
+        </div>
+
+    </div>
 
 {% endblock %}
 
