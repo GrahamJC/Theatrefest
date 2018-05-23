@@ -38,15 +38,15 @@ class Sale(TimeStampedModel):
     @property
     def performances(self):
         performances = []
-        for t in self.tickets.values('performance_id').distinct():
-            p = Performance.objects.get(pk = t['performance_id'])
-            tickets = self.tickets.filter(performance = p)
+        for ticket in self.tickets.values('performance_id').distinct():
+            p = Performance.objects.get(pk = ticket['performance_id'])
+            tickets = self.tickets.filter(performance_id = ticket['performance_id'])
             performance = {
                 'id': p.id,
                 'show': p.show.name,
                 'date' : p.date,
                 'time': p.time,
-                'ticket_cost': sum(t.cost for t in tickets.filter(performance = p)), 
+                'ticket_cost': sum(t.cost for t in tickets.all()), 
                 'tickets': [{'id': t.id, 'description': t.description, 'cost': t.cost} for t in tickets],
             }
             performances.append(performance)
@@ -173,7 +173,7 @@ class Fringer(TimeStampedModel):
         return "{0}:{1}".format(self.user.username, self.name)
 
     def get_available(user, performance = None):
-        return list(filter(lambda f: f.is_available(performance), user.fringers.all()))
+        return list(filter(lambda f: f.is_available(performance), user.fringers.exclude(basket__isnull=False)))
 
 class TicketType(TimeStampedModel):
 

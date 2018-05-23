@@ -3,22 +3,11 @@
 
 {% block title %}{% trans "Activation email sent" %}{% endblock %}
 
+{% block pagetitle %}{% trans "Activation email sent" %}{% endblock %}
+
 {% block content %}
    
-    <p class="tf-page-title">Verify e-mail</p>
-
     <p>{% trans "Please check your email to complete the registration process." %}</p>
-
     <p>{% trans "If the e-mail does not arrive in a few minutes check your spam or junk mail folder." %}</p>
 
 {% endblock %}
-
-
-{% comment %}
-**registration/registration_complete.html**
-
-Used after successful completion of the registration form. This
-template has no context variables of its own, and should simply inform
-the user that an email containing account-activation information has
-been sent.
-{% endcomment %}

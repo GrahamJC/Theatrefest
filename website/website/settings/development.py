@@ -19,10 +19,10 @@ DATABASES = {
         'NAME': 'theatrefest',
         'USER': 'theatrefest',
         'PASSWORD': 'barnum',
-#        'HOST': 'localhost',
-        'HOST': 'theatrefest.ukwest.cloudapp.azure.com',
+        'HOST': 'localhost',
+ #       'HOST': 'theatrefest.ukwest.cloudapp.azure.com',
         'PORT': '5432',
-    }
+    },
 }
 
 # Logging
@@ -89,8 +89,13 @@ LOGGING = {
 }
 
 # E-mail
-EMAIL_HOST = "ssrs.reachmail.net"
+EMAIL_HOST = "smtp.sendgrid.net"
 EMAIL_PORT = 465
-EMAIL_HOST_USER = "GCCONSUL2\graham"
-EMAIL_HOST_PASSWORD = get_secret("EASYSMTP_EMAIL_HOST_PASSWORD")
+EMAIL_HOST_USER = "apikey"
+EMAIL_HOST_PASSWORD = get_secret("SENDGRID_EMAIL_HOST_PASSWORD")
 EMAIL_USE_SSL = True
+#EMAIL_HOST = "ssrs.reachmail.net"
+#EMAIL_PORT = 465
+#EMAIL_HOST_USER = "GCCONSUL2\graham"
+#EMAIL_HOST_PASSWORD = get_secret("EASYSMTP_EMAIL_HOST_PASSWORD")
+#EMAIL_USE_SSL = True

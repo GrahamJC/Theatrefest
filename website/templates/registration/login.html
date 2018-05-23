@@ -2,49 +2,34 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 
-{% block title %}{% trans "Log in" %}{% endblock %}
+{% block title %}{% trans "Login" %}{% endblock %}
 
-{% block pagetitle %}
-    Login
-{% endblock %}
+{% block pagetitle %}Login{% endblock %}
 
 {% block content %}
 
-    <form class="form-horizontal" method="post" action="{% url 'auth_login' %}">
-        <input type="hidden" name="next" value="{{ next }}" />
-        {% crispy form form_helper %}
-    </form>
+    <div class="row">
 
-    <p>{% trans "Forgotten your password?" %} <a href="{% url 'auth_password_reset' %}">{% trans "Reset it" %}</a></p>
-    <p>{% trans "First time here?" %} <a href="{% url 'registration_register' %}">{% trans "Register now" %}</a></p>
+        <div class="col-xs-12 col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h4 class="panel-title">Already Registered</h4></div>
+                <div class="panel-body">
+                    {% crispy form form_helper %}
+                    <div class="tf-actions"><p><a href="{% url 'accounts:auth_password_reset' %}">Forgotten password?</a></p></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h4 class="panel-title">First Time User</h4></div>
+                <div class="panel-body">
+                    <p>You need to register before you can buy tickets or eFringers on this site.</p>
+                    <div class="tf-actions"><a class="btn btn-primary" href="{% url 'accounts:registration_register' %}">Register</a></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 
 {% endblock %}
-
-
-{% comment %}
-**registration/login.html**
-
-It's your responsibility to provide the login form in a template called
-registration/login.html by default. This template gets passed four
-template context variables:
-
-``form``
-    A Form object representing the login form. See the forms
-    documentation for more on Form objects.
-
-``next``
-    The URL to redirect to after successful login. This may contain a
-    query string, too.
-
-``site``
-    The current Site, according to the SITE_ID setting. If you don't
-    have the site framework installed, this will be set to an instance
-    of RequestSite, which derives the site name and domain from the
-    current HttpRequest.
-
-``site_name``
-    An alias for site.name. If you don't have the site framework
-    installed, this will be set to the value of
-    request.META['SERVER_NAME']. For more on sites, see The
-    "sites" framework.
-{% endcomment %}

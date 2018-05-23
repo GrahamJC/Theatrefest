@@ -197,6 +197,7 @@
     <Content Include="templates\program\schedule.html" />
     <Content Include="templates\program\shows.html" />
     <Content Include="templates\program\show_detail.html" />
+    <Content Include="templates\program\venues_venue.html" />
     <Content Include="templates\program\venues.html" />
     <Content Include="templates\program\venue_detail.html" />
     <Content Include="templates\registration\activate.html" />

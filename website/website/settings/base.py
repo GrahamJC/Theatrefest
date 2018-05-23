@@ -84,9 +84,6 @@ WSGI_APPLICATION = 'website.wsgi.application'
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
@@ -102,7 +99,7 @@ AUTH_USER_MODEL = "accounts.User"
 
 # Internationalization
 LANGUAGE_CODE = 'en-uk'
-TIME_ZONE = 'GMT'
+TIME_ZONE = 'Europe/London'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True

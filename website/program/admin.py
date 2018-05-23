@@ -2,15 +2,17 @@ from django.contrib import admin
 
 from .models import Venue, Company, Genre, Show, ShowImage, Performance, Review
 
-admin.site.register(Genre)
-
 @admin.register(Venue)
 class VenueAdmin(admin.ModelAdmin):
     
     model = Venue
     fieldsets = [
         (None, {
-            'fields': ('name', 'image', 'description', 'capacity', 'box_office', 'email', 'telno', 'color', 'is_ticketed'),
+            'fields': ('map_index', 'name', 'image', 'url', 'description', 'color', 'is_ticketed', 'is_searchable', 'is_scheduled', 'capacity', 'box_office', 'email', 'telno'),
+        }),
+        ('Sponsor', {
+            'classes': ('collapse',),
+            'fields': ('sponsor_name', 'sponsor_image', 'sponsor_message', 'sponsor_color', 'sponsor_background', 'sponsor_url'),
         }),
         ('Address', {
             'classes': ('collapse',),
@@ -84,7 +86,7 @@ class ShowAdmin(admin.ModelAdmin):
     model = Show
     fieldsets = [
         (None, {
-            'fields': ('name', 'image', 'company', 'venue', 'description', 'long_description', 'age_range', 'duration'),
+            'fields': ('name', 'image', 'company', 'venue', 'description', 'long_description', 'age_range', 'duration', 'is_cancelled'),
         }),
         ('HTML Description', {
             'classes': ('collapse',),
@@ -113,3 +115,9 @@ class ShowAdmin(admin.ModelAdmin):
         form.base_fields['html_description'].widget.attrs['rows'] = 25
         return form
 
+
+@admin.register(Genre)
+class GenreAdmin(admin.ModelAdmin):
+
+    model = Genre
+    fields = ('name',)

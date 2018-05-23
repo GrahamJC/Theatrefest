@@ -1,10 +1,14 @@
 from .base import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
-    'theatrefest.ukwest.cloudapp.azure.com'
+    'theatrefest.ukwest.cloudapp.azure.com',
+]
+
+INTERNAL_IPS = [
+        '86.137.115.4',
 ]
 
 # Database
@@ -16,7 +20,7 @@ DATABASES = {
         'PASSWORD': 'barnum',
         'HOST': 'localhost',
         'PORT': '5432',
-    }
+    },
 }
 
 # Logging
@@ -81,6 +85,9 @@ LOGGING = {
         "handlers": ["console", "file"],
     },
 }
+
+# Static files
+STATIC_ROOT = posixpath.join(*(BASE_DIR.split(os.path.sep) + ['static']))
 
 # E-mail
 EMAIL_HOST = "smtp.sendgrid.net"

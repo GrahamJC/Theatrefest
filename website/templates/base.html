@@ -52,8 +52,10 @@
                         <ul class="nav navbar-nav navbar-right">
                             {% if user.is_authenticated %}
                                 <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.email }} <span class="caret"></span></a>
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">my account <span class="caret"></span></a>
                                     <ul class="dropdown-menu">
+                                        <li><a href="#">{{ user.email }}</a></li>
+                                        <li class="divider"></li>
                                         <li><a href="{% url 'tickets:show' %}">My Tickets</a></li>
                                         <li><a href="{% url 'tickets:fringers' %}">My Fringers</a></li>
                                         <li><a href="{% url 'tickets:checkout' %}">Checkout</a></li>
@@ -66,11 +68,11 @@
                                             <li><a href="/admin">Admin</a></li>
                                         {% endif %}
                                         <li class="divider"></li>
-                                        <li><a href="{% url 'auth_logout' %}">Logout</a></li>
+                                        <li><a href="{% url 'accounts:auth_logout' %}">Logout</a></li>
                                     </ul>
                                 </li>
                             {% else %}
-                                <li><a href="{% url 'auth_login' %}">Login/Register</a></li>
+                                <li><a href="{% url 'accounts:auth_login' %}">Login/Register</a></li>
                             {% endif %}
                         </ul>
                     </div>
@@ -80,7 +82,7 @@
 
         <div id="tf-header" class="row">
             <div class="col-xs-12 col-lg-10 col-lg-offset-1">
-                <div class="alert alert-warning">
+                <div class="alert alert-warning" style="display: none;">
                     <i class="fa fa-lg fa-exclamation-circle"></i>
                     This is the Theatrefest ticketing web site which is currently under construction.
                     You can register and explore the site including the trial purchase of tickets and eFringers.

@@ -4,27 +4,30 @@
 
 {% block title %}{% trans "Register for an account" %}{% endblock %}
 
-{% block pagetitle %}
-    Register
-{% endblock %}
+{% block pagetitle %}Register{% endblock %}
 
 {% block content %}
 
-    <form class="form-horizontal" method="post" action="{% url 'registration_register' %}">
-        {% crispy form form_helper %}
-    </form>
+    <div class="row">
+
+        <div class="col-xs-12 col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h4 class="panel-title">New User</h4></div>
+                <div class="panel-body">
+                    {% crispy form form_helper %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h4 class="panel-title">Information</h4></div>
+                <div class="panel-body">
+                    <p>Registering on this site will allow you to buy tickets and eFringers using your credit card.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
 
 {% endblock %}
-
-
-{% comment %}
-**registration/registration_form.html**
-Used to show the form users will fill out to register. By default, has
-the following context:
-
-``form``
-    The registration form. This will be an instance of some subclass
-    of ``django.forms.Form``; consult `Django's forms documentation
-    <http://docs.djangoproject.com/en/dev/topics/forms/>`_ for
-    information on how to display this in a template.
-{% endcomment %}

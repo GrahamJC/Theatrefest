@@ -1,0 +1,35 @@
+{% load static %}
+
+<div class="tf-venue">
+    <div class="tf-name">
+        <a href="{% url 'program:venue_detail' venue.id %}" {% if venue.color %}style="color: {{ venue.color }};"{% endif %}>
+            {% if venue.map_index < 100 %}
+                <span class="tf-index" {% if venue.color %}style="background-color: {{ venue.color }};"{% endif %}>{{ venue.map_index }}</span>
+            {% endif %}
+            {{ venue.name }}
+        </a>
+    </div>
+    <div class="row">
+        <div class="hidden-xs col-sm-3">
+            <a href="{% url 'program:venue_detail' venue.id %}">
+                <img class="tf-thumbnail" src="{{ MEDIA_ROOT }}{{ venue.image.url }}" />
+            </a>
+        </div>
+        <div class="tf-description col-xs-12 col-sm-9">
+            {% if venue.image %}
+                <img class="visible-xs-block tf-thumbnail" src="{{ MEDIA_ROOT }}{{ venue.image.url }}" />
+            {% endif %}
+            <p>{{ venue.description }}</p>
+            <p><a href="{% url 'program:venue_detail' venue.id %}">shows</a></p>
+        </div>
+    </div>
+    {% if venue.sponsor_name %}
+        <div class="tf-sponsor" style="{% if venue.sponsor_background %}background-color: {{ venue.sponsor_background }};{% endif %}">
+            <a href="{{ venue.sponsor_url }}" target="_blank"  style="{% if venue.sponsor_color %}color: {{ venue.sponsor_color }};{% endif %}">
+                {% if venue.sponsor_image %}<img src="{{ MEDIA_ROOT }}{{ venue.sponsor_image.url }}" />{% endif %}
+                <div class="tf-title">{{ venue.name }} programme is sponsored by</div>
+                {% if venue.sponsor_message %}<div class="tf-message">{{ venue.sponsor_message }}</div>{% endif %}
+            </a>
+        </div>
+    {% endif %}
+</div>

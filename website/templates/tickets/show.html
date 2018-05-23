@@ -20,33 +20,26 @@
                             <li>Tickets purchased with a credit card cannot be cancelled.</li>
                         </ul>
                     </div>
-                    {% if tickets_current %}
-                        <div class="tf-rows-striped">
-                            {% for ticket in tickets_current %}
-                                <div class="row">
-                                    <div class="col-xs-12 col-sm-9">
+                    {% if performances_current %}
+                        {% for performance in performances_current %}
+                            <div class="row">
+                                <div class="col-xs-12"><strong>{{ performance.show }}</strong></div>
+                                <div class="col-xs-6">{{ performance.date | date:"D, jS M" }} at {{ performance.time }}</div>
+                               <div class="col-xs-3"><a href="#tf-tickets-show-current-tickets-{{ forloop.counter }}" data-toggle="collapse">{{ performance.tickets | length }} Tickets</a></div>
+                                <div class="col-xs-3 text-right"><a href="{% url 'tickets:print_performance' performance.id %}">Print</a></div>
+                                <div id="tf-tickets-show-current-tickets-{{ forloop.counter }}" class="col-xs-12 collapse">
+                                    {% for ticket in performance.tickets %}
                                         <div class="row">
-                                            <div class="col-xs-12">{{ ticket.performance.show.name }}</div>
-                                            <div class="col-xs-12 col-sm-6">{{ ticket.performance.date|date:'D, j M' }} at {{ ticket.performance.time|date:'H:i' }}</div>
-                                            <div class="col-xs-12 col-sm-6">
-                                                {% if ticket.fringer %}
-                                                    eFringer ({{ticket.fringer.name }})
-                                                {% else %}
-                                                    {{ ticket.description }}
-                                                    &#163;{{ ticket.cost }}
-                                                {% endif %}
-                                            </div>
+                                            <div class="col-xs-1"></div>
+                                            <div class="col-xs-3">{{ ticket.description }}</div>
+                                            <div class="col-xs-2 text-right">{% if ticket.fringer_name %}{{ ticket.fringer_name }}{% else %}&#163;{{ ticket.cost }}{% endif %}</div>
+                                            <div class="col-xs-3">{% if ticket.fringer_name %}<a href="{% url 'tickets:cancel_ticket' ticket.id %}">Cancel</a>{% endif %}</div>
+                                            <div class="col-xs-3"></div>
                                         </div>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-3" style="text-align: right;">
-                                        {% if ticket.fringer %}
-                                            <a class="btn btn-primary" href="{% url 'tickets:cancel_ticket' ticket.id %}">Cancel</a>
-                                        {% endif %}
-                                        <a class="btn btn-primary" href="{% url 'tickets:print_ticket' ticket.id %}">Print</a>
-                                    </div>
+                                    {% endfor %}
                                 </div>
-                            {% endfor %}
-                        </div>
+                            </div>
+                        {% endfor %}
                     {% else %}
                         You do not have any current tickets.
                     {% endif %}
@@ -60,23 +53,25 @@
             </div>
             <div id="tf-tickets-show-Past" class="panel-collapse collapse in">
                 <div class="panel-body">
-                    {% if tickets_past %}
-                        <div class="tf-rows-striped">
-                            {% for ticket in tickets_past %}
-                                <div class="row">
-                                    <div class="col-xs-12">{{ ticket.performance.show.name }}</div>
-                                    <div class="col-xs-12 col-sm-6">{{ ticket.performance.date|date:'D, j M' }} at {{ ticket.performance.time|date:'H:i' }}</div>
-                                    <div class="col-xs-12 col-sm-6">
-                                        {% if ticket.fringer %}
-                                            eFringer ({{ticket.fringer.name }})
-                                        {% else %}
-                                            {{ ticket.description }}
-                                            &#163;{{ ticket.cost }}
-                                        {% endif %}
-                                    </div>
+                    {% if performances_past %}
+                        {% for performance in performances_past %}
+                            <div class="row">
+                                <div class="col-xs-12"><strong>{{ performance.show }}</strong></div>
+                                <div class="col-xs-6">{{ performance.date | date:"D, jS M" }} at {{ performance.time }}</div>
+                                <div class="col-xs-3"><a href="#tf-tickets-show-past-tickets-{{ forloop.counter }}" data-toggle="collapse">{{ performance.tickets | length }} Tickets</a></div>
+                                <div class="col-xs-3"></div>
+                                <div id="tf-tickets-show-past-tickets-{{ forloop.counter }}" class="col-xs-12 collapse">
+                                    {% for ticket in performance.tickets %}
+                                        <div class="row">
+                                            <div class="col-xs-1"></div>
+                                            <div class="col-xs-3">{{ ticket.description }}</div>
+                                            <div class="col-xs-2 text-right">{% if ticket.fringer_name %}{{ ticket.fringer_name }}{% else %}&#163;{{ ticket.cost }}{% endif %}</div>
+                                            <div class="col-xs-6"></div>
+                                        </div>
+                                    {% endfor %}
                                 </div>
-                            {% endfor %}
-                        </div>
+                            </div>
+                        {% endfor %}
                     {% else %}
                         You do not have any past tickets.
                     {% endif %}

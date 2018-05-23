@@ -14,5 +14,5 @@ urlpatterns = [
     path('remove/performance/<int:performance_id>', views.RemovePerformanceView.as_view(), name = 'remove_performance'),
     path('remove/ticket/<int:ticket_id>', views.RemoveTicketView.as_view(), name = 'remove_ticket'),
     path('cancel/ticket/<int:ticket_id>', views.CancelTicketView.as_view(), name = 'cancel_ticket'),
-    path('print/ticket/<int:ticket_id>', views.PrintTicketView.as_view(), name = 'print_ticket'),
+    path('print/performance/<int:performance_id>', views.PrintPerformanceView.as_view(), name = 'print_performance'),
 ]

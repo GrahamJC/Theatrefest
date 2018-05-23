@@ -1,4 +1,6 @@
 import uuid
+import os
+
 from django.conf import settings
 from django.db import models
 
@@ -23,13 +25,15 @@ class BoxOffice(TimeStampedModel):
 class Venue(TimeStampedModel):
 
     class Meta:
-        ordering = ['name']
+        ordering = ['map_index', 'name']
 
     name = models.CharField(max_length = 128, unique = True)
     image = models.ImageField(upload_to = get_image_filename, blank = True, default = '')
     description = models.TextField(blank = True, default = '')
     capacity = models.IntegerField(null = True, blank = True)
+    map_index = models.IntegerField(blank = True, default = 0)
     color = models.CharField(max_length = 16, blank = True, default = '')
+    url = models.URLField(max_length = 128, blank = True, default = '')
     address1 = models.CharField(max_length = 64, blank = True, default = '')
     address2 = models.CharField(max_length = 64, blank = True, default = '')
     city = models.CharField(max_length = 32, blank = True, default = '')
@@ -49,7 +53,15 @@ class Venue(TimeStampedModel):
     secondary_mobile = models.CharField(max_length = 32, blank = True, default = '')
     secondary_email = models.EmailField(max_length = 64, blank = True, default = '')
     is_ticketed = models.BooleanField(default = False)
+    is_searchable = models.BooleanField(default = False)
+    is_scheduled = models.BooleanField(default = False)
     box_office = models.ForeignKey(BoxOffice, null = True, blank = True, on_delete = models.SET_NULL, related_name = 'venues')
+    sponsor_name = models.CharField(max_length = 64, blank = True, default = '')
+    sponsor_color = models.CharField(max_length = 16, blank = True, default = '')
+    sponsor_background = models.CharField(max_length = 16, blank = True, default = '')
+    sponsor_message = models.CharField(max_length = 32, blank = True, default = '')
+    sponsor_image = models.ImageField(upload_to = get_image_filename, blank = True, default = '')
+    sponsor_url = models.URLField(max_length = 128, blank = True, default = '')
 
     def __str__(self):
         return self.name
@@ -119,6 +131,7 @@ class Show(TimeStampedModel):
     duration = models.PositiveIntegerField(null = True, blank = True)
     venue = models.ForeignKey(Venue, on_delete = models.PROTECT, related_name = 'shows')
     theatrefest_ID = models.CharField(max_length = 16, blank = True, default = '')    
+    is_cancelled = models.BooleanField(blank = True, default = False)
 
     def __str__(self):
         return self.name
@@ -139,8 +152,9 @@ class Show(TimeStampedModel):
     def is_ticketed(self):
         return venue.is_ticketed
 
-    def display_days(self):
-        return ", ".join([performance.date.strftime("%a") for performance in self.performances.all()])
+    def performance_dates(self):
+        return self.performances.order_by('date').distinct('date').values_list('date', flat = True)
+        #return ", ".join([performance.date.strftime("%a") for performance in self.performances.all()])
 
     def display_genres(self):
         return self.genre_display or ", ".join([genre.name for genre in self.genres.all()])

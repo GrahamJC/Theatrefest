@@ -11,7 +11,8 @@ def user_logged_in_callback(sender, request, user, **kwargs):
 
 @receiver(user_logged_out)
 def user_logged_out_callback(sender, request, user, **kwargs):
-    log.info("Log out for: %s", user.email);
+    if user:
+        log.info("Log out for: %s", user.email);
 
 @receiver(user_login_failed)
 def user_login_failed_callback(sender, credentials, **kwargs):

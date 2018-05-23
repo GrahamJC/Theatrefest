@@ -15,10 +15,12 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('tickets/', include('tickets.urls')),
     path('boxoffice/', include('boxoffice.urls')),
-    path('debug/', include(debug_toolbar.urls)),
     path('admin/', admin.site.urls),
+    path('debug/', include(debug_toolbar.urls)),
 ]
 
-# Serve static files
-urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
+# Serve static and media files
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root = settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
 

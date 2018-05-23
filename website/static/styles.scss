@@ -22,7 +22,7 @@ a {
 }
 
 p {
-    margin-bottom: 3px;
+    margin-bottom: 5px;
 }
 
 .table {
@@ -36,6 +36,11 @@ p {
 
 .panel-heading .panel-title {
     color: $text-color;
+}
+
+// Crispy forms overrides
+.asteriskField {
+    display: none;
 }
 
 // Main layout
@@ -83,8 +88,12 @@ body {
 
 // Header
 #tf-header {
+    position: relative;
+    margin-bottom: 10px;
+
     .tf-social-media {
-        float: right;
+        position: absolute;
+        right: 15px;
 
         img {
             width: 35px;
@@ -92,16 +101,27 @@ body {
     }
 
     .tf-page-title {
+        margin-top: 5px;
         font-size: $font-size-xl;
         font-weight: bold;
-        line-height: 40px;
     }
 }
 
 // Content area
 #tf-content {
     font-size: $font-size-md;
-    @media (max-width: $screen-xs) { font-size: $font-size-sm; }
+
+    .tf-single-column {
+        @media (min-width: $screen-md) {
+            margin-left: 75px;
+            margin-right: 75px;
+        }
+
+        @media (min-width: $screen-lg) {
+            margin-left: 100px;
+            margin-right: 150px;
+        }
+    }
 }
 
 // General styles
@@ -132,7 +152,7 @@ body {
     padding-left: 10px;
 }
 
-form .tf-actions {
+.tf-actions {
     text-align: right;
 }
 

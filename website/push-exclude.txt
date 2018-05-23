@@ -2,6 +2,7 @@
 /obj/
 /media/
 /django_static/
+/static/
 __pycache__/
 migrations/
 *.bak

@@ -8,9 +8,11 @@
 
     <div id="tf-program-schedule">
 
+        <p><a href="{% url 'program:schedule_pdf' %}">Full schedule (PDF)</a></p>
+        
         <div class="row">
             <div class="col-xs-12">
-                <ul class="nav nav-tabs">
+                <ul class="nav nav-tabs nav-justified">
                     {% for day in days %}
                         <li class="{% if forloop.first %}active{% endif %}"><a href="#tab{{ forloop.counter }}" data-toggle="tab">{{ day.date | date:"l" }}</a></li>
                     {% endfor %}
@@ -22,12 +24,32 @@
                 <div id="tab{{ forloop.counter }}"class="tab-pane {% if forloop.first %}active{% endif %}">
                     <div class="row">
                         {% for venue in day.venues %}
-                            <div class="col-xs-4">
-                                <h4>{{ venue.name }}</h4>
-                                {% for performance in venue.performances %}
-                                    {{ performance.time | time:"H:i" }} {{ performance.show }}<br/>
-                                {% endfor %}
+                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                <div class="tf-venue" {% if venue.color %}style="border-color: {{ venue.color }};"{% endif %}>
+                                    <h4 {% if venue.color %}style="color: {{ venue.color }};"{% endif %}>{{ venue.name }}</h4>
+                                    <table>
+                                        {% for performance in venue.performances %}
+                                            {% if performance.is_cancelled %}
+                                                <tr class="tf-cancelled">
+                                                    <td class="tf-time">{{ performance.time | time:"H:i" }}</td>
+                                                    <td class="tf-show">{{ performance.show_name }}</td>
+                                                </tr>
+                                            {% else %}
+                                                <tr>
+                                                    <td class="tf-time">{{ performance.time | time:"H:i" }}</td>
+                                                    <td class="tf-show"><a href="{% url 'program:show_detail' performance.show_id %}">{{ performance.show_name }}</a></td>
+                                                </tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </table>
+                                </div>
                             </div>
+                            {% if forloop.counter|divisibleby:3 %}
+                                <div class="clearfix visible-md-block visible-lg-block"></div>
+                            {% endif %}
+                            {% if forloop.counter|divisibleby:2 %}
+                                <div class="clearfix visible-sm-block"></div>
+                            {% endif %}
                         {% endfor %}
                     </div>
                 </div>

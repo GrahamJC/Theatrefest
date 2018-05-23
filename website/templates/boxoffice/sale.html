@@ -32,7 +32,7 @@
                             {% for form in ticket_subforms.forms %}
                                 <div class="form-group">
                                     <div class="col-xs-6">{{ form.type_id }}<p class="form-control-static">{{ form.name }}{{ form.name.value }}</p></div>
-                                    <div class="col-xs-2">{% if form.price.value %}<p class="form-control-static">{{ form.price }}&#163;{{ form.price.value|floatformat }}</p>{% endif %}</div>
+                                    <div class="col-xs-2">{{ form.price }}{% if form.price.value %}<p class="form-control-static">&#163;{{ form.price.value | floatformat }}</p>{% endif %}</div>
                                     <div class="col-xs-4">{{ form.quantity | add_css_class:'form-control' }}</div>
                                 </div>
                             {% endfor %}

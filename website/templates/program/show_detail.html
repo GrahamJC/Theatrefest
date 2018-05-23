@@ -1,17 +1,14 @@
 {% extends "base.html" %}
 {% load tf_filters %}
 
-{% block pagetitle %}
-    {{ show.name }}
-{% endblock %}
-
 {% block content %}
 
-    <div id="tf-program-show-detail">
+    <div id="tf-program-show-detail" class="tf-single-column">
         
         <div class="row">
             
             <div class="col-xs-12 col-sm-3">
+                <p class="visible-xs-block show tf-show-name">{{ show.name }}</p>
                 <p class="visible-xs-block company tf-company-name">{{ show.company.name }}</p>
                 {% if show.image %}
                     <div class="image">
@@ -25,36 +22,47 @@
                         </p>
                     {% endif %}
                     {% if show.age_range %}
-                        <p class="age-range">Age {{ show.age_range }}</p>
+                        <p class="age-range">{{ show.age_range }}</p>
                     {% endif %}
                     {% if show.duration %}
                         <p class="duration">{{ show.duration }} mins</p>
                     {% endif %}
                 </div>
                 <div class="info2">
-                    <p class="venue">{{ show.venue.name }}</p>
+                    <a class="venue" style="{% if show.venue.color %}color: {{ show.venue.color }}{% endif %}" href="{% url 'program:venue_detail' show.venue_id %}">{{ show.venue.name }}</a>
                     {% if show.performances.all %}
                         <div class="performances">
                             {% for performance in show.performances.all %}
                                 <p class="performance">
                                     {% if show.venue.is_ticketed %}
-                                        <a href="{% url 'tickets:buy' performance.id %}">{{ performance.date|date:'l' }} at {{ performance.time|time:'P'}}</a>
+                                        <a href="{% url 'tickets:buy' performance.id %}">{{ performance.date | date:'D' }} at {{ performance.time | time:'P'}}</a>
                                     {% else %}
-                                        {{ performance.date|date:'l' }} at {{ performance.time|time:'P'}}
+                                        {{ performance.date | date:'D' }} at {{ performance.time | time:'P'}}
                                     {% endif %}
                                 </p>
                             {% endfor %}
                         </div>
                         {% if show.venue.is_ticketed %}
-                            <p>Select a performance to buy tickets online.</p>
+                            <p class="buy">Select a performance to buy tickets online.</p>
                         {% else %}
-                            <p>Tickets are not required for this show.</p>
+                            <p class="bucket">
+                                This is a pay-what-you-will-show.
+                                There are no tickets but there will be a bucket-collection.
+                            </p>
                         {% endif %}
                     {% endif %}
                 </div>
+                {% if show.venue.sponsor_name %}
+                    <div class="tf-sponsor" style="{% if show.venue.sponsor_background %}background-color: {{ show.venue.sponsor_background }};{% endif %}">
+                        <a href="{{ show.venue.sponsor_url }}" target="_blank"  style="{% if show.venue.sponsor_color %}color: {{ show.venue.sponsor_color }};{% endif %}">
+                            {% if show.venue.sponsor_image %}<img src="{{ MEDIA_ROOT }}{{ show.venue.sponsor_image.url }}" />{% endif %}
+                        </a>
+                    </div>
+                {% endif %}
             </div>
 
             <div class="col-xs-12 col-sm-9">
+                <p class="hidden-xs-block show tf-show-name">{{ show.name }}</p>
                 <p class="hidden-xs company tf-company-name">{{ show.company.name }}</p>
                 <div class="description">
                     {% if html %}

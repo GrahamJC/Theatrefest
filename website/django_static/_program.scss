@@ -13,10 +13,366 @@
     }
 
     .results {
-        @media (min-width: $screen-md) {
-            margin-left: 75px;
-            margin-right: 75px;
+
+        .show {
+            margin-bottom: 10px;
+            border-bottom: 5px solid #cccccc;
+            padding-top: 5px;
+            padding-bottom: 10px;
+
+            .image {
+                img {
+                    width: 100%;
+                }
+            }
+
+            .title {
+            }
+
+            .company {
+            }
+
+            .description {
+            }
+
+            .info1 {
+                margin-top: 15px;
+                color: $primary-color;
+
+                .venue {
+                    font-weight: bold;
+                }
+
+                .tickets {
+                }
+
+                .days {
+                }
+            }
+
+            .info2 {
+                @media (min-width: $screen-md) {
+                    font-weight: bold;
+                }
+
+                .genres {
+                    color: $secondary-color;
+                    margin-right: 5px;
+                }
+
+                .warnings {
+                    font-weight: normal;
+                    margin-right: 5px;
+                }
+
+                .age-range {
+                    color: $primary-color;
+                    margin-right: 5px;
+                }
+
+                .duration {
+                    color: $secondary-color;
+                    margin-right: 5px;
+                }
+            }
+
+            &.tf-cancelled {
+                color: darkgrey;
+
+                .tf-show-name, .tf-company-name, .info1 {
+                    color: darkgrey;
+                }
+
+                img {
+                    filter: grayscale(100%) contrast(50%);
+                }
+            }
         }
+    }
+}
+
+// Show detail
+#tf-program-show-detail {
+
+    .title {
+    }
+
+    .company {
+    }
+
+    .image {
+        margin-bottom: 10px;
+
+        img {
+            width: 100%;
+        }
+    }
+
+    .info1 {
+        color: $secondary-color;
+
+        @media (min-width: $screen-md) {
+            font-weight: bold;
+        }
+
+        .genres {
+            color: $primary-color;
+        }
+
+        .genre-warnings {
+            color: $warning-color;
+        }
+
+        .age-range {
+            color: #e13d22;
+        }
+
+        .duration {
+            color: green;
+        }
+    }
+
+    .info2 {
+        margin-top: 10px;
+
+        .venue {
+            font-weight: bold;
+            color: $primary-color;
+        }
+
+        .performances {
+            .performance {
+                color: $primary-color;
+            }
+        }
+
+        .buy, .bucket {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    }
+
+    .tf-sponsor {
+        position: relative;
+        margin-top: 5px;
+        height: 45px;
+        width:100%;
+        padding: 3px 5px;
+
+        a {
+            color: white;
+            background-color: black;
+            text-decoration: none;
+
+            &:hover &:visited {
+                text-decoration: none;
+            }
+        }
+
+        img {
+            float: right;
+            height: 100%;
+        }
+
+        .tf-title {
+        }
+
+        .tf-message {
+            position: absolute;
+            left: 5px;
+            bottom: 3px;
+            font-size: $font-size-lg;
+            font-weight: bold;
+        }
+    }
+
+    .description {
+
+        .html {
+            img {
+                margin-top: 10px;
+                margin-bottom: 10px;
+                width: 100%;
+            }
+
+            .youtube {
+                margin-top: 10px;
+                margin-bottom: 10px;
+                width: 100%;
+                height: 153px;
+
+                @media (min-width: $screen-sm) {
+                    height: 299px;
+                }
+
+                @media (min-width: $screen-md) {
+                    height: 349px;
+                }
+
+                @media (min-width: $screen-lg) {
+                    height: 358px;
+                }
+
+                iframe {
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+        }
+    }
+
+    .social-media {
+        .website {
+        }
+
+        .twitter {
+        }
+
+        .instagram {
+        }
+
+        .facebook {
+        }
+    }
+
+    .reviews {
+        margin-top: 10px;
+
+        .review {
+            .head {
+                font-weight: bold;
+
+                .rating {
+                }
+
+                .source {
+                }
+
+                .url {
+                }
+            }
+
+            .body {
+            }
+        }
+    }
+}
+
+// Venues
+#tf-program-venues {
+
+    h3 {
+        margin-top: 0;
+    }
+
+    .tf-venue {
+        margin-bottom: 20px;
+
+        .tf-name {
+            font-size: $font-size-lg;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2169b2;
+
+            .tf-index {
+                color: white;
+                background-color: #2169b2;
+                padding: 2px 4px;
+                margin-right: 5px;
+            }
+        }
+
+        img.tf-thumbnail {
+            width: 100%;
+        }
+
+        .tf-description {
+            img {
+                float: left;
+                width: 100px;
+                margin-right: 10px;
+                margin-bottom: 10px;
+            }
+        }
+        .tf-sponsor {
+            position: relative;
+            margin-top: 5px;
+            height: 65px;
+            padding: 3px 5px;
+
+            a {
+                color: white;
+                background-color: black;
+                text-decoration: none;
+
+                &:hover &:visited {
+                    text-decoration: none;
+                }
+            }
+
+            img {
+                float: right;
+                height: 100%;
+            }
+
+            .tf-title {
+            }
+
+            .tf-message {
+                position: absolute;
+                left: 5px;
+                bottom: 3px;
+                font-size: $font-size-lg;
+                font-weight: bold;
+            }
+        }
+    }
+
+    .tf-venue-map {
+        img {
+            width: 100%;
+        }
+    }
+}
+
+// Venue detail
+#tf-program-venue-detail {
+
+
+    .tf-sponsor {
+        position: relative;
+        margin-bottom: 10px;
+        height: 65px;
+        padding: 3px 5px;
+
+        a {
+            color: white;
+            background-color: black;
+            text-decoration: none;
+
+            &:hover &:visited {
+                text-decoration: none;
+            }
+        }
+
+        img {
+            float: right;
+            height: 100%;
+        }
+
+        .tf-title {
+        }
+
+        .tf-message {
+            position: absolute;
+            left: 5px;
+            bottom: 3px;
+            font-size: $font-size-lg;
+            font-weight: bold;
+        }
+    }
+
+    .shows {
 
         .show {
             margin-bottom: 10px;
@@ -63,8 +419,8 @@
                     margin-right: 5px;
                 }
 
-                .genre-warnings {
-                    color: $warning-color;
+                .warnings {
+                    font-weight: normal;
                     margin-right: 5px;
                 }
 
@@ -78,104 +434,52 @@
                     margin-right: 5px;
                 }
             }
+
+            &.tf-cancelled {
+                color: darkgrey;
+
+                .tf-show-name, .tf-company-name, .info1 {
+                    color: darkgrey;
+                }
+
+                img {
+                    filter: grayscale(100%) contrast(50%);
+                }
+            }
         }
     }
 }
 
-// Show detail
-#tf-program-show-detail {
+// Schedule
+#tf-program-schedule {
 
-    .title {
-    }
+    .tf-venue {
+        margin-top: 15px;
+        border-left: 1px solid #2169b2;
+        padding-left: 10px;
 
-    .company {
-    }
+        h4 {
+            margin-top: 0;
+        }
 
-    .image {
-        margin-bottom: 10px;
-
-        img {
+        table {
             width: 100%;
-        }
-    }
 
-    .info1 {
-        color: $secondary-color;
+            tr {
+                vertical-align: top;
+                color: $secondary-color;
 
-        @media (min-width: $screen-md) {
-            font-weight: bold;
-        }
-
-        .genres {
-        }
-
-        .genre-warnings {
-            color: $warning-color;
-        }
-
-        .age-range {
-        }
-
-        .duration {
-        }
-    }
-
-    .info2 {
-        margin-top: 10px;
-        color: $primary-color;
-
-        .venue {
-            font-weight: bold;
-        }
-
-        .performances {
-            .performance {
-            }
-        }
-    }
-
-
-    .description {
-
-        img {
-            margin-top: 10px;
-            margin-bottom: 10px;
-            width: 100%;
-        }
-    }
-
-    .social-media {
-        .website {
-        }
-
-        .twitter {
-        }
-
-        .instagram {
-        }
-
-        .facebook {
-        }
-    }
-
-    .reviews {
-        margin-top: 10px;
-
-        .review {
-            .head {
-                font-weight: bold;
-
-                .rating {
+                td.tf-time {
+                    width: 45px;
                 }
 
-                .source {
+                td.tf-show {
                 }
 
-                .url {
+                &.tf-cancelled {
+                    text-decoration: line-through;
+                    color: darkgrey;
                 }
-            }
-
-            .body {
             }
         }
     }

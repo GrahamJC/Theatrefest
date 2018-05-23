@@ -6,51 +6,78 @@
 
 {% block content %}
 
-    <div id="tf-program-venue-detail">
+    <div id="tf-program-venue-detail" class="tf-single-column">
 
-        <div class="sponsor">Here is where your company logo and message will be if you sponsor the programme in the {{ venues.name }}.</div>
+        {% if venue.sponsor_name %}
+            <div class="tf-sponsor" style="{% if venue.sponsor_background %}background-color: {{ venue.sponsor_background }};{% endif %}">
+                <a href="{{ venue.sponsor_url }}" target="_blank" style="{% if venue.sponsor_color %}color: {{ venue.sponsor_color }};{% endif %}">
+                    {% if venue.sponsor_image %}<img src="{{ MEDIA_ROOT }}{{ venue.sponsor_image.url }}" />{% endif %}
+                    <div class="tf-title">{{ venue.name }} programme is sponsored by</div>
+                    {% if venue.sponsor_message %}<div class="tf-message">{{ venue.sponsor_message }}</div>{% endif %}
+                </a>
+            </div>
+        {% endif %}
 
         <div class="shows">
-            {% for show in venue.shows.all %}
-                <div class="show row">
-
-                    <div class="image col-xs-4 col-md-3 col-lg-2">
-                        {% if show.image %}
+            {% for show in shows %}
+                {% if show.is_cancelled %}
+                    <div class="row show tf-cancelled">
+                        <div class="image col-xs-4 col-md-3">
                             <img src="{{ MEDIA_ROOT }}{{ show.image.url }}" />
-                        {% endif %}
-                    </div>
-                    <div class="col-xs-8 col-md-9 col-lg-10">
-                        <div class="title tf-show-name"><a href="{% url 'program:show_detail' show.id %}">{{ show.name }}</a></div>
-                        <div class="company tf-company-name">{{ show.company.name }}</div>
-                        <div class="description hidden-xs">{{ show.list_long_description | linebreaks }}</div>
-                        <div class="description visible-xs-block">{{ show.list_short_description | linebreaks }}</div>
-                        <div class="info1">
-                            <span class="venue">
-                                {{ show.venue.name }}
-                            </span>
-                            <span class="days">
-                                {{ show.display_days }}
-                            </span>
                         </div>
-                        <div class="info2">
-                            {% if show.display_genres %}
-                                <span class="genres hidden-xs">
-                                    {{ show.display_genres }}
+                        <div class="col-xs-8 col-md-9">
+                            <div class="tf-show-name">{{ show.name }}</div>
+                            <div class="tf-company-name">{{ show.company.name }}</div>
+                            <div class="description">{{ show.list_short_description | linebreaks }}</div>
+                            <div class="info1">
+                                <span class="days">
+                                    {% for date in show.performance_dates %}
+                                        {% if not forloop.first %}, {% endif %}
+                                        {{ date | date:'D' }}
+                                    {% endfor %}
                                 </span>
-                            {% endif %}
-                            {% if show.has_warnings %}
-                                <a class="warnings" href="{% url 'program:show_detail' show.id %}">(content)</a>
-                            {% endif %}
-                            {% if show.age_range %}
-                                <span class="age-range">Age {{ show.age_range }}</span>
-                            {% endif %}
-                            {% if show.duration %}
-                                <span class="duration">{{ show.duration }} mins</span>
-                            {% endif %}
+                            </div>
+                        </div>
+                    </div>                
+                {% else %}
+                    <div class="row show">
+                        <div class="image col-xs-4 col-md-3">
+                            <a href="{% url 'program:show_detail' show.id %}">
+                                <img src="{{ MEDIA_ROOT }}{{ show.image.url }}" />
+                            </a>
+                        </div>
+                        <div class="col-xs-8 col-md-9">
+                            <div class="title tf-show-name"><a href="{% url 'program:show_detail' show.id %}">{{ show.name }}</a></div>
+                            <div class="company tf-company-name">{{ show.company.name }}</div>
+                            <div class="description hidden-xs">{{ show.list_long_description | linebreaks }}</div>
+                            <div class="description visible-xs-block">{{ show.list_short_description | linebreaks }}</div>
+                            <div class="info1">
+                                <span class="days">
+                                    {% for date in show.performance_dates %}
+                                        {% if not forloop.first %}, {% endif %}
+                                        {{ date | date:'D' }}
+                                    {% endfor %}
+                                </span>
+                            </div>
+                            <div class="info2">
+                                {% if show.display_genres %}
+                                    <span class="genres hidden-xs">
+                                        {{ show.display_genres }}
+                                    </span>
+                                {% endif %}
+                                {% if show.has_warnings %}
+                                    <a class="warnings" href="{% url 'program:show_detail' show.id %}">(content)</a>
+                                {% endif %}
+                                {% if show.age_range %}
+                                    <span class="age-range">Age {{ show.age_range }}</span>
+                                {% endif %}
+                                {% if show.duration %}
+                                    <span class="duration">{{ show.duration }} mins</span>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
-            
-                </div>
+                {% endif %}
             {% empty %}
                 <p>There are no shows at this venue.</p>
             {% endfor %}
