@@ -132,6 +132,7 @@ class Show(TimeStampedModel):
     venue = models.ForeignKey(Venue, on_delete = models.PROTECT, related_name = 'shows')
     theatrefest_ID = models.CharField(max_length = 16, blank = True, default = '')    
     is_cancelled = models.BooleanField(blank = True, default = False)
+    replaced_by = models.OneToOneField('self', on_delete = models.SET_NULL, related_name = 'replacement_for', blank = True, null = True)
 
     def __str__(self):
         return self.name

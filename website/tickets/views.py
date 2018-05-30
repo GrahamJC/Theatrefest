@@ -12,6 +12,8 @@ from django.views import View
 from django.forms import formset_factory, modelformset_factory
 from django.urls import reverse
 from django.utils import timezone
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
@@ -49,16 +51,14 @@ class BuyFringerFormHelper(FormHelper):
     )
 
 
-class ShowView(LoginRequiredMixin, View):
+class MyAccountView(LoginRequiredMixin, View):
 
-    def get(self, request):
-
-        # Get tickets grouped by performance
-        performances_current = []
-        performances_past = []
-        for ticket in request.user.tickets.order_by('performance__date', 'performance__time', 'performance__show__name').values('performance_id').distinct():
+    def _get_performances(self, user):
+        current = []
+        past = []
+        for ticket in user.tickets.filter(basket = None).order_by('performance__date', 'performance__time', 'performance__show__name').values('performance_id').distinct():
             performance = Performance.objects.get(pk = ticket['performance_id'])
-            tickets = request.user.tickets.filter(performance_id = ticket['performance_id'])
+            tickets = user.tickets.filter(performance_id = ticket['performance_id'], basket = None)
             p = {
                 'id': performance.id,
                 'show': performance.show.name,
@@ -67,31 +67,134 @@ class ShowView(LoginRequiredMixin, View):
                 'tickets': [{'id': t.id, 'description': t.description, 'cost': t.cost, 'fringer_name': (t.fringer.name if t.fringer else None)} for t in tickets],
             }
             if datetime.combine(performance.date, performance.time) >= datetime.now():
-                performances_current.append(p)
+                current.append(p)
             else:
-                performances_past.append(p)
+                past.append(p)
+        return (current, past)
 
-        # Display tickets
+    def _create_fringer_formset(self, user, post_data = None):
+        FringerFormSet = modelformset_factory(Fringer, form = RenameFringerForm, extra = 0)
+        formset = FringerFormSet(post_data, queryset = user.fringers.filter(basket = None))
+        return formset
+
+    def _create_buy_fringer_form(self, user, post_data = None):
+        fringer_types = FringerType.objects.filter(is_online = True)
+        form = BuyFringerForm(user, fringer_types, post_data)
+        form.use_required_attribute = False
+        form.helper = BuyFringerFormHelper()
+        return form
+
+    def get(self, request):
+
+        # Get tickets grouped by performance
+        performances_current, performances_past = self._get_performances(request.user)
+
+        # Create fringer formset
+        formset = self._create_fringer_formset(request.user)
+
+        # Get fringer types and create buy form
+        buy_form = self._create_buy_fringer_form(request.user)
+
+        # Display tickets and fringers
         context = {
+            'sales_open': request.user.is_superuser or (date.today() >= date(2018, 6, 1)),
+            'tab': 'tickets',
             'performances_current': performances_current,
             'performances_past': performances_past,
+            'basket': request.user.basket,
+            'formset': formset,
+            'buy_form': buy_form,
         }
-        return render(request, "tickets/show.html", context)
+        return render(request, 'tickets/myaccount.html', context)
 
-class TheatrefestBuyView(LoginRequiredMixin, View):
+    @transaction.atomic
+    def post(self, request):
 
-    def get(self, request, theatrefest_id, yyyymmdd, hhmm):
+        # Get the action and basket
+        action = request.POST.get("action")
+        basket = request.user.basket
+        formset = None
+        buy_form = None
 
-        # Get show
-        show = get_object_or_404(Show, theatrefest_ID = theatrefest_id)
+        # Check for rename
+        if action == "Rename":
 
-        # Get performance
-        date = datetime.strptime(yyyymmdd, "%Y%m%d").date()
-        time = datetime.strptime(hhmm, "%H%M").time()
-        performance = get_object_or_404(Performance, show = show, date = date, time = time)
+            # Create fringer formset
+            formset = self._create_fringer_formset(request.user, request.POST)
 
-        # Show buy page
-        return redirect(reverse("tickets:buy", args = [performance.id]))
+            # Check for errors
+            if formset.is_valid():
+
+                # Save changes
+                for fringer in formset.save():
+                    logger.info("eFringer renamed to %s", fringer.name)
+                    messages.success(request, f"eFringer renamed to {fringer.name}")
+
+                # Reset formset
+                formset = None
+
+        # Check for buying
+        elif action == "Add":
+
+            # Get fringer types and create form
+            buy_form = self._create_buy_fringer_form(request.user, request.POST)
+
+            # Check for errors
+            if buy_form.is_valid():
+
+                # Get fringer type
+                buy_type = get_object_or_404(FringerType, pk = int(buy_form.cleaned_data['type']))
+                buy_name = buy_form.cleaned_data['name']
+                if not buy_name:
+                    fringer_count = Fringer.objects.filter(user = request.user).count()
+                    buy_name = f"eFringer{fringer_count + 1}"
+
+                # Create new fringer and add to basket
+                fringer = Fringer(
+                    user = request.user,
+                    name = buy_name if buy_name else buy_type.name,
+                    description = buy_type.description,
+                    shows = buy_type.shows,
+                    cost = buy_type.price,
+                    basket = basket,
+                )
+                fringer.save()
+                logger.info("eFringer %s (%s) added to basket", fringer.name, fringer.description)
+                messages.success(request, f"Fringer {fringer.name} ({fringer.description}) added to basket")
+
+                # Confirm purchase
+                return redirect(reverse('tickets:myaccount_confirm_fringers'))
+
+        # Get tickets grouped by performance
+        performances_current, performances_past = self._get_performances(request.user)
+
+        # Create formset and buy form if not already done
+        if not formset:
+            formset = self._create_fringer_formset(request.user)
+        if not buy_form:
+            buy_form = self._create_buy_fringer_form(request.user)
+
+        # Redisplay with confirmation
+        context = {
+            'sales_open': request.user.is_superuser or (date.today() >= date(2018, 6, 1)),
+            'tab': 'fringers',
+            'performances_current': performances_current,
+            'performances_past': performances_past,
+            'basket': basket,
+            'formset': formset,
+            'buy_form': buy_form,
+        }
+        return render(request, 'tickets/myaccount.html', context)
+
+
+class MyAccountConfirmFringersView(View):
+
+    def get(self, request):
+
+        # Render confirmation
+        context = {
+        }
+        return render(request, 'tickets/myaccount_confirm_fringers.html', context)
 
 
 class BuyView(LoginRequiredMixin, View):
@@ -126,6 +229,7 @@ class BuyView(LoginRequiredMixin, View):
 
         # Display buy page
         context = {
+            'sales_open': request.user.is_superuser or (date.today() >= date(2018, 6, 1)),
             'basket': basket,
             'performance': performance,
             'ticket_formset': ticket_formset,
@@ -182,19 +286,16 @@ class BuyView(LoginRequiredMixin, View):
                             logger.info("%d x %s tickets added to basket: %s", quantity, ticket_type, performance)
                             messages.success(request, f"{quantity} x {ticket_type} tickets added to basket.")
 
-                    # Remind user that eFringer tickets are not added to the basket
-                    messages.success(request, f"<b>These tickets are not confirmed until you have completed the checkout process</b>")
-
-                    # Reset ticket type formset
-                    ticket_formset = self.get_ticket_formset(ticket_types, None)
+                    # Confirm purchase
+                    return redirect(reverse('tickets:buy_confirm_tickets', args = [performance.id]))
 
                 # Insufficient tickets available
                 else:
                     logger.info("Tickets not available (%d requested, %d available): %s", tickets_requested, performance.tickets_available, performance)
                     messages.error(request, f"There are only {performance.tickets_available} tickets available for this perfromance.")
 
-                # Reset buy fringer form
-                buy_fringer_form = self.get_buy_fringer_form(request.user, fringer_types, None)
+            # Reset buy fringer form
+            buy_fringer_form = self.get_buy_fringer_form(request.user, fringer_types, None)
 
         # Use fringer credits
         elif action == "UseFringers":
@@ -206,25 +307,30 @@ class BuyView(LoginRequiredMixin, View):
                 # Process each checked fringer
                 for fringer_id in request.POST.getlist('fringer_id'):
 
-                    # Get fringer
+                    # Get fringer and double check that it has not been used for this performance
                     fringer = Fringer.objects.get(pk = int(fringer_id))
+                    if fringer.is_available(performance):
 
-                    # Create ticket
-                    ticket = Ticket(
-                        user = request.user,
-                        performance = performance,
-                        description = "eFringer",
-                        cost = 0,
-                        fringer = fringer,
-                    )
-                    ticket.save()
+                        # Create ticket
+                        ticket = Ticket(
+                            user = request.user,
+                            performance = performance,
+                            description = "eFringer",
+                            cost = 0,
+                            fringer = fringer,
+                        )
+                        ticket.save()
 
-                    # Confirm purchase
-                    logger.info("Ticket purchased with eFringer (%s): %s", fringer.name, performance)
-                    messages.success(request, f"Ticket purchased with eFringer {fringer.name}")
+                        # Confirm purchase
+                        logger.info("Ticket purchased with eFringer (%s): %s", fringer.name, performance)
+                        messages.success(request, f"Ticket purchased with eFringer {fringer.name}")
 
-                # Remind user that eFringer tickets are not added to the basket
-                messages.success(request, f"<b>These tickets are confirmed</b>")
+                    else:
+                        # Fringer already used for this performance
+                        logger.warn("eFringer (%s) already used: %s", fringer.name, performance)
+
+                # Confirm purchase
+                    return redirect(reverse('tickets:buy_confirm_fringer_tickets', args = [performance.id]))
 
             # Insufficient tickets available
             else:
@@ -264,11 +370,8 @@ class BuyView(LoginRequiredMixin, View):
                 logger.info("eFringer %s (%s) added to basket", fringer.name, fringer.description)
                 messages.success(request, f"Fringer {fringer.name} ({fringer.description}) added to basket")
 
-                # Remind user that eFringer vouchers cannot be used until paid for
-                messages.success(request, f"<b>This eFringer cannot be used to buy tickets until you have completed the checkout process</b>")
-
-                # Reset buy fringer form
-                buy_fringer_form = self.get_buy_fringer_form(request.user, fringer_types, None)
+                # Confirm purchase
+                return redirect(reverse('tickets:buy_confirm_fringers', args = [performance.id]))
 
             # Reset ticket formset
             ticket_formset = self.get_ticket_formset(ticket_types, None)
@@ -278,6 +381,7 @@ class BuyView(LoginRequiredMixin, View):
 
         # Display buy page
         context = {
+            'sales_open': request.user.is_superuser or (date.today() >= date(2018, 6, 1)),
             'basket': basket,
             'performance': performance,
             'ticket_formset': ticket_formset,
@@ -286,106 +390,53 @@ class BuyView(LoginRequiredMixin, View):
         }
         return render(request, "tickets/buy.html", context)
 
-class FringersView(LoginRequiredMixin, View):
 
-    def get(self, request):
+class BuyConfirmTicketsView(LoginRequiredMixin, View):
 
-        # Create fringer formset
-        FringerFormSet = modelformset_factory(Fringer, form = RenameFringerForm, extra = 0)
-        formset = FringerFormSet(queryset = Fringer.objects.filter(user = request.user, basket = None))
+    def get(self, request, performance_id):
 
-        # Get fringer types and create buy form
-        fringer_types = FringerType.objects.filter(is_online = True)
-        buy_form = BuyFringerForm(request.user, fringer_types)
-        buy_form.use_required_attribute = False
-        buy_form.helper = BuyFringerFormHelper()
-
-        # Display fringers
-        context = {
-            'basket': request.user.basket,
-            'formset': formset,
-            'buy_form': buy_form,
-        }
-        return render(request, "tickets/fringers.html", context)
-
-    @transaction.atomic
-    def post(self, request):
-
-        # Get the action and basket
-        action = request.POST.get("action")
+        # Get basket and performance
         basket = request.user.basket
-        formset = None
-        buy_form = None
+        performance = get_object_or_404(Performance, pk = performance_id)
 
-        # Check for rename
-        if action == "Rename":
-
-            # Create fringer formset
-            FringerFormSet = modelformset_factory(Fringer, form = RenameFringerForm, extra = 0)
-            formset = FringerFormSet(request.POST, queryset = Fringer.objects.filter(user = request.user, basket = None))
-
-            # Check for errors
-            if formset.is_valid():
-
-                # Save changes
-                for fringer in formset.save():
-                    logger.info("eFringer renamed to %s", fringer.name)
-                    messages.success(request, f"eFringer renamed to {fringer.name}")
-
-                # Reset formset
-                formset = None
-
-        # Check for buying
-        elif action == "Add":
-
-            # Get fringer types and create form
-            fringer_types = FringerType.objects.filter(is_online = True)
-            buy_form = BuyFringerForm(request.user, fringer_types, request.POST)
-
-            # Check for errors
-            if buy_form.is_valid():
-
-                # Get fringer type
-                buy_type = get_object_or_404(FringerType, pk = int(buy_form.cleaned_data['type']))
-                buy_name = buy_form.cleaned_data['name']
-                if not buy_name:
-                    fringer_count = Fringer.objects.filter(user = request.user).count()
-                    buy_name = f"eFringer{fringer_count + 1}"
-
-                # Create new fringer and add to basket
-                fringer = Fringer(
-                    user = request.user,
-                    name = buy_name if buy_name else buy_type.name,
-                    description = buy_type.description,
-                    shows = buy_type.shows,
-                    cost = buy_type.price,
-                    basket = basket,
-                )
-                fringer.save()
-                logger.info("eFringer %s (%s) added to basket", fringer.name, fringer.description)
-                messages.success(request, f"Fringer {fringer.name} ({fringer.description}) added to basket")
-
-                # Reset form
-                buy_form = None
-
-        # Create formset and form if not already done
-        if not formset:
-            FringerFormSet = modelformset_factory(Fringer, form = RenameFringerForm, extra = 0)
-            formset = FringerFormSet(queryset = Fringer.objects.filter(user = request.user, basket = None))
-        if not buy_form:
-            fringer_types = FringerType.objects.filter(is_online = True)
-            buy_form = BuyFringerForm(request.user, fringer_types)
-
-        # Add crispy forms helper to buy form
-        buy_form.helper = BuyFringerFormHelper()
-
-        # Redisplay with confirmation
+        # Display confirmation
         context = {
             'basket': basket,
-            'formset': formset,
-            'buy_form': buy_form,
+            'performance': performance,
         }
-        return render(request, "tickets/fringers.html", context)
+        return render(request, "tickets/buy_confirm_tickets.html", context)
+
+
+class BuyConfirmFringerTicketsView(LoginRequiredMixin, View):
+
+    def get(self, request, performance_id):
+
+        # Get basket and performance
+        basket = request.user.basket
+        performance = get_object_or_404(Performance, pk = performance_id)
+
+        # Display confirmation
+        context = {
+            'basket': basket,
+            'performance': performance,
+        }
+        return render(request, "tickets/buy_confirm_fringer_tickets.html", context)
+
+
+class BuyConfirmFringersView(LoginRequiredMixin, View):
+
+    def get(self, request, performance_id):
+
+        # Get basket and performance
+        basket = request.user.basket
+        performance = get_object_or_404(Performance, pk = performance_id)
+
+        # Display confirmation
+        context = {
+            'basket': basket,
+            'performance': performance,
+        }
+        return render(request, "tickets/buy_confirm_fringers.html", context)
 
 
 class CheckoutView(LoginRequiredMixin, View):
@@ -402,7 +453,6 @@ class CheckoutView(LoginRequiredMixin, View):
         }
         return render(request, "tickets/checkout.html", context)
 
-    @transaction.atomic
     def post(self, request):
 
         # Get basket
@@ -421,41 +471,56 @@ class CheckoutView(LoginRequiredMixin, View):
         else:
             # Complete purchase and charge credit card
             try:
-                # Create Stripe charge
-                stripe_token = request.POST.get("stripeToken")
-                charge = stripe.Charge.create(
-                    source = stripe_token,
-                    amount = basket.stripe_charge_pence,
-                    currency = "GBP",
-                    description = "Theatrefest tickets",
-                    receipt_email = basket.user.email
-                )
-                logger.info("Credit card charged £%.2f (%s)", basket.stripe_charge, stripe_token)
-                messages.success(request, f"Purchase complete. Your card has been charged £{basket.stripe_charge}.")
+                with transaction.atomic():
+                    # Create a new sale
+                    sale = Sale(
+                        user = request.user,
+                        customer = request.user.email,
+                        stripe_charge = basket.stripe_charge,
+                        completed = datetime.now(),
+                    )
+                    sale.save()
 
-                # Create a new sale
-                sale = Sale(
-                    user = request.user,
-                )
-                sale.save()
+                    # Complete purchase of fringers by removing them from the basket and adding them to the sale
+                    for fringer in basket.fringers.all():
+                        fringer.basket = None
+                        fringer.sale = sale
+                        fringer.save()
+                        logger.info("Purchase complete: eFringer (%s)", fringer.name)
 
-                # Complete purchase of fringers by removing them from the basket and adding them to the sale
-                for fringer in basket.fringers.all():
-                    fringer.basket = None
-                    fringer.sale = sale
-                    fringer.save()
-                    logger.info("Purchase complete: eFringer %s (%s)", fringer.name, fringer.description)
+                    # Complete purchase of tickets by removing them from the basket
+                    for ticket in basket.tickets.all():
+                        ticket.basket = None
+                        ticket.sale = sale
+                        ticket.save()
+                        logger.info("Purchase complete: %s ticket for %s", ticket.description, ticket.performance)
 
-                # Complete purchase of tickets by removing them from the basket
-                for ticket in basket.tickets.all():
-                    ticket.basket = None
-                    ticket.sale = sale
-                    ticket.save()
-                    logger.info("Purchase complete: %s ticket for %s", ticket.description, ticket.performance)
+                    # Create Stripe charge
+                    stripe_token = request.POST.get("stripeToken")
+                    charge = stripe.Charge.create(
+                        source = stripe_token,
+                        amount = int(sale.stripe_charge * 100),
+                        currency = "GBP",
+                        description = "Theatrefest tickets",
+                        receipt_email = basket.user.email
+                    )
+                    logger.info("Credit card charged GBP%.2f (%s)", sale.stripe_charge, stripe_token)
+                    messages.success(request, f"Purchase complete. Your card has been charged £{sale.stripe_charge}.")
 
             except stripe.error.CardError as ce:
                 logger.exception("Credit card charge failure")
                 return False, ce
+
+            # Send e-mail to confirm tickets
+            if sale.tickets:
+                context = {
+                    'tickets': sale.tickets.order_by('performance__date', 'performance__time', 'performance__show__name')
+                }
+                body = render_to_string('tickets/sale_email.txt', context)
+                send_mail('Theatrfest 2018', body, settings.DEFAULT_FROM_EMAIL, [self.request.user.email])
+
+            # Confirm checkout
+            return redirect(reverse('tickets:checkout_confirm', args = [sale.id]))
 
         # Redisplay checkout
         context = {
@@ -465,7 +530,7 @@ class CheckoutView(LoginRequiredMixin, View):
         return render(request, "tickets/checkout.html", context)
 
 
-class RemoveFringerView(LoginRequiredMixin, View):
+class CheckoutRemoveFringerView(LoginRequiredMixin, View):
 
     @transaction.atomic
     def get(self, request, fringer_id):
@@ -483,7 +548,7 @@ class RemoveFringerView(LoginRequiredMixin, View):
         return redirect(reverse("tickets:checkout"))
 
 
-class RemovePerformanceView(LoginRequiredMixin, View):
+class CheckoutRemovePerformanceView(LoginRequiredMixin, View):
 
     @transaction.atomic
     def get(self, request, performance_id):
@@ -502,7 +567,7 @@ class RemovePerformanceView(LoginRequiredMixin, View):
         return redirect(reverse("tickets:checkout"))
 
 
-class RemoveTicketView(LoginRequiredMixin, View):
+class CheckoutRemoveTicketView(LoginRequiredMixin, View):
 
     @transaction.atomic
     def get(self, request, ticket_id):
@@ -520,6 +585,20 @@ class RemoveTicketView(LoginRequiredMixin, View):
         return redirect(reverse("tickets:checkout"))
 
 
+class CheckoutConfirmView(View):
+
+    def get(self, request, sale_id):
+
+        # Get sale
+        sale = get_object_or_404(Sale, pk = sale_id)
+
+        # Render confirmation
+        context = {
+            'sale': sale,
+        }
+        return render(request, 'tickets/checkout_confirm.html', context)
+
+
 class CancelTicketView(LoginRequiredMixin, View):
 
     @transaction.atomic
@@ -535,6 +614,22 @@ class CancelTicketView(LoginRequiredMixin, View):
 
         # Redisplay tickets
         return redirect(reverse("tickets:show"))
+
+    
+class TheatrefestBuyView(LoginRequiredMixin, View):
+
+    def get(self, request, theatrefest_id, yyyymmdd, hhmm):
+
+        # Get show
+        show = get_object_or_404(Show, theatrefest_ID = theatrefest_id)
+
+        # Get performance
+        date = datetime.strptime(yyyymmdd, "%Y%m%d").date()
+        time = datetime.strptime(hhmm, "%H%M").time()
+        performance = get_object_or_404(Performance, show = show, date = date, time = time)
+
+        # Show buy page
+        return redirect(reverse("tickets:buy", args = [performance.id]))
 
 
 class PrintPerformanceView(LoginRequiredMixin, View):

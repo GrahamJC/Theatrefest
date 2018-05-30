@@ -141,6 +141,7 @@
     <Content Include="static\bootstrap\js\bootstrap.min.js" />
     <Content Include="static\bootstrap\js\npm.js" />
     <Content Include="static\BridgeBanner.png" />
+    <Content Include="static\facebook.png" />
     <Content Include="static\font-awesome-4.7.0\css\font-awesome.css" />
     <Content Include="static\font-awesome-4.7.0\css\font-awesome.min.css" />
     <Content Include="static\font-awesome-4.7.0\fonts\fontawesome-webfont.eot" />
@@ -178,8 +179,11 @@
     <Content Include="static\font-awesome-4.7.0\scss\_screen-reader.scss" />
     <Content Include="static\font-awesome-4.7.0\scss\_stacked.scss" />
     <Content Include="static\font-awesome-4.7.0\scss\_variables.scss" />
+    <Content Include="static\instagram.png" />
     <Content Include="static\jquery\jquery-3.2.1.min.js" />
     <Content Include="static\moment\moment.min.js" />
+    <Content Include="static\twitter.png" />
+    <Content Include="static\VenueMap.png" />
     <Content Include="static\_tickets.scss" />
     <Content Include="static\_program.scss" />
     <Content Include="static\styles.css">
@@ -197,6 +201,7 @@
     <Content Include="templates\program\schedule.html" />
     <Content Include="templates\program\shows.html" />
     <Content Include="templates\program\show_detail.html" />
+    <Content Include="templates\program\theatrefest.html" />
     <Content Include="templates\program\venues_venue.html" />
     <Content Include="templates\program\venues.html" />
     <Content Include="templates\program\venue_detail.html" />
@@ -229,10 +234,16 @@
     <Content Include="templates\registration\registration_form.html" />
     <Content Include="templates\registration\resend_activation_complete.html" />
     <Content Include="templates\registration\resend_activation_form.html" />
-    <Content Include="templates\tickets\show.html" />
+    <Content Include="templates\tickets\buy_confirm_fringers.html" />
+    <Content Include="templates\tickets\buy_confirm_fringer_tickets.html" />
+    <Content Include="templates\tickets\buy_confirm_tickets.html" />
+    <Content Include="templates\tickets\checkout_confirm.html" />
+    <Content Include="templates\tickets\faqs.html" />
+    <Content Include="templates\tickets\myaccount.html" />
+    <Content Include="templates\tickets\myaccount_confirm_fringers.html" />
+    <Content Include="templates\tickets\sale_email.txt" />
     <Content Include="templates\tickets\checkout.html" />
     <Content Include="templates\tickets\buy.html" />
-    <Content Include="templates\tickets\fringers.html" />
     <Content Include="tickets\__pycache__\admin.cpython-36.pyc" />
     <Content Include="tickets\__pycache__\apps.cpython-36.pyc" />
     <Content Include="tickets\__pycache__\forms.cpython-36.pyc" />

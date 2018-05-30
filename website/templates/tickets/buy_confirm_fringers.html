@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load tf_filters %}
+{% load crispy_forms_tags %}
+
+{% block pagetitle %}thankyou{% endblock %}
+
+{% block content %}
+
+    <div id="tf-tickets-confirm">
+
+        <div class="row">
+            <div class="col-xs-12">
+                <p>You have added eFringer Vouchers to your basket.</p>
+                <p><b>These vouchers cannot be used to buy tickets for a performance until they have been paid for through the checkout.</b></p>
+                <p>What would you like to do next?</p>
+                <ul>
+                    <li><a href="{% url 'tickets:checkout' %}">Go to the checkout</a></li>
+                    <li><a href="{% url 'tickets:buy' performance.id %}">Buy tickets for {{ performance.show.name }} on {{ performance.date|date:'D, j M' }} at {{ performance.time|time:'P' }}</a></li>
+                    <li><a href="{% url 'program:shows' %}">Find another show</a></li>
+                    <li><a href="{% url 'tickets:myaccount' %}">Manage my account</a></li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

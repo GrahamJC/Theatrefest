@@ -5,6 +5,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     'theatrefest.ukwest.cloudapp.azure.com',
+    'tickets.theatrefest.co.uk',
 ]
 
 INTERNAL_IPS = [

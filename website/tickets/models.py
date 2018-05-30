@@ -13,6 +13,7 @@ class Sale(TimeStampedModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.PROTECT, related_name = 'sales')
     customer = models.CharField(max_length = 64, blank = True, default = '')
     buttons = models.IntegerField(blank = True, default = 0)
+    stripe_charge = models.DecimalField(blank = True, default = 0, max_digits = 4, decimal_places = 2)
     completed = models.DateTimeField(null = True, blank = True)
 
     @property
@@ -34,6 +35,10 @@ class Sale(TimeStampedModel):
     @property
     def total_cost(self):
         return self.button_cost + self.fringer_cost + self.ticket_cost
+
+    @property
+    def stripe_fee(self):
+        return self.stripe_charge - self.total_cost if self.stripe_charge else 0
 
     @property
     def performances(self):
@@ -96,10 +101,6 @@ class Basket(TimeStampedModel):
     @property
     def stripe_charge(self):
         return ((self.total_cost + settings.STRIPE_FEE_FIXED) / (1 - settings.STRIPE_FEE_PERCENT)).quantize(Decimal('.01'), rounding = ROUND_05UP)
-
-    @property
-    def stripe_charge_pence(self):
-        return int(self.stripe_charge * 100)
 
     @property
     def stripe_fee(self):

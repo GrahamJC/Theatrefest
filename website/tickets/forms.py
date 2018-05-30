@@ -48,7 +48,7 @@ class BuyFringerForm(forms.Form):
 
         # Add fields
         self.fields['type'] = forms.ChoiceField(label = "Type", choices = fringer_choices, initial = [fringer_choices[0][0]])
-        self.fields['name'] = forms.CharField(label = "Name", max_length = 32, required = False, help_text = "Keep track of your eFringers by giving each a name.")
+        self.fields['name'] = forms.CharField(label = "Name", max_length = 32, required = False, help_text = "Keep track of your eFringer Vouchers by giving each a name.")
 
     def clean_name(self):
         name = self.cleaned_data['name']

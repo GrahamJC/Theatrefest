@@ -344,6 +344,9 @@ body {
         text-decoration: line-through;
         color: darkgrey; }
 
+#tf-tickets-myaccount .tab-content {
+  margin-top: 15px; }
+
 #tf-tickets-buy .tab-content {
   margin-top: 15px; }
 

@@ -12,4 +12,5 @@ urlpatterns = [
     path('schedule_pdf', views.SchedulePdfView.as_view(), name = 'schedule_pdf'),
     path('venue', views.VenuesView.as_view(), name = 'venues'),
     path('venue/<int:venue_id>', views.VenueDetailView.as_view(), name = 'venue_detail'),
+    path('theatrefest/<str:name>', views.TheatrefestView.as_view(), name = 'theatrefest'),
 ]

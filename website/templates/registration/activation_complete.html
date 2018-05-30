@@ -1,17 +1,14 @@
 {% extends "registration/registration_base.html" %}
-{% load i18n %}
 
-{% block title %}{% trans "Registration Compelte" %}{% endblock %}
+{% block title %}Registration Compelte{% endblock %}
 
-{% block pagetitle %}{% trans "Registration Compelte" %}{% endblock %}
+{% block pagetitle %}Registration Compelte{% endblock %}
 
 {% block content %}
 
-    <p>
-        {% trans "Your account is now activated." %}
-        {% if not user.is_authenticated %}
-            {% trans "You can log in." %}
-        {% endif %}
-    </p>
+    <p>Your account is now activated and you can buy tickets online.</p>
+    <div class="tf-actions">
+        <a class="btn btn-primary" href="{% url 'program:shows' %}">Find a Show</a>
+    </div>
 
 {% endblock %}

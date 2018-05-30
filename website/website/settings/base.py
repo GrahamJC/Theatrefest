@@ -116,10 +116,12 @@ MEDIA_URL = "/media/"
 # Crispy forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
+# e-mail
+DEFAULT_FROM_EMAIL = "noreply@theatrefest.co.uk"
+
 # Registration
 ACCOUNT_ACTIVATION_DAYS = 7
 REGISTRATION_AUTO_LOGIN = True
-REGISTRATION_DEFAULT_FROM_EMAIL = "noreply@theatrefest.co.uk"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 

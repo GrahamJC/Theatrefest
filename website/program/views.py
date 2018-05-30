@@ -3,7 +3,7 @@ import os
 from django.db.models import Q
 from django.db.models.functions import Lower
 from django.conf import settings
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.template import Template, Context
 from django.views import View
 from django.urls import reverse
@@ -184,11 +184,25 @@ class VenueDetailView(View):
     def get(self, request, venue_id):
 
         venue = get_object_or_404(Venue, pk = venue_id)
-        context ={
+        context = {
             'venue': venue,
             'shows': venue.shows.order_by(Lower('name')),
         }
         return render(request, 'program/venue_detail.html', context)
+
+
+class TheatrefestView(View):
+
+    def get(self, request, name):
+        urls = {
+            'home': r'http://theatrefest.co.uk/index.htm',
+            'tickets': r'http://theatrefest.co.uk/18/booking.htm',
+            'performers': r'http://theatrefest.co.uk/performers.htm',
+            'volunteers': r'http://theatrefest.co.uk/volunteers.htm',
+            'contacts': r'http://theatrefest.co.uk/contacts.htm',
+        }
+        return redirect(urls[name])
+
 
 from django.http import HttpResponse
 

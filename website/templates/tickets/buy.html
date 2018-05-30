@@ -30,29 +30,33 @@
                             <div class="panel panel-default">
                                 <div class="panel-heading"><h4 class="panel-title">Buy Tickets</h4></div>
                                 <div class="panel-body">
-                                    <form class="form-inline" method="post">
-                                        {% csrf_token %}
-                                        {{ ticket_formset.management_form }}
-                                        <table class="table table-striped">
-                                            {% for form in ticket_formset.forms %}
-                                                <tr>
-                                                    <td>{{ form.id }}<p class="form-control-static">{{ form.name.value }}</p></td>
-                                                    <td><p class="form-control-static">&#163;{{ form.price.value|floatformat }}</p></td>
-                                                    <td>{{ form.quantity|add_css_class:'form-control' }}</td>
-                                                </tr>
-                                            {% endfor %}
-                                        </table>
-                                        <div class="tf-actions">
-                                            <button type="submit" class="btn btn-primary" name="action" value="BuyTickets">Add to Basket</button>
-                                        </div>
-                                    </form>
+                                    {% if sales_open %}
+                                        <form class="form-inline" method="post">
+                                            {% csrf_token %}
+                                            {{ ticket_formset.management_form }}
+                                            <table class="table table-striped">
+                                                {% for form in ticket_formset.forms %}
+                                                    <tr>
+                                                        <td>{{ form.id }}<p class="form-control-static">{{ form.name.value }}</p></td>
+                                                        <td><p class="form-control-static">&#163;{{ form.price.value|floatformat }}</p></td>
+                                                        <td>{{ form.quantity|add_css_class:'form-control' }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </table>
+                                            <div class="tf-actions">
+                                                <button type="submit" class="btn btn-primary" name="action" value="BuyTickets">Add to Basket</button>
+                                            </div>
+                                        </form>
+                                    {% else %}
+                                        Tickets will be on sale from Friday, June 1st.
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-sm-6">
                             <div class="well">
                                 <ul>
-                                    <li>Tickets added to your basket but are not confirmed until they have been paid for at the checkout.</li>
+                                    <li>Tickets are added to your basket but are not confirmed until they have been paid for at the checkout.</li>
                                     <li>A booking fee of 1.4% plus 20p will be added to your total when you checkout.</li>
                                     <li>You can add tickets for multiple performances and pay for them all together to minimise the total booking fee.</li>
                                 </ul>
@@ -70,7 +74,7 @@
                                     {% if fringers %}
                                         <form method="post">
                                             {% csrf_token %}
-                                            <p><i>eFringers that have already been used for this performance are not shown below because an eFringer can only be used to buy one ticket per performance.</i></p>
+                                            <p><i>eFringer Vouchers that have already been used for this performance are not shown below because each eFringer Voucher can only be used to buy one ticket per performance.</i></p>
                                             <table class="table table-striped">
                                                 {% for fringer in fringers %}
                                                     <tr>
@@ -80,118 +84,52 @@
                                                 {% endfor %}
                                             </table>
                                             <div class="tf-actions">
-                                                <button type="submit" class="btn btn-primary" name="action" value="UseFringers">Use eFringers</button>
+                                                <button type="submit" class="btn btn-primary" name="action" value="UseFringers">Confirm</button>
                                             </div>
                                         </form>
                                     {% else %}
                                         <p>You do not have any eFringer credits available for this performance.</p>
-                                        <p><i>eFringers that have already been used for this performance are not available because an eFringer can only be used to buy one ticket per performance.</i></p>
+                                        <p><i>eFringer Vouchers that have already been used for this performance are not shown because each eFringer Voucher can only be used to buy one ticket per performance.</i></p>
                                     {% endif %}
                                 </div>
                             </div>
                             <div class="panel panel-default">
                                 <div class="panel-heading"><h4 class="panel-title">Buy eFringer Vouchers</h4></div>
                                 <div class="panel-body">
-                                    <form class="form-horizontal" method="POST">
-                                        {% crispy buy_fringer_form %}
-                                        <div class="tf-actions">
-                                            <button type="submit" class="btn btn-primary" name="action" value="BuyFringers">Add to Basket</button>
-                                        </div>
-                                    </form>
+                                    {% if sales_open %}
+                                        <form class="form-horizontal" method="POST">
+                                            {% crispy buy_fringer_form %}
+                                            <div class="tf-actions">
+                                                <button type="submit" class="btn btn-primary" name="action" value="BuyFringers">Add to Basket</button>
+                                            </div>
+                                        </form>
+                                    {% else %}
+                                        eFringers Vouchers will be on sale from Friday, June 1st.
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-sm-6">
                             <div class="well">
                                 <ul>
-                                    <li>Buy an eFringer voucher and use it to buy tickets for several shows at a reduced price.</li>
-                                    <li>Each eFringer can only be used to purchase one ticket per performance.</li>
-                                    <li>An eFringer voucher cannot be used to buy tickets until it has been paid for at the checkout.</li>
-                                    <li>If you have more than one eFringer voucher you can give each one a name to make them easier to keep track of.</li>
+                                    <li>Buy an eFringer Voucher and use it to buy tickets for 6 different performances at a reduced price.</li>
+                                    <li>Each eFringer Voucher can only be used to purchase one ticket per performance.</li>
+                                    <li>An eFringer Voucher cannot be used to buy tickets until it has been paid for at the checkout.</li>
+                                    <li>If you have more than one eFringer Voucher you can give each one a name to make them easier to keep track of.</li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="tf-faqs-tab" class="tab-pane">
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div id="tf-faq-accordion" class="panel-group">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading"><h4 class="panel-title"><a href="#tf-faq-when" data-toggle="collapse" data-parent="#tf-faq-accordion">When can I buy tickets?</a></h4></div>
-                                    <div id="tf-faq-when" class="panel-collapse collapse">
-                                        <div class="panel-body">
-                                            <p>
-                                                You can buy tickets online until 30 minutes before the performance starts.
-                                                After that time you can only buy tickets at the venue.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="panel panel-default">
-                                    <div class="panel-heading"><h4 class="panel-title"><a href="#tf-faq-pay" data-toggle="collapse" data-parent="#tf-faq-accordion">How can I pay for tickets?</a></h4></div>
-                                    <div id="tf-faq-pay" class="panel-collapse collapse">
-                                        <div class="panel-body">
-                                            <p>
-                                                Tickets bought online must be paid for using a credit card and all transactions are subject to a booking fee of 1.4% plus 20p.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="panel panel-default">
-                                    <div class="panel-heading"><h4 class="panel-title"><a href="#tf-faq-fringer" data-toggle="collapse" data-parent="#tf-faq-accordion">What are eFringers and how do they work?</a></h4></div>
-                                    <div id="tf-faq-fringer" class="panel-collapse collapse">
-                                        <div class="panel-body">
-                                            <p>
-                                                An eFringer voucher can be used to buy tickets for several shows at a discounted price.
-                                                For example, a "6 shows for &#163;18" eFringer costs &#163;18 and can be used to buy tickets for 6 different shows (&#163;3 per show).
-                                            </p>
-                                            <ul>
-                                                <li>eFringer vouchers can only be bought and redeemed online (you cannot use an eFringer to buy a ticket at a box office).</li>
-                                                <li>Each eFringer can only be used to buy one ticket per performance.</li>
-                                                <li>Select the My Fringers option in "my account" to manage your eFringers.</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="panel panel-default">
-                                    <div class="panel-heading"><h4 class="panel-title"><a href="#tf-faq-tickets" data-toggle="collapse" data-parent="#tf-faq-accordion">How will I get my tickets once I have bought them?</a></h4></div>
-                                    <div id="tf-faq-tickets" class="panel-collapse collapse">
-                                        <div class="panel-body">
-                                            <p>
-                                                You will receive an e-mail containing details of all tickets bought online.
-                                                You can print this e-mail and take it to the venue or simply display the e-mail on a mobile device.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="panel panel-default">
-                                    <div class="panel-heading"><h4 class="panel-title"><a href="#tf-faq-cancel" data-toggle="collapse" data-parent="#tf-faq-accordion">Can I cancel tickets?</a></h4></div>
-                                    <div id="tf-faq-cancel" class="panel-collapse collapse">
-                                        <div class="panel-body">
-                                            <p>
-                                                Tickets bought using a credit card cannot be cancelled.
-                                            </p>
-                                            <p>
-                                                Tickets bought using an eFringer voucher can be cancelled until 30 minutes before the performance begins.
-                                                Select the My Tickets option in "my account" to manage your tickets.
-                                            </p>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% include 'tickets/faqs.html' %}
 
             </div>
 
         {% else %}
 
             <div class="row">
-                <div class="col-xs-12 col-sm-6">
+                <div class="col-xs-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">Sold Out</div>
                         <div class="panel-body">

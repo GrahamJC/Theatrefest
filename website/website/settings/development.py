@@ -19,8 +19,8 @@ DATABASES = {
         'NAME': 'theatrefest',
         'USER': 'theatrefest',
         'PASSWORD': 'barnum',
-        'HOST': 'localhost',
- #       'HOST': 'theatrefest.ukwest.cloudapp.azure.com',
+#        'HOST': 'localhost',
+        'HOST': 'theatrefest.ukwest.cloudapp.azure.com',
         'PORT': '5432',
     },
 }

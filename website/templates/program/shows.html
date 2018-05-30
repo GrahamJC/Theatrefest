@@ -39,7 +39,13 @@
                         <div class="col-xs-8 col-md-9">
                             <div class="tf-show-name">{{ show.name }}</div>
                             <div class="tf-company-name">{{ show.company.name }}</div>
-                            <div class="description">{{ show.list_short_description | linebreaks }}</div>
+                            <div class="description">
+                                {% if show.replaced_by %}
+                                    CHANGE TO BROCHURE: this show is cancelled and replaced by {{ show.replaced_by.company.name }} performing <a href="{% url 'program:show_detail' show.replaced_by.id %}">{{ show.replaced_by.name }}</a>.
+                                {% else %}
+                                    CHANGE TO BROCHURE: this show is cancelled.
+                                {% endif %}
+                            </div>
                             <div class="info1">
                                 <span class="venue">{{ show.venue.name }}</span>
                                 <span class="days">

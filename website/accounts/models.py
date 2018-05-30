@@ -40,8 +40,8 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(unique=True, null=True)
-    first_name = models.CharField(blank=True, max_length=30, verbose_name='first name')
-    last_name = models.CharField(blank=True, max_length=30, verbose_name='last name')
+    first_name = models.CharField(blank=True, default = '', max_length=30, verbose_name='first name')
+    last_name = models.CharField(blank=True, default = '', max_length=30, verbose_name='last name')
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
@@ -54,6 +54,11 @@ class User(AbstractBaseUser, PermissionsMixin):
             'Designates whether this user should be treated as active. '
             'Unselect this instead of deleting accounts.'
         ),
+    )
+    is_survey = models.BooleanField(
+        _('e-mail survey'),
+        default=False,
+        help_text=_('Designates whether this user can be surveyed by e-mail.'),
     )
     date_joined  = models.DateTimeField(_("date joined"), default = timezone.now)
 

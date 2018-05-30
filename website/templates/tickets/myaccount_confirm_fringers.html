@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load tf_filters %}
+
+{% block pagetitle %}thankyou{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-xs-12">
+            <p>You have added eFringer Vouchers to your basket.</p>
+            <p><b>These vouchers cannot be used to buy tickets for a performance until they have been paid for through the checkout.</b></p>
+            <p>What would you like to do next?</p>
+            <ul>
+                <li><a href="{% url 'tickets:checkout' %}">Go to the checkout</a></li>
+                <li><a href="{% url 'tickets:myaccount' %}">Return to my account</a></li>
+                <li><a href="{% url 'program:shows' %}">Find a show</a></li>
+            </ul>
+        </div>
+    </div>
+
+{% endblock %}

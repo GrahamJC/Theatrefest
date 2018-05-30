@@ -23,7 +23,9 @@ class UserCreationForm(forms.ModelForm):
         strip=False,
         help_text=_("Enter the same password as before, for verification."),
     )
-
+    is_survey = forms.BooleanField(
+        label = "I agree to take part in an e-mail survey.",
+    )
 
     class Meta:
         model = User
@@ -66,7 +68,7 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None                , {'fields': ('email', 'password')}),
         (_('Personal info')  , {'fields': ('first_name', 'last_name',)}),
-        (_('Permissions')    , {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        (_('Permissions')    , {'fields': ('is_active', 'is_staff', 'is_superuser', 'is_survey', 'groups', 'user_permissions')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin

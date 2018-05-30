@@ -299,7 +299,7 @@ class SalePrintView(LoginRequiredMixin, View):
         story.append(table)
         story.append(Spacer(1, 1*cm))
 
-        # Buttons
+        # Buttons and fringers
         if sale.buttons or sale.fringers.count():
             tableData = []
             if sale.buttons:
@@ -324,8 +324,7 @@ class SalePrintView(LoginRequiredMixin, View):
                 story.append(Spacer(1, 0.5*cm))
             is_first = False
             tableData = []
-            tableData.append((Paragraph(f"<para><b>{performance['show']}</b></para>", styles['Normal']), "", "", ""))
-            tableData.append((f"{performance['date']:%a, %e %b} at {performance['time']:%I:%M %p}", "", "", ""))
+            tableData.append((Paragraph(f"<para>{performance['date']:%a, %e %b} at {performance['time']:%I:%M %p} - <b>{performance['show']}</b></para>", styles['Normal']), "", "", ""))
             for ticket in performance['tickets']:
                 tableData.append((f"{ticket['id']}", "", ticket['description'], f"£{ticket['cost']}"))
             table = Table(
@@ -334,9 +333,8 @@ class SalePrintView(LoginRequiredMixin, View):
                 hAlign = 'LEFT',
                 style = (
                     ('SPAN', (0, 0), (3, 0)),
-                    ('SPAN', (0, 1), (3, 1)),
-                    ('ALIGN', (0, 2), (0, -1), 'RIGHT'),
-                    ('ALIGN', (3, 2), (3, -1), 'RIGHT'),
+                    ('ALIGN', (0, 1), (0, -1), 'RIGHT'),
+                    ('ALIGN', (3, 1), (3, -1), 'RIGHT'),
                 )
             )
             story.append(table)
