@@ -19,13 +19,6 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
 from crispy_forms.bootstrap import FormActions, StrictButton, FieldWithButtons
 
-from reportlab.pdfgen.canvas import Canvas
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.pagesizes import A4, portrait
-from reportlab.lib.units import cm
-from reportlab.lib import colors
-
 from .models import Sale, Basket, FringerType, Fringer, TicketType, Ticket
 from .forms import BuyTicketForm, RenameFringerForm, BuyFringerForm
 from program.models import Show, Performance
@@ -204,7 +197,8 @@ class BuyView(LoginRequiredMixin, View):
         initial_data = [{'id': t.id, 'name': t.name, 'price': t.price, 'quantity': 0} for t in ticket_types]
         return TicketFormset(post_data, initial = initial_data)
 
-    def get_buy_fringer_form(self, user, fringer_types, post_data):
+    def _create_buy_fringer_form(self, user, post_data):
+        fringer_types = FringerType.objects.filter(is_online = True)
         form = BuyFringerForm(user, fringer_types, post_data)
         form.use_required_attribute = False
         form.helper = BuyFringerFormHelper()
@@ -216,7 +210,6 @@ class BuyView(LoginRequiredMixin, View):
         basket = request.user.basket
         performance = get_object_or_404(Performance, pk = performance_id)
         ticket_types = TicketType.objects.filter(is_online = True)
-        fringer_types = FringerType.objects.filter(is_online = True)
 
         # Create buy ticket formset
         ticket_formset = self.get_ticket_formset(ticket_types, None)
@@ -225,10 +218,11 @@ class BuyView(LoginRequiredMixin, View):
         fringers = Fringer.get_available(request.user, performance)
 
         # Create buy fringer form
-        buy_fringer_form = self.get_buy_fringer_form(request.user, fringer_types, None)
+        buy_fringer_form = self._create_buy_fringer_form(request.user, None)
 
         # Display buy page
         context = {
+            'tab': 'tickets',
             'sales_open': request.user.is_superuser or (date.today() >= date(2018, 6, 1)),
             'basket': basket,
             'performance': performance,
@@ -245,10 +239,10 @@ class BuyView(LoginRequiredMixin, View):
         basket = request.user.basket
         performance = get_object_or_404(Performance, pk = performance_id)
         ticket_types = TicketType.objects.filter(is_online = True)
-        fringer_types = FringerType.objects.filter(is_online = True)
 
         # Get the requested action
         action = request.POST.get("action")
+        tab = None
 
         # Buy tickets
         if action == "BuyTickets":
@@ -295,7 +289,8 @@ class BuyView(LoginRequiredMixin, View):
                     messages.error(request, f"There are only {performance.tickets_available} tickets available for this perfromance.")
 
             # Reset buy fringer form
-            buy_fringer_form = self.get_buy_fringer_form(request.user, fringer_types, None)
+            buy_fringer_form = self._create_buy_fringer_form(request.user, None)
+            tab = 'tickets',
 
         # Use fringer credits
         elif action == "UseFringers":
@@ -339,13 +334,14 @@ class BuyView(LoginRequiredMixin, View):
 
             # Reset ticket formset and buy fringer form
             ticket_formset = self.get_ticket_formset(ticket_types, None)
-            buy_fringer_form = self.get_buy_fringer_form(request.user, fringer_types, None)
+            buy_fringer_form = self._create_buy_fringer_form(request.user, None)
+            tab = 'fringers',
 
         # Buy fringer vouchers
         elif action == "BuyFringers":
 
             # Create buy fringer form
-            buy_fringer_form = BuyFringerForm(request.user, fringer_types, request.POST)
+            buy_fringer_form = self._create_buy_fringer_form(request.user, request.POST)
 
             # Check for errors
             if buy_fringer_form.is_valid():
@@ -375,12 +371,14 @@ class BuyView(LoginRequiredMixin, View):
 
             # Reset ticket formset
             ticket_formset = self.get_ticket_formset(ticket_types, None)
+            tab = 'fringers',
 
         # Get fringers available for this performance
         fringers = Fringer.get_available(request.user, performance)
 
         # Display buy page
         context = {
+            'tab': 'fringers',
             'sales_open': request.user.is_superuser or (date.today() >= date(2018, 6, 1)),
             'basket': basket,
             'performance': performance,
@@ -630,6 +628,128 @@ class TheatrefestBuyView(LoginRequiredMixin, View):
 
         # Show buy page
         return redirect(reverse("tickets:buy", args = [performance.id]))
+
+
+# PDF generation
+import os
+from django.conf import settings
+from reportlab.pdfgen.canvas import Canvas
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.pagesizes import A4, portrait
+from reportlab.lib.units import cm
+from reportlab.lib import colors
+
+
+class PrintSaleView(LoginRequiredMixin, View):
+
+    def get(self, request, sale_id):
+
+        # Get sale to be printed
+        sale = get_object_or_404(Sale, pk = sale_id)
+
+        # Create receipt as a Platypus story
+        response = HttpResponse(content_type = "application/pdf")
+        response["Content-Disposition"] = f"attachment; filename=sale{sale.id}.pdf"
+        doc = SimpleDocTemplate(
+            response,
+            pagesize = portrait(A4),
+            leftMargin = 2.5*cm,
+            rightMargin = 2.5*cm,
+            topMargin = 2.5*cm,
+            bottomMargin = 2.5*cm,
+        )
+        styles = getSampleStyleSheet()
+        story = []
+
+        # Theatrefest banner
+        banner = Image(os.path.join(settings.STATIC_ROOT, "BridgeBanner.png"), width = 16*cm, height = 4*cm)
+        banner.hAlign = 'CENTER'
+        story.append(banner)
+        story.append(Spacer(1, 1*cm))
+
+        # Customer and sale number
+        table = Table(
+            (
+                (Paragraph("<para><b>Customer:</b></para>", styles['Normal']), sale.customer),
+                (Paragraph("<para><b>Sale no:</b></para>", styles['Normal']), sale.id),
+            ),
+            colWidths = (4*cm, 12*cm),
+            hAlign = 'LEFT'
+        )
+        story.append(table)
+        story.append(Spacer(1, 0.5*cm))
+
+        # Fringers
+        if sale.fringers.count():
+            tableData = []
+            for fringer in sale.fringers.all():
+                tableData.append(("eFringer", fringer.name, fringer.description, f"£{fringer.cost}"))
+                table = Table(
+                    tableData,
+                    colWidths = (4*cm, 4*cm, 4*cm, 4*cm),
+                    hAlign = 'LEFT',
+                    style = (
+                        ('ALIGN', (3, 0), (3, -1), 'RIGHT'),
+                    )
+                )
+            story.append(table)
+            story.append(Spacer(1, 0.5*cm))
+
+        # Tickets
+        if sale.tickets:
+            is_first = True
+            for performance in sale.performances:
+                if not is_first:
+                    story.append(Spacer(1, 0.3*cm))
+                is_first = False
+                tableData = []
+                tableData.append((Paragraph(f"<para>{performance['date']:%a, %e %b} at {performance['time']:%I:%M %p} - <b>{performance['show']}</b></para>", styles['Normal']), "", "", ""))
+                for ticket in performance['tickets']:
+                    tableData.append((f"{ticket['id']}", "", ticket['description'], f"£{ticket['cost']}"))
+                table = Table(
+                    tableData,
+                    colWidths = (4*cm, 4*cm, 4*cm, 4*cm),
+                    hAlign = 'LEFT',
+                    style = (
+                        ('SPAN', (0, 0), (3, 0)),
+                        ('ALIGN', (0, 1), (0, -1), 'RIGHT'),
+                        ('ALIGN', (3, 1), (3, -1), 'RIGHT'),
+                    )
+                )
+                story.append(table)
+            story.append(Spacer(1, 0.5*cm))
+
+        # Stripe fee
+        table = Table(
+            (
+                ("", Paragraph("<para><b>Card fee:</b></para>", styles['Normal']), f"£{sale.stripe_fee}"),
+            ),
+            colWidths = (8*cm, 4*cm, 4*cm),
+            hAlign = 'LEFT',
+            style = (
+                ('ALIGN', (2, 0), (2, 0), 'RIGHT'),
+            )
+        )
+        story.append(table)
+        story.append(Spacer(1, 0.5*cm))
+
+        # Total
+        table = Table(
+            (
+                ("", Paragraph("<para><b>Total:</b></para>", styles['Normal']), f"£{sale.stripe_charge}"),
+            ),
+            colWidths = (8*cm, 4*cm, 4*cm),
+            hAlign = 'LEFT',
+            style = (
+                ('ALIGN', (2, 0), (2, 0), 'RIGHT'),
+            )
+        )
+        story.append(table)
+
+        # Create PDF document and return it
+        doc.build(story)
+        return response
 
 
 class PrintPerformanceView(LoginRequiredMixin, View):

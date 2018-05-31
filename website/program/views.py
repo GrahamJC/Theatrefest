@@ -14,6 +14,7 @@ from crispy_forms.layout import Submit
 from .models import Show, Venue, Performance
 from .forms import SearchForm
 
+
 def home(request):
     return render(request, 'program/home.html', {})
 
@@ -195,11 +196,11 @@ class TheatrefestView(View):
 
     def get(self, request, name):
         urls = {
-            'home': r'http://theatrefest.co.uk/index.htm',
-            'tickets': r'http://theatrefest.co.uk/18/booking.htm',
-            'performers': r'http://theatrefest.co.uk/performers.htm',
-            'volunteers': r'http://theatrefest.co.uk/volunteers.htm',
-            'contacts': r'http://theatrefest.co.uk/contacts.htm',
+            'home': r'https://theatrefest.co.uk/index.htm',
+            'tickets': r'https://theatrefest.co.uk/18/booking.htm',
+            'performers': r'https://theatrefest.co.uk/performers.htm',
+            'volunteers': r'https://theatrefest.co.uk/volunteers.htm',
+            'contacts': r'https://theatrefest.co.uk/contacts.htm',
         }
         return redirect(urls[name])
 

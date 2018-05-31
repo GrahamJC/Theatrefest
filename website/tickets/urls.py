@@ -18,5 +18,6 @@ urlpatterns = [
     path('checkout/confirm/<int:sale_id>', views.CheckoutConfirmView.as_view(), name = 'checkout_confirm'),
     path('cancel/ticket/<int:ticket_id>', views.CancelTicketView.as_view(), name = 'cancel_ticket'),
     path('buy/<str:theatrefest_id>/<str:yyyymmdd>/<str:hhmm>', views.TheatrefestBuyView.as_view(), name = 'theatrefest_buy'),
+    path('print/sale/<int:sale_id>', views.PrintSaleView.as_view(), name = 'print_sale'),
     path('print/performance/<int:performance_id>', views.PrintPerformanceView.as_view(), name = 'print_performance'),
 ]

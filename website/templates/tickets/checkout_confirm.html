@@ -43,7 +43,7 @@
                 </p>
                 <p>What would you like to do next?</p>
                 <ul>
-                    <li><a href="{% url 'boxoffice:sale_print' sale.id %}" target="_blank">Print a receipt for this sale</a></li>
+                    <li><a href="{% url 'tickets:print_sale' sale.id %}" target="_blank">Print a receipt for this sale</a></li>
                     <li><a href="{% url 'program:shows' %}">Find another show</a></li>
                     <li><a href="{% url 'tickets:myaccount' %}">Manage my account</a></li>
                 </ul>

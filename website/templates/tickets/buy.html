@@ -12,19 +12,28 @@
         <p class="tf-performance">{{ performance.date|date:'D, j M' }} at {{ performance.time|time:'P' }}</p>
         <p>Tickets available: {{ performance.tickets_available }}</p>
 
+        <div class="well">
+            <strong>Every audience member aged 13+ needs a <a href="#tf_fringe_badges" data-toggle="collapse">Fringe Badge</a> to enter a ticketed venue.</strong>
+            <p id="tf_fringe_badges" class="collapse">
+                These badges are available at any of the box-offices and at certain alt space venues for just &#163;1.
+                This one-off payment of just &#163;1 is the only charge that Fringe TheatreFest makes towards the running of the festival.
+                All of the ticket money and the pay-what-you-will collection goes to the performers.
+            </p>
+        </div>
+
         {% if performance.tickets_available %}
 
             <div class="row">
                 <div class="col-xs-12">
                     <ul class="nav nav-tabs nav-justified">
-                        <li class="active"><a href="#tf-credit-card-tab" data-toggle="tab">Credit Card</a></li>
-                        <li><a href="#tf-fringer-tab" data-toggle="tab">eFringers</a></li>
+                        <li {% if tab == 'tickets' %}class="active"{% endif %}><a href="#tf-credit-card-tab" data-toggle="tab">Credit Card</a></li>
+                        <li {% if tab == 'fringers' %}class="active"{% endif %}><a href="#tf-fringer-tab" data-toggle="tab">eFringers</a></li>
                         <li><a href="#tf-faqs-tab" data-toggle="tab">FAQs</a></li>
                     </ul>
                 </div>
             </div>
             <div class="tab-content">
-                <div id="tf-credit-card-tab" class="tab-pane active">
+                <div id="tf-credit-card-tab" class="tab-pane {% if tab == 'tickets' %}active{% endif %}">
                     <div class="row">
                         <div class="col-xs-12 col-sm-6">
                             <div class="panel panel-default">
@@ -65,7 +74,7 @@
                     </div>
                 </div>
 
-                <div id="tf-fringer-tab" class="tab-pane">
+                <div id="tf-fringer-tab" class="tab-pane {% if tab == 'fringers' %}active{% endif %}">
                     <div class="row">
                         <div class="col-xs-12 col-sm-6">
                             <div class="panel panel-default">
@@ -141,6 +150,6 @@
             
         {% endif %}
 
-    </div>
+    </p>
 
 {% endblock %}

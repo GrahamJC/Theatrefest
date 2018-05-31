@@ -347,6 +347,10 @@ body {
 #tf-tickets-myaccount .tab-content {
   margin-top: 15px; }
 
+#tf-tickets-buy .well {
+  padding: 5px 10px;
+  margin-bottom: 10px; }
+
 #tf-tickets-buy .tab-content {
   margin-top: 15px; }
 
