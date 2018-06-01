@@ -91,8 +91,8 @@ LOGGING = {
 STATIC_ROOT = posixpath.join(*(BASE_DIR.split(os.path.sep) + ['static']))
 
 # E-mail
-EMAIL_HOST = "smtp.sendgrid.net"
-EMAIL_PORT = 465
-EMAIL_HOST_USER = "apikey"
-EMAIL_HOST_PASSWORD = get_secret("SENDGRID_EMAIL_HOST_PASSWORD")
-EMAIL_USE_SSL = True
+EMAIL_HOST = "smtp.mailgun.org"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "postmaster@mg.theatrefest.co.uk"
+EMAIL_HOST_PASSWORD = get_secret("MAILGUN_EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = True

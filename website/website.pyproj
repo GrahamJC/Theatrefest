@@ -76,6 +76,15 @@
     <Compile Include="common\models.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="sysadmin\admin.py" />
+    <Compile Include="sysadmin\apps.py" />
+    <Compile Include="sysadmin\forms.py" />
+    <Compile Include="sysadmin\migrations\__init__.py" />
+    <Compile Include="sysadmin\models.py" />
+    <Compile Include="sysadmin\tests.py" />
+    <Compile Include="sysadmin\urls.py" />
+    <Compile Include="sysadmin\views.py" />
+    <Compile Include="sysadmin\__init__.py" />
     <Compile Include="website\settings\base.py" />
     <Compile Include="website\settings\azure.py" />
     <Compile Include="website\settings\development.py" />
@@ -192,6 +201,7 @@
     </Content>
     <Content Include="static\styles.min.css" />
     <Content Include="static\styles.scss" />
+    <Content Include="sysadmin\templates\index.html" />
     <Content Include="templates\accounts\profile.html" />
     <Content Include="templates\base.html" />
     <Content Include="templates\boxoffice\select.html" />
@@ -234,6 +244,7 @@
     <Content Include="templates\registration\registration_form.html" />
     <Content Include="templates\registration\resend_activation_complete.html" />
     <Content Include="templates\registration\resend_activation_form.html" />
+    <Content Include="templates\sysadmin\email.html" />
     <Content Include="templates\tickets\buy_confirm_fringers.html" />
     <Content Include="templates\tickets\buy_confirm_fringer_tickets.html" />
     <Content Include="templates\tickets\buy_confirm_tickets.html" />
@@ -283,12 +294,16 @@
     <Folder Include="static\font-awesome-4.7.0\scss\" />
     <Folder Include="static\jquery\" />
     <Folder Include="static\moment\" />
+    <Folder Include="sysadmin\" />
+    <Folder Include="sysadmin\migrations\" />
+    <Folder Include="sysadmin\templates\" />
     <Folder Include="templates\" />
     <Folder Include="templates\accounts\" />
     <Folder Include="D:\Git\Theatrefest\website\templates\program\" />
     <Folder Include="templates\boxoffice\" />
     <Folder Include="D:\Git\Theatrefest\website\templates\registrationX\" />
     <Folder Include="templates\content\" />
+    <Folder Include="templates\sysadmin\" />
     <Folder Include="templates\program\" />
     <Folder Include="templates\registrationX\" />
     <Folder Include="templates\registration\" />

@@ -15,6 +15,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('tickets/', include('tickets.urls')),
     path('boxoffice/', include('boxoffice.urls')),
+    path('sysadmin/', include('sysadmin.urls')),
     path('admin/', admin.site.urls),
     path('debug/', include(debug_toolbar.urls)),
 ]

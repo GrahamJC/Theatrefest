@@ -117,7 +117,7 @@ MEDIA_URL = "/media/"
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 # e-mail
-DEFAULT_FROM_EMAIL = "noreply@theatrefest.co.uk"
+DEFAULT_FROM_EMAIL = "noreply@mg.theatrefest.co.uk"
 
 # Registration
 ACCOUNT_ACTIVATION_DAYS = 7

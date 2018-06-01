@@ -64,6 +64,7 @@
                                         {% if user.is_superuser and user.is_active %}
                                             <li class="divider"></li>
                                             <li><a href="/admin">Admin</a></li>
+                                            <li><a href="{% url 'sysadmin:email' %}">Test e-mail</a></li>
                                         {% endif %}
                                         <li class="divider"></li>
                                         <li><a href="{% url 'accounts:auth_logout' %}">Logout</a></li>
