@@ -199,8 +199,8 @@ class TheatrefestView(View):
             'home': r'https://theatrefest.co.uk/index.htm',
             'tickets': r'https://theatrefest.co.uk/18/booking.htm',
             'performers': r'https://theatrefest.co.uk/performers.htm',
-            'volunteers': r'https://theatrefest.co.uk/volunteers.htm',
-            'contacts': r'https://theatrefest.co.uk/contacts.htm',
+            'volunteer': r'https://theatrefest.co.uk/volunteers.htm',
+            'contact': r'https://theatrefest.co.uk/contacts.htm',
         }
         return redirect(urls[name])
 

@@ -34,7 +34,7 @@
                         <div class="performances">
                             {% for performance in show.performances.all %}
                                 <p class="performance">
-                                    {% if show.venue.is_ticketed %}
+                                    {% if show.venue.is_ticketed and not show.is_suspended %}
                                         <a href="{% url 'tickets:buy' performance.id %}">{{ performance.date | date:'D' }} at {{ performance.time | time:'P'}}</a>
                                     {% else %}
                                         {{ performance.date | date:'D' }} at {{ performance.time | time:'P'}}
@@ -42,7 +42,9 @@
                                 </p>
                             {% endfor %}
                         </div>
-                        {% if show.venue.is_ticketed %}
+                        {% if show.is_suspended %}
+                            <p class="buy">Online ticket sales for this show are temporarily unavailable.</p>
+                        {% elif show.venue.is_ticketed %}
                             <p class="buy">Select a performance to buy tickets online.</p>
                         {% else %}
                             <p class="bucket">

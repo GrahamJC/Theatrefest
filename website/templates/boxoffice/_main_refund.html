@@ -1,0 +1,111 @@
+{% load crispy_forms_tags %}
+{% load tf_filters %}
+
+<div class="row">
+    <div class="col-xs-6">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h4 class="panel-title">Tickets</h4></div>
+            <div class="panel-body">
+                {% if refund.completed %}
+                    <div class="well">
+                        You must start a new refund to add tickets.
+                    </div>
+                {% else %}
+                    <form id="refund-ticket-form" method="post" class="form-horizontal">
+                        {% csrf_token %}
+                        {% crispy refund_ticket_form %}
+                        <div class="form-group">
+                            <div class="col-xs-12 tf-form-actions">
+                                <button type="submit" class="btn btn-primary" name="action" value="RefundAddTicket">Add</button>
+                            </div>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">{% if refund.completed %}Refund Confirmed{% else %}New Refund{% endif %}</h4>
+            </div>
+            <div class="panel-body">
+                {% if not refund %}
+                    <div class="well">
+                        <ul>
+                            <li>Add tickets to be refunded by entering the ticket number and clicking Add.</li>
+                            <li>When all tickets have been added enter the customer name, refund amount and reason then click Complete to confirm the refund.</li>
+                            <li>Once the refund is confirmed you can Print or E-mail the receipt.</li>
+                        </ul>
+                    </div>
+                {% else %}
+                    {% if refund.completed %}
+                        <div class="row">
+                            <div class="col-xs-12 tf-form-actions">
+                                <button class="btn btn-primary">E-mail</button>
+                                <a class="btn btn-primary" href="{% url 'reports:refund_pdf' refund.id %}" target="_blank">PDF</a>
+                                <a class="btn btn-primary" href="#" onclick="$('#refund-tab-content').load('{% url "boxoffice:refund_new" %}')">New Refund</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <form id="refund-form" method="post" class="form-horizontal">
+                            {% csrf_token %}
+                            {% crispy refund_form %}
+                            <div class="form-group">
+                                <div class="col-xs-12 tf-form-actions">
+                                    <button type="submit" class="btn btn-primary">Complete</button>
+                                    <a class="btn btn-primary" href="#" onclick="$('#refund-tab-content').load('{% url "boxoffice:refund_cancel" %}')" formnovalidate>Cancel</a>
+                                </div>
+                            </div>
+                        </form>
+                    {% endif %}
+                    <table class="table table-striped">
+                        <tr>
+                            <th>Ticket</th>
+                            <th>Show/Performance</th>
+                            <th>Type/Cost</th>
+                        </tr>
+                        {% for ticket in refund.tickets.all %}
+                            <tr>
+                                <td>
+                                    {{ ticket.id }}<br/>
+                                    {% if not refund.completed %}
+                                        <a href="#" onclick="$('#refund-tab-content').load('{% url "boxoffice:refund_remove_ticket" ticket.id %}')">Remove</a>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ ticket.performance.show.name }}<br/>
+                                    {{ ticket.performance.date | date:"D, jS M" }} at {{ ticket.performance.time }}
+                                </td>
+                                <td>
+                                    {{ ticket.description }}<br/>
+                                    {% if ticket.cost %}&#163;{{ ticket.cost }}{% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        <tr>
+                            <td></td>
+                            <td><strong>Total</strong></td>
+                            <td>&#163;{{ refund.total_cost }}</td>
+                        </tr>
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script language="javascript">
+    $(function () {
+        $('#refund-ticket-form').submit(function (event) {
+            event.preventDefault();
+            postData = $('#refund-ticket-form').serializeArray()
+            $('#refund-tab-content').load('{% url "boxoffice:refund_add_ticket" %}', postData);
+        });
+        $('#refund-form').submit(function (event) {
+            event.preventDefault();
+            postData = $('#refund-form').serializeArray()
+            $('#refund-tab-content').load('{% url "boxoffice:refund_complete" %}', postData);
+        });
+    });
+</script>

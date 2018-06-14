@@ -132,6 +132,7 @@ class Show(TimeStampedModel):
     venue = models.ForeignKey(Venue, on_delete = models.PROTECT, related_name = 'shows')
     theatrefest_ID = models.CharField(max_length = 16, blank = True, default = '')    
     is_cancelled = models.BooleanField(blank = True, default = False)
+    is_suspended = models.BooleanField(blank = True, default = False)
     replaced_by = models.OneToOneField('self', on_delete = models.SET_NULL, related_name = 'replacement_for', blank = True, null = True)
 
     def __str__(self):
@@ -190,9 +191,21 @@ class Performance(TimeStampedModel):
         return self.tickets.filter(basket__isnull = True).count()
 
     @property
+    def tickets_refunded(self):
+        return self.tickets.filter(refund__isnull = True).count()
+
+    @property
     def tickets_available(self):
-        available = self.show.venue.capacity - self.tickets_sold if self.show.venue.capacity else 0
+        available = self.show.venue.capacity - self.tickets_sold + self.tickets_refunded if self.show.venue.capacity else 0
         return available if available > 0 else 0
+
+    @property
+    def is_cancelled(self):
+        return self.show.is_cancelled
+
+    @property
+    def is_suspended(self):
+        return self.show.is_suspended
 
     def __str__(self):
         return self.show.name + ' (' + self.date.strftime('%a, %d %b') + ' at ' + self.time.strftime('%H:%M') + ')'

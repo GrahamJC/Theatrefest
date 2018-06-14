@@ -13,6 +13,8 @@ class Sale(TimeStampedModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.PROTECT, related_name = 'sales')
     customer = models.CharField(max_length = 64, blank = True, default = '')
     buttons = models.IntegerField(blank = True, default = 0)
+    amount = models.DecimalField(blank = True, default = 0, max_digits = 4, decimal_places = 2)
+    stripe_fee = models.DecimalField(blank = True, default = 0, max_digits = 4, decimal_places = 2)
     stripe_charge = models.DecimalField(blank = True, default = 0, max_digits = 4, decimal_places = 2)
     completed = models.DateTimeField(null = True, blank = True)
 
@@ -37,8 +39,43 @@ class Sale(TimeStampedModel):
         return self.button_cost + self.fringer_cost + self.ticket_cost
 
     @property
-    def stripe_fee(self):
-        return self.stripe_charge - self.total_cost if self.stripe_charge else 0
+    def performances(self):
+        performances = []
+        for ticket in self.tickets.values('performance_id').distinct():
+            p = Performance.objects.get(pk = ticket['performance_id'])
+            tickets = self.tickets.filter(performance_id = ticket['performance_id'])
+            performance = {
+                'id': p.id,
+                'show': p.show.name,
+                'date' : p.date,
+                'time': p.time,
+                'ticket_cost': sum(t.cost for t in tickets.all()), 
+                'tickets': [{'id': t.id, 'description': t.description, 'cost': t.cost} for t in tickets],
+            }
+            performances.append(performance)
+        return performances
+
+
+class Refund(TimeStampedModel):
+
+    box_office = models.ForeignKey(BoxOffice, null = True, blank = True, on_delete = models.PROTECT, related_name = 'refunds')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.PROTECT, related_name = 'refunds')
+    customer = models.CharField(max_length = 64, blank = True, default = '')
+    amount = models.DecimalField(blank = True, default = 0, max_digits = 4, decimal_places = 2)
+    reason = models.TextField()
+    completed = models.DateTimeField(null = True, blank = True)
+
+    @property
+    def is_empty(self):
+        return (self.tickets.count() == 0)
+
+    @property
+    def ticket_cost(self):
+        return sum([t.cost for t in self.tickets.all()])
+
+    @property
+    def total_cost(self):
+        return self.ticket_cost
 
     @property
     def performances(self):
@@ -101,6 +138,10 @@ class Basket(TimeStampedModel):
     @property
     def stripe_charge(self):
         return ((self.total_cost + settings.STRIPE_FEE_FIXED) / (1 - settings.STRIPE_FEE_PERCENT)).quantize(Decimal('.01'), rounding = ROUND_05UP)
+
+    @property
+    def stripe_charge_pence(self):
+        return int(self.stripe_charge * 100)
 
     @property
     def stripe_fee(self):
@@ -211,6 +252,15 @@ class Ticket(TimeStampedModel):
     basket = models.ForeignKey(Basket, on_delete = models.CASCADE, null = True, blank = True, related_name = 'tickets')
     fringer = models.ForeignKey(Fringer, on_delete = models.PROTECT, null = True, blank = True, related_name = 'tickets')
     sale = models.ForeignKey(Sale, on_delete = models.CASCADE, null = True, blank = True, related_name = 'tickets')
+    refund = models.ForeignKey(Refund, on_delete = models.SET_NULL, null = True, blank = True, related_name = 'tickets')
+
+    @property
+    def is_confirmed(self):
+        return (self.basket == None) and (self.refund == None)
+
+    @property
+    def is_cancelled(self):
+        return (self.refund != None)
 
     def __str__(self):
         return "{0}:{1}:{2}".format(self.user.email, self.description, self.performance)

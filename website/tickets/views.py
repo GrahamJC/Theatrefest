@@ -474,7 +474,8 @@ class CheckoutView(LoginRequiredMixin, View):
                     sale = Sale(
                         user = request.user,
                         customer = request.user.email,
-                        stripe_charge = basket.stripe_charge,
+                        amount = basket.stripe_charge,
+                        stripe_fee = basket.stripe_fee,
                         completed = datetime.now(),
                     )
                     sale.save()
@@ -486,7 +487,7 @@ class CheckoutView(LoginRequiredMixin, View):
                         fringer.save()
                         logger.info("Purchase complete: eFringer (%s)", fringer.name)
 
-                    # Complete purchase of tickets by removing them from the basket
+                    # Complete purchase of tickets by removing them from the basket and adding them to the sale
                     for ticket in basket.tickets.all():
                         ticket.basket = None
                         ticket.sale = sale
@@ -497,13 +498,13 @@ class CheckoutView(LoginRequiredMixin, View):
                     stripe_token = request.POST.get("stripeToken")
                     charge = stripe.Charge.create(
                         source = stripe_token,
-                        amount = int(sale.stripe_charge * 100),
+                        amount = int(sale.amount * 100),
                         currency = "GBP",
                         description = "Theatrefest tickets",
                         receipt_email = basket.user.email
                     )
-                    logger.info("Credit card charged GBP%.2f (%s)", sale.stripe_charge, stripe_token)
-                    messages.success(request, f"Purchase complete. Your card has been charged £{sale.stripe_charge}.")
+                    logger.info("Credit card charged GBP%.2f (%s)", sale.amount, stripe_token)
+                    messages.success(request, f"Purchase complete. Your card has been charged £{sale.amount}.")
 
             except stripe.error.CardError as ce:
                 logger.exception("Credit card charge failure")
@@ -737,7 +738,7 @@ class PrintSaleView(LoginRequiredMixin, View):
         # Total
         table = Table(
             (
-                ("", Paragraph("<para><b>Total:</b></para>", styles['Normal']), f"£{sale.stripe_charge}"),
+                ("", Paragraph("<para><b>Total:</b></para>", styles['Normal']), f"£{sale.amount}"),
             ),
             colWidths = (8*cm, 4*cm, 4*cm),
             hAlign = 'LEFT',

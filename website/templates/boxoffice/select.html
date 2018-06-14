@@ -1,16 +1,13 @@
 {% extends "base.html" %}
 
 {% block pagetitle %}
-    Select Box Office
+    select box office
 {% endblock %}
 
 {% block content %}
 
-    <form method="post">
-        {% csrf_token %}
-        {% for box_office in box_offices %}
-            <p><button class="btn btn-default" type="submit" name="box_office_id" value="{{ box_office.id }}">{{ box_office.name }}</button></p>
-        {% endfor %}
-    </form>
+    {% for box_office in box_offices %}
+        <p><a class="btn btn-default" href="{% url 'boxoffice:select' box_office.id %}">{{ box_office.name }}</a></p>
+    {% endfor %}
 
 {% endblock %}

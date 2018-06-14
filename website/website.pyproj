@@ -76,6 +76,14 @@
     <Compile Include="common\models.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="reports\admin.py" />
+    <Compile Include="reports\apps.py" />
+    <Compile Include="reports\migrations\__init__.py" />
+    <Compile Include="reports\models.py" />
+    <Compile Include="reports\tests.py" />
+    <Compile Include="reports\urls.py" />
+    <Compile Include="reports\views.py" />
+    <Compile Include="reports\__init__.py" />
     <Compile Include="sysadmin\admin.py" />
     <Compile Include="sysadmin\apps.py" />
     <Compile Include="sysadmin\forms.py" />
@@ -119,6 +127,7 @@
     <Content Include="accounts\__pycache__\views.cpython-36.pyc" />
     <Content Include="accounts\__pycache__\__init__.cpython-36.pyc" />
     <Content Include="boxoffice\templates\index.html" />
+    <Content Include="reports\templates\index.html" />
     <Content Include="secrets.json" />
     <None Include="compilerconfig.json" />
     <Content Include="compilerconfig.json.defaults">
@@ -193,6 +202,7 @@
     <Content Include="static\moment\moment.min.js" />
     <Content Include="static\twitter.png" />
     <Content Include="static\VenueMap.png" />
+    <Content Include="static\_boxoffice.scss" />
     <Content Include="static\_tickets.scss" />
     <Content Include="static\_program.scss" />
     <Content Include="static\styles.css">
@@ -204,8 +214,15 @@
     <Content Include="sysadmin\templates\index.html" />
     <Content Include="templates\accounts\profile.html" />
     <Content Include="templates\base.html" />
+    <Content Include="templates\boxoffice\report_refunds.html" />
+    <Content Include="templates\boxoffice\report_refund_detail.html" />
+    <Content Include="templates\boxoffice\report_sale_detail.html" />
+    <Content Include="templates\boxoffice\report_sales.html" />
+    <Content Include="templates\boxoffice\report_summary.html" />
+    <Content Include="templates\boxoffice\_main_sale.html" />
+    <Content Include="templates\boxoffice\_main_refund.html" />
     <Content Include="templates\boxoffice\select.html" />
-    <Content Include="templates\boxoffice\sale.html" />
+    <Content Include="templates\boxoffice\main.html" />
     <Content Include="templates\content\page.html" />
     <Content Include="templates\program\home.html" />
     <Content Include="templates\program\schedule.html" />
@@ -244,6 +261,7 @@
     <Content Include="templates\registration\registration_form.html" />
     <Content Include="templates\registration\resend_activation_complete.html" />
     <Content Include="templates\registration\resend_activation_form.html" />
+    <Content Include="templates\boxoffice\admission_tickets.html" />
     <Content Include="templates\sysadmin\email.html" />
     <Content Include="templates\tickets\buy_confirm_fringers.html" />
     <Content Include="templates\tickets\buy_confirm_fringer_tickets.html" />
@@ -282,6 +300,9 @@
     <Folder Include="program\" />
     <Folder Include="program\migrations\" />
     <Folder Include="program\__pycache__\" />
+    <Folder Include="reports\" />
+    <Folder Include="reports\migrations\" />
+    <Folder Include="reports\templates\" />
     <Folder Include="static\" />
     <Folder Include="static\bootstrap\" />
     <Folder Include="static\bootstrap\css\" />
@@ -310,6 +331,7 @@
     <Folder Include="templates\tickets\" />
     <Folder Include="tickets\" />
     <Folder Include="tickets\migrations\" />
+    <Folder Include="templates\reports\" />
     <Folder Include="tickets\__pycache__\" />
     <Folder Include="uploads\" />
     <Folder Include="uploads\show\" />

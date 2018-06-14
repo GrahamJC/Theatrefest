@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load tf_filters %}
+
+{% block pagetitle %}
+    Box Office: {{ box_office.name }}
+{% endblock %}
+
+
+{% block content %}
+
+    <div id="tf-boxoffice">
+
+        <div class="row">
+            <div class="col-xs-12">
+                <ul class="nav nav-tabs nav-justified">
+                    <li id="sale-tab" {% if tab == 'sale' %}class="active"{% endif %}><a href="#sale-tab-content" data-toggle="tab">Sale</a></li>
+                    <li id="refund-tab" {% if tab == 'refund' %}class="active"{% endif %}><a href="#refund-tab-content" data-toggle="tab">Refund</a></li>
+                    <li id="admission-tab" {% if tab == 'admission' %}class="active"{% endif %}><a href="#admission-tab-content" data-toggle="tab">Admission</a></li>
+                    <li id="report-tab" {% if tab == 'report' %}class="active"{% endif %}><a href="#report-tab-content" data-toggle="tab">Report</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tab-content">
+
+            <div id="sale-tab-content" class="tab-pane {% if tab == 'sale' %}active{% endif %}">
+                {% include 'boxoffice/_main_sale.html' %}
+            </div>
+
+            <div id="refund-tab-content" class="tab-pane {% if tab == 'refund' %}active{% endif %}">
+                {% include 'boxoffice/_main_refund.html' %}
+            </div>
+
+            <div id="admission-tab-content" class="tab-pane {% if tab == 'admission' %}active{% endif %}">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><h4 class="panel-title">Show/Performance</h4></div>
+                            <div class="panel-body">
+                                <div class="well">
+                                    <ul>
+                                        <li>Select the show and performance for which you want to manage admission.</li>
+                                        <li>30 minutes before the performance starts print the ticket list and use it to issue admission tokens.</li>
+                                        <li>Issue admission tokens immediately for any tickets sold after the list has been printed.</li>
+                                    </ul>
+                                </div>
+                                <form>
+                                    <div class="form-group">
+                                        <select id="admission-show" class="form-control"></select>
+                                    </div>
+                                    <div class="form-group">
+                                        <select id="admission-performance" class="form-control"></select>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><h4 class="panel-title">Tickets</h4></div>
+                            <div class="panel-body">
+                                <div id="admission-tickets"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="report-tab-content" class="tab-pane {% if tab == 'report' %}active{% endif %}">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><h4 class="panel-title">Summary</h4></div>
+                            <div class="panel-body">
+                                <div id="report-summary"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><h4 class="panel-title">Sales</h4></div>
+                            <div class="panel-body">
+                                <div id="report-sales"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><h4 class="panel-title">Refunds</h4></div>
+                            <div class="panel-body">
+                                <div id="report-refunds"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="report-modal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modal title</h4>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript %}
+
+    <script language="javascript">
+
+        $( function() {
+            $('#admission-show').load('{% url 'boxoffice:admission_shows' %}');
+
+            $('#admission-show').on('change', function(event) {
+                $('#admission-performance').load('{% url 'boxoffice:admission_show_performances' 0 %}'.replace('/0', '/' + $(this).val()));
+            });
+
+            $('#admission-performance').on('change', function(event) {
+                $('#admission-tickets').load('{% url 'boxoffice:admission_performance_tickets' 0 %}'.replace('/0', '/' + $(this).val()));
+            });
+
+            $('#report-tab a').on('show.bs.tab', function(event) {
+                $('#report-summary').load('{% url 'boxoffice:report_summary' %}');
+                $('#report-sales').load('{% url 'boxoffice:report_sales' %}');
+                $('#report-refunds').load('{% url 'boxoffice:report_refunds' %}');
+            });
+        });
+
+        function showSaleDetail(sale_id) {
+            $('#report-modal .modal-title').text('Sale: ' + sale_id);
+            $('#report-modal .modal-body').load('{% url "boxoffice:report_sale_detail" 0 %}'.replace('/0', '/' + sale_id));
+            $('#report-modal').modal('show');
+        }
+
+        function showRefundDetail(refund_id) {
+            $('#report-modal .modal-title').text('Refund: ' + refund_id);
+            $('#report-modal .modal-body').load('{% url "boxoffice:report_refund_detail" 0 %}'.replace('/0', '/' + refund_id));
+            $('#report-modal').modal('show');
+        }
+
+    </script>
+
+{% endblock %}
