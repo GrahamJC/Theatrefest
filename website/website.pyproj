@@ -93,6 +93,11 @@
     <Compile Include="sysadmin\urls.py" />
     <Compile Include="sysadmin\views.py" />
     <Compile Include="sysadmin\__init__.py" />
+    <Compile Include="website\context_processors.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="website\training_wsgi.py" />
+    <Compile Include="website\settings\training.py" />
     <Compile Include="website\settings\base.py" />
     <Compile Include="website\settings\azure.py" />
     <Compile Include="website\settings\development.py" />
@@ -224,6 +229,7 @@
     <Content Include="templates\boxoffice\select.html" />
     <Content Include="templates\boxoffice\main.html" />
     <Content Include="templates\content\page.html" />
+    <Content Include="templates\program\training.html" />
     <Content Include="templates\program\home.html" />
     <Content Include="templates\program\schedule.html" />
     <Content Include="templates\program\shows.html" />
@@ -262,6 +268,9 @@
     <Content Include="templates\registration\resend_activation_complete.html" />
     <Content Include="templates\registration\resend_activation_form.html" />
     <Content Include="templates\boxoffice\admission_tickets.html" />
+    <Content Include="templates\sysadmin\_main_reports.html" />
+    <Content Include="templates\sysadmin\_main_volunteers.html" />
+    <Content Include="templates\sysadmin\main.html" />
     <Content Include="templates\sysadmin\email.html" />
     <Content Include="templates\tickets\buy_confirm_fringers.html" />
     <Content Include="templates\tickets\buy_confirm_fringer_tickets.html" />

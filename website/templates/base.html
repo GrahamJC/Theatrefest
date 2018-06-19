@@ -24,7 +24,9 @@
 
         <div id="tf-banner" class="row">
             <div class="col-xs-12 col-lg-10 col-lg-offset-1">
-                <img src="{% static 'BridgeBanner.png' %}" /> 
+                <a href="{% url 'program:theatrefest' 'home' %}">
+                    <img src="{% static 'BridgeBanner.png' %}" />
+                </a>
             </div>
         </div>
 
@@ -57,14 +59,17 @@
                                         <li><a href="#">{{ user.email }}</a></li>
                                         <li class="divider"></li>
                                         <li><a href="{% url 'tickets:myaccount' %}">Tickets and eFringers</a></li>
-                                        {% if user.is_staff and user.is_active %}
+                                        {% if user.is_volunteer or user.is_admin %}
                                             <li class="divider"></li>
                                             <li><a href="{% url 'boxoffice:select' %}">Box Office</a></li>
                                         {% endif %}
-                                        {% if user.is_superuser and user.is_active %}
+                                        {% if user.is_admin %}
                                             <li class="divider"></li>
-                                            <li><a href="/admin">Admin</a></li>
-                                            <li><a href="{% url 'sysadmin:email' %}">Test e-mail</a></li>
+                                            <li><a href="{% url 'sysadmin:main' %}">System Admin</a></li>
+                                        {% endif %}
+                                        {% if user.is_staff %}
+                                            <li class="divider"></li>
+                                            <li><a href="/admin">Site Admin</a></li>
                                         {% endif %}
                                         <li class="divider"></li>
                                         <li><a href="{% url 'accounts:auth_logout' %}">Logout</a></li>
@@ -108,9 +113,13 @@
                 <!-- Social media links -->
                 {% block social_media %}
                     <div class="tf-social-media">
-                        <a href="https://www.facebook.com/TheatreFestND/" target="_blank"><img src="{% static 'facebook.png' %}"></a>
-                        <a href="https://twitter.com/@theatrefestND" target="_blank"><img src="{% static 'twitter.png' %}"></a>
-                        <a href="https://www.instagram.com/theatrefestND" target="_blank"><img src="{% static 'instagram.png' %}"></a>
+                        {% if TRAINING %}
+                            <h3 style="margin-top: 0; color: red;">TRAINING</h3>
+                        {% else %}
+                            <a href="https://www.facebook.com/TheatreFestND/" target="_blank"><img src="{% static 'facebook.png' %}"></a>
+                            <a href="https://twitter.com/@theatrefestND" target="_blank"><img src="{% static 'twitter.png' %}"></a>
+                            <a href="https://www.instagram.com/theatrefestND" target="_blank"><img src="{% static 'instagram.png' %}"></a>
+                        {% endif %}
                     </div>
                 {% endblock %}
                 <!-- Page title -->

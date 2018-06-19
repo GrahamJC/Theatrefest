@@ -9,7 +9,7 @@
 
 {% block content %}
 
-    <div id="tf-boxoffice">
+    <div id="tf-boxoffice-main">
 
         <div class="row">
             <div class="col-xs-12">
@@ -70,6 +70,19 @@
             </div>
 
             <div id="report-tab-content" class="tab-pane {% if tab == 'report' %}active{% endif %}">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Select date</label>
+                        <div class="col-sm-4">
+                            <select id="report-date" class="form-control">
+                                <option value="{{ report_today }}" selected>Today</option>
+                                {% for date in report_dates %}
+                                    <option value="{{ date.value }}">{{ date.text }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="panel panel-default">
@@ -137,12 +150,16 @@
                 $('#admission-tickets').load('{% url 'boxoffice:admission_performance_tickets' 0 %}'.replace('/0', '/' + $(this).val()));
             });
 
-            $('#report-tab a').on('show.bs.tab', function(event) {
-                $('#report-summary').load('{% url 'boxoffice:report_summary' %}');
-                $('#report-sales').load('{% url 'boxoffice:report_sales' %}');
-                $('#report-refunds').load('{% url 'boxoffice:report_refunds' %}');
-            });
+            $('#report-date').on('change', updateReport);
+            $('#report-tab a').on('show.bs.tab', updateReport);
         });
+
+        function updateReport() {
+            var date = $('#report-date').val()
+            $('#report-summary').load('{% url 'boxoffice:report_summary' 'yyyyMMdd' %}'.replace('yyyyMMdd', date));
+            $('#report-sales').load('{% url 'boxoffice:report_sales' 'yyyyMMdd' %}'.replace('yyyyMMdd', date));
+            $('#report-refunds').load('{% url 'boxoffice:report_refunds' 'yyyyMMdd' %}'.replace('yyyyMMdd', date));
+        };
 
         function showSaleDetail(sale_id) {
             $('#report-modal .modal-title').text('Sale: ' + sale_id);

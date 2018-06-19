@@ -37,7 +37,7 @@
                                                         <div class="col-xs-1"></div>
                                                         <div class="col-xs-3">{{ ticket.description }}</div>
                                                         <div class="col-xs-2 text-right">{% if ticket.fringer_name %}{{ ticket.fringer_name }}{% else %}&#163;{{ ticket.cost }}{% endif %}</div>
-                                                        <div class="col-xs-3">{% if ticket.fringer_name %}<a href="{% url 'tickets:cancel_ticket' ticket.id %}">Cancel</a>{% endif %}</div>
+                                                        <div class="col-xs-3">{% if ticket.fringer_name %}<a href="{% url 'tickets:ticket_cancel' ticket.uuid %}">Cancel</a>{% endif %}</div>
                                                         <div class="col-xs-3"></div>
                                                     </div>
                                                 {% endfor %}

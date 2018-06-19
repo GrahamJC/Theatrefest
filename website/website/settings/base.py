@@ -71,6 +71,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'website.context_processors.training',
             ],
             'libraries': {
                 'tf_filters': 'website.tf_filters'
@@ -124,12 +125,6 @@ ACCOUNT_ACTIVATION_DAYS = 7
 REGISTRATION_AUTO_LOGIN = True
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
-
-# Stripe
-STRIPE_PUBLIC_KEY = get_secret("STRIPE_PUBLIC_KEY")
-STRIPE_PRIVATE_KEY = get_secret("STRIPE_PRIVATE_KEY")
-STRIPE_FEE_FIXED = Decimal(0.2)
-STRIPE_FEE_PERCENT = Decimal(0.014)
 
 # Debug toolbar
 DEBUG_TOOLBAR_CONFIG = {

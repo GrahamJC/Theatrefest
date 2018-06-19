@@ -143,6 +143,12 @@ body {
     #tf-program-shows .results .show.tf-cancelled img {
       filter: grayscale(100%) contrast(50%); }
 
+#tf-program-show-detail .show {
+  margin-top: 25px; }
+  @media (min-width: 992px) {
+    #tf-program-show-detail .show {
+      margin-top: 0; } }
+
 #tf-program-show-detail .image {
   margin-bottom: 10px; }
   #tf-program-show-detail .image img {
@@ -367,6 +373,9 @@ body {
 #tf-tickets-fringers-rename-form .tf-name {
   width: 150px; }
 
-#tf-boxoffice .tab-content {
+#tf-boxoffice-main .tab-content {
   margin-top: 15px; }
+
+#tf-boxoffice-main #admission-tickets tr.cancelled {
+  text-decoration: line-through; }
 

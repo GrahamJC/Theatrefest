@@ -1,20 +1,17 @@
-<div id="tf-reports-front-of-house">
+<p><a class="tf-show-name" href="{% url 'program:show_detail' performance.show.id %}">{{ performance.show.name }}</a></p>
+<p class="tf-performance">{{ performance.date|date:'D, j M' }} at {{ performance.time|time:'P' }}</p>
 
-    <p><a class="tf-show-name" href="{% url 'program:show_detail' performance.show.id %}">{{ performance.show.name }}</a></p>
-    <p class="tf-performance">{{ performance.date|date:'D, j M' }} at {{ performance.time|time:'P' }}</p>
-
-    <table class="table table-striped">
-        <tr>
-            <th>Number</th>
-            <th>Customer</th>
-            <th>Type</th>
+<table class="table table-striped">
+    <tr>
+        <th>Number</th>
+        <th>Customer</th>
+        <th>Type</th>
+    </tr>
+    {% for ticket in tickets %}
+        <tr {% if ticket.is_cancelled %}class="cancelled"{% endif %}>
+            <td>{{ ticket.id }}</td>
+            <td>{% if ticket.user %} {{ ticket.user.username }} {%else%} {{ ticket.sale.customer }} {% endif %}</td>
+            <td>{{ ticket.description }}</td>
         </tr>
-        {% for ticket in tickets %}
-            <tr {% if ticket.is_cancelled %}class="cancelled"{% endif %}>
-                <td>{{ ticket.id }}</td>
-                <td>{% if ticket.user %} {{ ticket.user.username }} {%else%} {{ ticket.sale.customer }} {% endif %}</td>
-                <td>{{ ticket.description }}</td>
-            </tr>
-        {% endfor %}
-    </table>
-</div>
+    {% endfor %}
+</table>

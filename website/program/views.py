@@ -195,6 +195,12 @@ class VenueDetailView(View):
 class TheatrefestView(View):
 
     def get(self, request, name):
+
+        # Training site does not link to main site
+        if settings.TRAINING:
+            return render(request, 'program/training.html')
+
+        # Redirect to main site
         urls = {
             'home': r'https://theatrefest.co.uk/index.htm',
             'tickets': r'https://theatrefest.co.uk/18/booking.htm',

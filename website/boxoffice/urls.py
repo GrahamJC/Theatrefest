@@ -33,9 +33,9 @@ urlpatterns = [
     path('admission/show/<int:show_id>/performances', views.admission_show_performances, name = 'admission_show_performances'),
     path('admission/performance/<int:performance_id>/tickets', views.admission_performance_tickets, name = 'admission_performance_tickets'),
     # Report AJAX support
-    path('report/summary', views.report_summary, name = 'report_summary'),
-    path('report/sales', views.report_sales, name = 'report_sales'),
+    path('report/summary/<str:yyyymmdd>', views.report_summary, name = 'report_summary'),
+    path('report/sales/<str:yyyymmdd>', views.report_sales, name = 'report_sales'),
     path('report/sale/<int:sale_id>', views.report_sale_detail, name = 'report_sale_detail'),
-    path('report/refunds', views.report_refunds, name = 'report_refunds'),
+    path('report/refunds<str:yyyymmdd>', views.report_refunds, name = 'report_refunds'),
     path('report/refund/<int:refund_id>', views.report_refund_detail, name = 'report_refund_detail'),
 ]

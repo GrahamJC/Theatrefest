@@ -192,7 +192,7 @@ class Performance(TimeStampedModel):
 
     @property
     def tickets_refunded(self):
-        return self.tickets.filter(refund__isnull = True).count()
+        return self.tickets.filter(refund__isnull = False).count()
 
     @property
     def tickets_available(self):

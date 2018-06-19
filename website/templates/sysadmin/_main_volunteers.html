@@ -1,0 +1,49 @@
+{% load crispy_forms_tags %}
+
+<div class="row">
+    <div class="col-xs-6">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h4 class="panel-title">Add Volunteer</h4></div>
+            <div class="panel-body">
+                <form id="volunteer-form" class="form-horizontal">
+                    {% csrf_token %}
+                    {% crispy volunteer_form %}
+                    <div class="tf-form-actions">
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h4 class="panel-title">Volunteers</h4></div>
+            <div class="panel-body">
+                <table class="table table-striped">
+                    <tr>
+                        <th>Name</th>
+                        <th>Action</th>
+                    </tr>
+                    {% for v in volunteers %}
+                        <tr>
+                            <td>{{ v.last_name }}, {{ v.first_name }}</td>
+                            <td><a href="#" onclick="$('#volunteers-tab-content').load('{% url "sysadmin:volunteer_remove" v.uuid %}')">Remove</a></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script language="javascript">
+
+    $( function() {
+        $('#volunteer-form').submit(function (event) {
+            event.preventDefault();
+            var postData = $('#volunteer-form').serializeArray()
+            $('#volunteers-tab-content').load('{% url "sysadmin:volunteer_add" %}', postData);
+        });
+    });
+
+</script>

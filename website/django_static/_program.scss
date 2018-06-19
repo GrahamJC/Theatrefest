@@ -94,7 +94,12 @@
 // Show detail
 #tf-program-show-detail {
 
-    .title {
+    .show {
+        margin-top: 25px;
+
+        @media (min-width: $screen-md) {
+            margin-top: 0;
+        }
     }
 
     .company {
@@ -156,7 +161,7 @@
         position: relative;
         margin-top: 5px;
         height: 45px;
-        width:100%;
+        width: 100%;
         padding: 3px 5px;
 
         a {

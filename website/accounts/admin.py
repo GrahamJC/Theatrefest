@@ -23,13 +23,10 @@ class UserCreationForm(forms.ModelForm):
         strip=False,
         help_text=_("Enter the same password as before, for verification."),
     )
-    is_survey = forms.BooleanField(
-        label = "I agree to take part in an e-mail survey.",
-    )
 
     class Meta:
         model = User
-        fields = ('email', 'is_staff', 'is_active', 'first_name', 'last_name', )
+        fields = ('email', 'is_active', 'is_volunteer', 'is_admin', 'is_staff', 'first_name', 'last_name', )
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -61,14 +58,14 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('email', 'is_superuser', 'is_staff', 'is_active', 'first_name', 'last_name', 'date_joined', 'last_login')
+    list_display = ('email', 'is_volunteer', 'is_admin', 'is_staff', 'is_superuser', 'is_active', 'first_name', 'last_name', 'date_joined', 'last_login')
     # list_filter = ('email',)
 
     readonly_fields=('date_joined',)
     fieldsets = (
         (None                , {'fields': ('email', 'password')}),
         (_('Personal info')  , {'fields': ('first_name', 'last_name',)}),
-        (_('Permissions')    , {'fields': ('is_active', 'is_staff', 'is_superuser', 'is_survey', 'groups', 'user_permissions')}),
+        (_('Permissions')    , {'fields': ('is_active', 'is_volunteer', 'is_admin', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin

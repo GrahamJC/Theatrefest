@@ -4,7 +4,8 @@ from decimal import Decimal
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db import transaction
-from django.db.models import Sum
+from django.db.models import Q, Sum
+from django.db.models.functions import Coalesce
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
@@ -162,12 +163,19 @@ def _render_refund(request, refund_ticket_form = None, refund_form = None):
     return render(request, "boxoffice/_main_refund.html", context)
     
 # View functions
-@user_passes_test(lambda u: u.is_staff)
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 @login_required
 def select(request, box_office_id = None):
-    # If a box office is specified select it and go to the main box offic epage
+    # If a box office is specified select it, cancel any incomplete sales/refunds
+    # and go to the main box office page
     if box_office_id:
         request.session['box_office_id'] = box_office_id
+        for sale in request.user.sales.filter(completed__isnull = True):
+            sale.delete();
+        request.session['sale_id'] = None
+        for refund in request.user.refunds.filter(completed__isnull = True):
+            refund.delete();
+        request.session['refund_id'] = None
         return redirect(reverse('boxoffice:main'))
 
     # Allow user to select box office
@@ -177,7 +185,7 @@ def select(request, box_office_id = None):
     }
     return render(request, 'boxoffice/select.html', context)
     
-@user_passes_test(lambda u: u.is_staff)
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 @login_required
 def main(request, tab = 'sale'):
 
@@ -189,8 +197,11 @@ def main(request, tab = 'sale'):
     # Create forms and render box office page
     sale = _get_sale(request)
     refund = _get_refund(request)
+    today = datetime.datetime.today()
+    report_dates = [today - datetime.timedelta(days = n) for n in range(1, 14)]
     context = {
         'box_office': box_office,
+        'tab': tab,
         'sale_tickets_form': _create_sale_tickets_form(),
         'sale_ticket_subforms': _create_sale_ticket_subforms(),
         'sale_extras_form': _create_sale_extras_form(sale),
@@ -199,7 +210,8 @@ def main(request, tab = 'sale'):
         'refund_ticket_form': _create_refund_ticket_form(),
         'refund_form': _create_refund_form(refund),
         'refund' : refund,
-        'tab': tab,
+        'report_today': f'{today:%Y%m%d}',
+        'report_dates': [{ 'value': f'{d:%Y%m%d}', 'text': f'{d:%a, %b %d}'} for d in report_dates],
     }
     return render(request, 'boxoffice/main.html', context)
 
@@ -349,7 +361,6 @@ def sale_cancel(request):
         logger.error('sale_cancel: sale completed')
     else:
         sale.delete()
-        sale = None
         request.session['sale_id'] = None
     return _render_sale(request)
 
@@ -435,7 +446,6 @@ def refund_cancel(request):
         logger.error('refund_cancel: refund completed')
     else:
         refund.delete()
-        refund = None
         request.session['refund_id'] = None
     return _render_refund(request)
 
@@ -474,42 +484,55 @@ def admission_performance_tickets(request, performance_id):
     # Get performance
     performance = get_object_or_404(Performance, pk = performance_id)
 
-    # Get tickets
-    tickets = Ticket.objects.filter(performance = performance).order_by('id')
+    # Get tickets for this performance (exclude tickets that are in a basket or part of an incomplete sale)
+    tickets = Ticket.objects.filter(performance = performance)
+    tickets = tickets.exclude(basket__isnull = False)
+    tickets = tickets.exclude(fringer__isnull = True, sale__completed__isnull = True)
 
     # Render report
     context = {
         'performance': performance,
-        'tickets': tickets,
+        'tickets': tickets.order_by('id'),
     }
     return render(request, 'boxoffice/admission_tickets.html', context)
 
 # Report AJAX support
-def report_summary(request):
+def report_summary(request, yyyymmdd):
 
     # Get sales and refunds for this box office
     box_office = _get_box_office(request)
-    sales = Sale.objects.filter(box_office = box_office).order_by('id')
-    refunds = Refund.objects.filter(box_office = box_office).order_by('id')
+    date = datetime.datetime.strptime(yyyymmdd, '%Y%m%d')
+    sales = Sale.objects.filter(box_office = box_office, completed__date = date).order_by('id')
+    refunds = Refund.objects.filter(box_office = box_office, completed__date = date).order_by('id')
+
+    # Get aggregated figures
+    sales_count = sales.count()
+    sales_buttons = sales.aggregate(buttons = Coalesce(Sum('buttons'), 0))['buttons']
+    sales_fringers = sales.aggregate(fringers = Coalesce(Sum('fringers__cost'), 0))['fringers']
+    sales_tickets = sales.aggregate(tickets = Coalesce(Sum('tickets__cost'), 0))['tickets']
+    sales_total = sales.aggregate(total = Coalesce(Sum('amount'), 0))['total']
+    refunds_count = refunds.count()
+    refunds_total = refunds.aggregate(total = Coalesce(Sum('amount'), 0))['total']
 
     # Render report
     context = {
-        'sales_count': sales.count(),
-        'sales_buttons': sales.aggregate(Sum('buttons'))['buttons__sum'],
-        'sales_fringers': sales.aggregate(Sum('fringers__cost'))['fringers__cost__sum'],
-        'sales_tickets': sales.aggregate(Sum('tickets__cost'))['tickets__cost__sum'],
-        'sales_total': sales.aggregate(Sum('amount'))['amount__sum'],
-        'refunds_count': refunds.count(),
-        'refunds_total': refunds.aggregate(Sum('amount'))['amount__sum'],
-        'balance': sales.aggregate(Sum('amount'))['amount__sum'] - refunds.aggregate(Sum('amount'))['amount__sum'],
+        'sales_count': sales_count,
+        'sales_buttons': sales_buttons,
+        'sales_fringers': sales_fringers,
+        'sales_tickets': sales_tickets,
+        'sales_total': sales_total,
+        'refunds_count': refunds_count,
+        'refunds_total': refunds_total,
+        'balance': sales_total - refunds_total,
     }
     return render(request, 'boxoffice/report_summary.html', context)
 
-def report_sales(request):
+def report_sales(request, yyyymmdd):
 
-    # Get sales for this box office
+    # Get completed sales for this box office
     box_office = _get_box_office(request)
-    sales = Sale.objects.filter(box_office = box_office).order_by('id')
+    date = datetime.datetime.strptime(yyyymmdd, '%Y%m%d')
+    sales = Sale.objects.filter(box_office = box_office, completed__date = date).order_by('id')
 
     # Render report
     context = {
@@ -525,11 +548,12 @@ def report_sale_detail(request, sale_id):
     }
     return render(request, 'boxoffice/report_sale_detail.html', context)
 
-def report_refunds(request):
+def report_refunds(request, yyyymmdd):
 
-    # Get sales for this box office
+    # Get completed refunds for this box office
     box_office = _get_box_office(request)
-    refunds = Refund.objects.filter(box_office = box_office).order_by('id')
+    date = datetime.datetime.strptime(yyyymmdd, '%Y%m%d')
+    refunds = Refund.objects.filter(box_office = box_office, completed__date = date).order_by('id')
 
     # Render report
     context = {

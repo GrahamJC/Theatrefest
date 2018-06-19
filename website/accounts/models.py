@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils.translation import ugettext_lazy as _
@@ -39,30 +41,34 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
 
+    uuid = models.UUIDField(unique=True, default=uuid4, editable=False)
     email = models.EmailField(unique=True, null=True)
     first_name = models.CharField(blank=True, default = '', max_length=30, verbose_name='first name')
     last_name = models.CharField(blank=True, default = '', max_length=30, verbose_name='last name')
-    is_staff = models.BooleanField(
-        _('staff status'),
-        default=False,
-        help_text=_('Designates whether the user can log into this site.'),
-    )
     is_active = models.BooleanField(
         _('active'),
         default=True,
-        help_text=_(
-            'Designates whether this user should be treated as active. '
-            'Unselect this instead of deleting accounts.'
-        ),
+        help_text=_('Unselect this instead of deleting accounts.'),
     )
-    is_survey = models.BooleanField(
-        _('e-mail survey'),
+    is_staff = models.BooleanField(
+        _('site admin'),
         default=False,
-        help_text=_('Designates whether this user can be surveyed by e-mail.'),
+        help_text=_('User can administer this site.'),
+    )
+    is_admin = models.BooleanField(
+        _('system admin'),
+        default=False,
+        help_text=_('User can access system administration functions.'),
+    )
+    is_volunteer = models.BooleanField(
+        _('volunteer'),
+        default=False,
+        help_text=_('User can access volunteer functions.'),
     )
     date_joined  = models.DateTimeField(_("date joined"), default = timezone.now)
 
     USERNAME_FIELD = 'email'
+    EMAIL_FIELD = 'email'
     objects = UserManager()
 
     @property

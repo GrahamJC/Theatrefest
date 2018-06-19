@@ -15,7 +15,6 @@ class Sale(TimeStampedModel):
     buttons = models.IntegerField(blank = True, default = 0)
     amount = models.DecimalField(blank = True, default = 0, max_digits = 4, decimal_places = 2)
     stripe_fee = models.DecimalField(blank = True, default = 0, max_digits = 4, decimal_places = 2)
-    stripe_charge = models.DecimalField(blank = True, default = 0, max_digits = 4, decimal_places = 2)
     completed = models.DateTimeField(null = True, blank = True)
 
     @property
@@ -37,6 +36,10 @@ class Sale(TimeStampedModel):
     @property
     def total_cost(self):
         return self.button_cost + self.fringer_cost + self.ticket_cost
+
+    @property
+    def stripe_charge(self):
+        return self.total_cost + self.stripe_fee
 
     @property
     def performances(self):
@@ -263,4 +266,5 @@ class Ticket(TimeStampedModel):
         return (self.refund != None)
 
     def __str__(self):
-        return "{0}:{1}:{2}".format(self.user.email, self.description, self.performance)
+        customer = self.sale.customer if self.sale else self.user.email
+        return "{0} ({1}) for {2}".format(customer, self.description, self.performance)

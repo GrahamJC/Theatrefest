@@ -2,6 +2,7 @@ import os
 from datetime import datetime, date, time
 
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.db import transaction
@@ -19,7 +20,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
 from crispy_forms.bootstrap import FormActions, StrictButton, FieldWithButtons
 
-from .models import Sale, Basket, FringerType, Fringer, TicketType, Ticket
+from .models import Sale, Refund, Basket, FringerType, Fringer, TicketType, Ticket
 from .forms import BuyTicketForm, RenameFringerForm, BuyFringerForm
 from program.models import Show, Performance
 
@@ -51,13 +52,13 @@ class MyAccountView(LoginRequiredMixin, View):
         past = []
         for ticket in user.tickets.filter(basket = None).order_by('performance__date', 'performance__time', 'performance__show__name').values('performance_id').distinct():
             performance = Performance.objects.get(pk = ticket['performance_id'])
-            tickets = user.tickets.filter(performance_id = ticket['performance_id'], basket = None)
+            tickets = user.tickets.filter(performance_id = ticket['performance_id'], basket = None, refund = None)
             p = {
                 'id': performance.id,
                 'show': performance.show.name,
                 'date' : performance.date,
                 'time': performance.time,
-                'tickets': [{'id': t.id, 'description': t.description, 'cost': t.cost, 'fringer_name': (t.fringer.name if t.fringer else None)} for t in tickets],
+                'tickets': [{'id': t.id, 'uuid': t.uuid, 'description': t.description, 'cost': t.cost, 'fringer_name': (t.fringer.name if t.fringer else None)} for t in tickets],
             }
             if datetime.combine(performance.date, performance.time) >= datetime.now():
                 current.append(p)
@@ -299,6 +300,14 @@ class BuyView(LoginRequiredMixin, View):
             tickets_requested = len(request.POST.getlist('fringer_id'))
             if (tickets_requested > 0) and (tickets_requested <= performance.tickets_available):
 
+                # Create a sale
+                sale = Sale(
+                    user = request.user,
+                    customer = request.user.email,
+                    completed = datetime.now(),
+                )
+                sale.save()
+
                 # Process each checked fringer
                 for fringer_id in request.POST.getlist('fringer_id'):
 
@@ -306,13 +315,14 @@ class BuyView(LoginRequiredMixin, View):
                     fringer = Fringer.objects.get(pk = int(fringer_id))
                     if fringer.is_available(performance):
 
-                        # Create ticket
+                        # Create ticket and add to sale
                         ticket = Ticket(
                             user = request.user,
                             performance = performance,
                             description = "eFringer",
                             cost = 0,
                             fringer = fringer,
+                            sale = sale,
                         )
                         ticket.save()
 
@@ -325,7 +335,7 @@ class BuyView(LoginRequiredMixin, View):
                         logger.warn("eFringer (%s) already used: %s", fringer.name, performance)
 
                 # Confirm purchase
-                    return redirect(reverse('tickets:buy_confirm_fringer_tickets', args = [performance.id]))
+                return redirect(reverse('tickets:buy_confirm_fringer_tickets', args = [performance.id]))
 
             # Insufficient tickets available
             else:
@@ -474,12 +484,12 @@ class CheckoutView(LoginRequiredMixin, View):
                     sale = Sale(
                         user = request.user,
                         customer = request.user.email,
-                        amount = basket.stripe_charge,
+                        amount = basket.total_cost,
                         stripe_fee = basket.stripe_fee,
                         completed = datetime.now(),
                     )
                     sale.save()
-
+                    
                     # Complete purchase of fringers by removing them from the basket and adding them to the sale
                     for fringer in basket.fringers.all():
                         fringer.basket = None
@@ -498,7 +508,7 @@ class CheckoutView(LoginRequiredMixin, View):
                     stripe_token = request.POST.get("stripeToken")
                     charge = stripe.Charge.create(
                         source = stripe_token,
-                        amount = int(sale.amount * 100),
+                        amount = int(sale.stripe_charge * 100),
                         currency = "GBP",
                         description = "Theatrefest tickets",
                         receipt_email = basket.user.email
@@ -598,21 +608,27 @@ class CheckoutConfirmView(View):
         return render(request, 'tickets/checkout_confirm.html', context)
 
 
-class CancelTicketView(LoginRequiredMixin, View):
+@transaction.atomic
+@login_required
+def ticket_cancel(request, ticket_uuid):
 
-    @transaction.atomic
-    def get(self, request, ticket_id):
+    # Get ticket to be cancelled
+    ticket = get_object_or_404(Ticket, uuid = ticket_uuid)
 
-        # Get ticket to be cancelled
-        ticket = get_object_or_404(Ticket, pk = ticket_id)
+    # Create a refund and add the ticket
+    refund = Refund(
+        user = request.user,
+        customer = request.user.email,
+        completed = datetime.now(),
+    )
+    refund.save()
+    ticket.refund = refund
+    ticket.save()
+    logger.info("%s ticket for %s cancelled", ticket.description, ticket.performance)
+    messages.success(request, f"{ticket.description} ticket for {ticket.performance} cancelled")
 
-        # Delete ticket
-        logger.info("%s ticket for %s cancelled", ticket.description, ticket.performance)
-        messages.success(request, f"{ticket.description} ticket for {ticket.performance} cancelled")
-        ticket.delete()
-
-        # Redisplay tickets
-        return redirect(reverse("tickets:show"))
+    # Redisplay tickets
+    return redirect(reverse("tickets:myaccount"))
 
     
 class TheatrefestBuyView(LoginRequiredMixin, View):

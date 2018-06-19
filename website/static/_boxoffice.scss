@@ -1,7 +1,13 @@
 // Box office
-#tf-boxoffice {
+#tf-boxoffice-main {
 
     .tab-content {
         margin-top: 15px;
+    }
+
+    #admission-tickets {
+        tr.cancelled {
+            text-decoration: line-through;
+        }
     }
 }

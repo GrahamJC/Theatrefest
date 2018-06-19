@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from django.db import IntegrityError
 from django.db import models
 from django.db.models.fields.related import OneToOneField, ReverseOneToOneDescriptor
@@ -13,6 +15,7 @@ class TimeStampedModel(models.Model):
 
     created = models.DateTimeField(auto_now_add = True)
     updated = models.DateTimeField(auto_now = True)
+    uuid = models.UUIDField(unique = True, default = uuid4, editable = False)
 
 
 class AutoSingleRelatedObjectDescriptor(ReverseOneToOneDescriptor):

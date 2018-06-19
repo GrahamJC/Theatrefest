@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block pagetitle %}system administration{% endblock %}
+
+{% block content %}
+
+    <div id="tf-boxoffice-main">
+
+        <div class="row">
+            <div class="col-xs-12">
+                <ul class="nav nav-tabs nav-justified">
+                    <li id="volunteers-tab" {% if tab == 'volunteers' %}class="active"{% endif %}><a href="#volunteers-tab-content" data-toggle="tab">Volunteers</a></li>
+                    <li id="reports-tab" {% if tab == 'reports' %}class="active"{% endif %}><a href="#reports-tab-content" data-toggle="tab">Reports</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tab-content">
+
+            <div id="volunteers-tab-content" class="tab-pane {% if tab == 'volunteers' %}active{% endif %}">
+                {% include 'sysadmin/_main_volunteers.html' %}
+            </div>
+
+            <div id="reports-tab-content" class="tab-pane {% if tab == 'reports' %}active{% endif %}">
+                {% include 'sysadmin/_main_reports.html' %}
+            </div>
+
+        </div>
+
+{% endblock %}

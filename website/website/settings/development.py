@@ -2,6 +2,7 @@ from .base import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+TRAINING = True
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -19,8 +20,8 @@ DATABASES = {
         'NAME': 'theatrefest',
         'USER': 'theatrefest',
         'PASSWORD': 'barnum',
-#        'HOST': 'localhost',
-        'HOST': 'theatrefest.ukwest.cloudapp.azure.com',
+        'HOST': 'localhost',
+#        'HOST': 'theatrefest.ukwest.cloudapp.azure.com',
         'PORT': '5432',
     },
 }
@@ -94,13 +95,9 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = "postmaster@mg.theatrefest.co.uk"
 EMAIL_HOST_PASSWORD = get_secret("MAILGUN_EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
-#EMAIL_HOST = "smtp.sendgrid.net"
-#EMAIL_PORT = 465
-#EMAIL_HOST_USER = "apikey"
-#EMAIL_HOST_PASSWORD = get_secret("SENDGRID_EMAIL_HOST_PASSWORD")
-#EMAIL_USE_SSL = True
-#EMAIL_HOST = "ssrs.reachmail.net"
-#EMAIL_PORT = 465
-#EMAIL_HOST_USER = "GCCONSUL2\graham"
-#EMAIL_HOST_PASSWORD = get_secret("EASYSMTP_EMAIL_HOST_PASSWORD")
-#EMAIL_USE_SSL = True
+
+# Stripe
+STRIPE_PUBLIC_KEY = get_secret("STRIPE_TEST_PUBLIC_KEY")
+STRIPE_PRIVATE_KEY = get_secret("STRIPE_TEST_PRIVATE_KEY")
+STRIPE_FEE_FIXED = Decimal(0.2)
+STRIPE_FEE_PERCENT = Decimal(0.014)

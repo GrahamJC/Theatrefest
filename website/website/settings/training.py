@@ -2,10 +2,10 @@ from .base import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-TRAINING = False
+TRAINING = True
 
 ALLOWED_HOSTS = [
-    'tickets.theatrefest.co.uk',
+    'training.theatrefest.co.uk',
 ]
 
 INTERNAL_IPS = [
@@ -15,7 +15,7 @@ INTERNAL_IPS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'theatrefest',
+        'NAME': 'training',
         'USER': 'theatrefest',
         'PASSWORD': 'barnum',
         'HOST': 'localhost',
@@ -97,7 +97,7 @@ EMAIL_HOST_PASSWORD = get_secret("MAILGUN_EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
 
 # Stripe
-STRIPE_PUBLIC_KEY = get_secret("STRIPE_PUBLIC_KEY")
-STRIPE_PRIVATE_KEY = get_secret("STRIPE_PRIVATE_KEY")
+STRIPE_PUBLIC_KEY = get_secret("STRIPE_TEST_PUBLIC_KEY")
+STRIPE_PRIVATE_KEY = get_secret("STRIPE_TEST_PRIVATE_KEY")
 STRIPE_FEE_FIXED = Decimal(0.2)
 STRIPE_FEE_PERCENT = Decimal(0.014)

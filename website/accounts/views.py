@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.views import View
 from django.shortcuts import render
 from django.contrib.auth.views import LoginView as BaseLoginView
@@ -7,9 +8,11 @@ from django.urls import reverse, reverse_lazy
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Hidden, Submit
 
-from registration.backends.default.views import RegistrationView as BaseRegistrationView
+if settings.TRAINING:
+    from registration.backends.simple.views import RegistrationView as BaseRegistrationView
+else:
+    from registration.backends.default.views import RegistrationView as BaseRegistrationView
 from registration.backends.default.views import ActivationView as BaseActivationView
-#from registration.backends.simple.views import RegistrationView as BaseRegistrationView
 
 class LoginView(BaseLoginView):
 
