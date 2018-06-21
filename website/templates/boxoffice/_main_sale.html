@@ -3,51 +3,79 @@
 
 <div class="row">
     <div class="col-xs-6">
-        <div class="panel panel-default">
-            <div class="panel-heading"><h4 class="panel-title">Tickets</h4></div>
-            <div class="panel-body">
-                {% if sale.completed %}
-                    <div class="well">
-                        You must start a new sale to add tickets.
-                    </div>
-                {% else %}
-                    <form id="sale-tickets-form" class="form-horizontal">
+        {% if not sale or sale.completed %}
+            <div class="panel panel-default">
+                <div class="panel-heading"><h4 class="panel-title">New Sale</h4></div>
+                <div class="panel-body">
+                    <p>To start a new sale enter the customer name or e-mail address and click Start.</p>
+                    <p><strong>Important:</strong> if the customer wants to purchase tickets using an eFringer you must enter the e-mail address of the account used to purchase the eFringer.</p>
+                    <form id="sale-customer-form" class="form-horizontal">
                         {% csrf_token %}
                         <div class="form-group">
                             <div class="col-xs-12">
-                                {{ sale_tickets_form.show_id | add_css_class:'form-control' }}
+                                {{ sale_customer_form.customer | add_css_class:'form-control' }}
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="tf-form-actions">
+                            <button type="submit" class="btn btn-primary">Start</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <div class="panel panel-default">
+                <div class="panel-heading"><h4 class="panel-title">Tickets</h4></div>
+                <div class="panel-body">
+                    <form id="sale-tickets-form" class="form-horizontal" novalidate>
+                        {% csrf_token %}
+                        <div class="form-group {% if sale_tickets_form.show.errors %}has-error{% endif %}">
                             <div class="col-xs-12">
-                                {{ sale_tickets_form.performance_id | add_css_class:'form-control' }}
+                                {{ sale_tickets_form.show | add_css_class:'form-control' }}
+                                {% for error in sale_tickets_form.show.errors %}
+                                    <p class="help-block">{{ error }}</p>
+                                {% endfor %}
                             </div>
                         </div>
-                        <div class="form_group">
-                            {{ sale_ticket_subforms.management_form }}
-                            {% for form in sale_ticket_subforms.forms %}
-                                <div class="form-group">
-                                    <div class="col-xs-6">{{ form.type_id }}<p class="form-control-static">{{ form.name }}{{ form.name.value }}</p></div>
-                                    <div class="col-xs-2">{{ form.price }}{% if form.price.value %}<p class="form-control-static">&#163;{{ form.price.value | floatformat }}</p>{% endif %}</div>
-                                    <div class="col-xs-4">{{ form.quantity | add_css_class:'form-control' }}</div>
-                                </div>
-                            {% endfor %}
+                        <div class="form-group {% if sale_tickets_form.performance.errors %}has-error{% endif %}">
+                            <div class="col-xs-12">
+                                {{ sale_tickets_form.performance | add_css_class:'form-control' }}
+                                {% for error in sale_tickets_form.performance.errors %}
+                                    <p class="help-block">{{ error }}</p>
+                                {% endfor %}
+                            </div>
                         </div>
+                        {{ sale_ticket_subforms.management_form }}
+                        {% for form in sale_ticket_subforms.forms %}
+                            <div class="form-group">
+                                <div class="col-xs-6">{{ form.type_id }}<p class="form-control-static">{{ form.name }}{{ form.name.value }}</p></div>
+                                <div class="col-xs-2">{{ form.price }}{% if form.price.value %}<p class="form-control-static">&#163;{{ form.price.value | floatformat }}</p>{% endif %}</div>
+                                <div class="col-xs-4">{{ form.quantity | add_css_class:'form-control' }}</div>
+                            </div>
+                        {% endfor %}
+                        {{ sale_fringer_subforms.management_form }}
+                        {% for form in sale_fringer_subforms.forms %}
+                            <div {% if form.errors %}class="has-error"{% endif %}>
+                                {{ form.fringer_id }}{{ form.name }}
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.buy }}
+                                        eFringer: {{ form.name.value }}
+                                    </label>
+                                </div>
+                                {% for error in form.buy.errors %}
+                                    <p class="help-block">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
                         <div class="tf-form-actions">
                             <button type="submit" class="btn btn-primary">Add</button>
                         </div>
                     </form>
-                {% endif %}
+                </div>
             </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-heading"><h4 class="panel-title">Extras</h4></div>
-            <div class="panel-body">
-                {% if sale.completed %}
-                    <div class="well">
-                        You must start a new sale to add buttons and fringers.
-                    </div>
-                {% else %}
+            <div class="panel panel-default">
+                <div class="panel-heading"><h4 class="panel-title">Extras</h4></div>
+                <div class="panel-body">
                     <form id="sale-extras-form" class="form-horizontal">
                         {% csrf_token %}
                         {% crispy sale_extras_form %}
@@ -55,61 +83,44 @@
                             <button type="submit" class="btn btn-primary">Add/Update</button>
                         </div>
                     </form>
-                {% endif %}
+                </div>
             </div>
-        </div>
-
+        {% endif %}
     </div>
 
     <div class="col-xs-6">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h4 class="panel-title">{% if sale.completed %}Sale Confirmed{% else %}New Sale{% endif %}</h4>
+        {% if not sale %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Information</h4>
+                </div>
+                <div class="panel-body">
+                    This area will be used to display notifications from the system administrator.
+                </div>
             </div>
-            <div class="panel-body">
-                {% if not sale %}
-                    <div class="well">
-                        <ul>
-                            <li>Add items using the panels on the left.</li>
-                            <li>When all items have been added enter the customer name and click Complete to confirm the sale.</li>
-                            <li>Once the sale is confirmed you can Print or E-mail the receipt.</li>
-                        </ul>
-                    </div>
-                {% else %}
-                    {% if sale.completed %}
-                        <div class="row">
-                            <div class="col-xs-12 tf-form-actions">
-                                <button class="btn btn-primary">E-mail</button>
-                                <a class="btn btn-primary" href="{% url 'reports:sale_pdf' sale.id %}" target="_blank">PDF</a>
-                                <a class="btn btn-primary" href="#" onclick="$('#sale-tab-content').load('{% url "boxoffice:sale_new" %}')">New Sale</a>
-                            </div>
-                        </div>
-                    {% else %}
-                        <form id="sale-form" class="form-horizontal">
-                            {% csrf_token %}
-                            {% crispy sale_form %}
-                            <div class="row form-group">
-                                <div class="col-xs-12 tf-form-actions">
-                                    <button type="submit" class="btn btn-primary">Complete</button>
-                                    <a class="btn btn-primary" href="#" onclick="$('#sale-tab-content').load('{% url "boxoffice:sale_cancel" %}')">Cancel</a>
-                                </div>
-                            </div>
-                        </form>
-                    {% endif %}
+        {% else %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        {{ sale.customer }}
+                        <i class="fa fa-user-circle {% if sale.customer_user %}registered{% endif %}"></i>
+                    </h4>
+                </div>
+                <div class="panel-body">
                     {% if sale.buttons %}
-                        <div class="row">
+                        <div class="row form-group">
                             <div class="col-xs-9"><strong>{{ sale.buttons }} x Buttons</strong></div>
                             <div class="col-xs-3 text-right">&#163;{{ sale.button_cost }}</div>
                         </div>
                     {% endif %}
                     {% for fringer in sale.fringers.all %}
-                        <div class="row">
+                        <div class="row form-group">
                             <div class="col-xs-9"><strong>eFringer Voucher: {{ fringer.description }}</strong></div>
                             <div class="col-xs-3 text-right">&#163;{{ fringer.cost }}</div>
                         </div>
                     {% endfor %}
                     {% for performance in sale.performances %}
-                        <div class="row">
+                        <div class="row form-group">
                             <div class="col-xs-9"><strong>{{ performance.show }}</strong></div>
                             <div class="col-xs-3 text-right">&#163;{{ performance.ticket_cost }}</div>
                             <div class="col-xs-6">{{ performance.date | date:"D, jS M" }} at {{ performance.time }}</div>
@@ -128,13 +139,24 @@
                             </div>
                         </div>
                     {% endfor %}
-                    <div class="row">
+                    <div class="row form-group">
                         <div class="col-xs-9"><strong>Total</strong></div>
                         <div class="col-xs-3 text-right">{% if sale %}&#163;{{ sale.total_cost }}{% endif %}</div>
                     </div>
-                {% endif %}
+                    <div class="row">
+                        <div class="col-xs-12 tf-form-actions">
+                            {% if sale.completed %}
+                                <button class="btn btn-primary">E-mail</button>
+                                <a class="btn btn-primary" href="{% url 'reports:sale_pdf' sale.id %}" target="_blank">PDF</a>
+                            {% else %}
+                                <a class="btn btn-primary" href="#" onclick="$('#sale-tab-content').load('{% url "boxoffice:sale_complete" %}')">Complete</a>
+                                <a class="btn btn-primary" href="#" onclick="$('#sale-tab-content').load('{% url "boxoffice:sale_cancel" %}')">Cancel</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+        {% endif %}
     </div>
 </div>
 
@@ -142,11 +164,18 @@
 
     function onSaleTicketsShowChange() {
         var show_id = $(this).val();
-        $('#{{ sale_tickets_form.performance_id.auto_id }}').load('{% url 'boxoffice:sale_show_performances' 0 %}'.replace('/0', '/' + show_id));
+        $('#{{ sale_tickets_form.performance.auto_id }}').load('{% url 'boxoffice:sale_show_performances' 0 %}'.replace('/0', '/' + show_id));
     }
 
     $( function() {
-        $('#{{ sale_tickets_form.show_id.auto_id }}').on('change', onSaleTicketsShowChange );
+        {% if sale_tickets_form %}
+            $('#{{ sale_tickets_form.show.auto_id }}').on('change', onSaleTicketsShowChange );
+        {% endif %}
+        $('#sale-customer-form').submit(function (event) {
+            event.preventDefault();
+            var postData = $('#sale-customer-form').serializeArray()
+            $('#sale-tab-content').load('{% url "boxoffice:sale_start" %}', postData);
+        });
         $('#sale-tickets-form').submit(function (event) {
             event.preventDefault();
             var postData = $('#sale-tickets-form').serializeArray()

@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.db import models
 from decimal import Decimal, ROUND_05UP
@@ -13,9 +14,18 @@ class Sale(TimeStampedModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.PROTECT, related_name = 'sales')
     customer = models.CharField(max_length = 64, blank = True, default = '')
     buttons = models.IntegerField(blank = True, default = 0)
-    amount = models.DecimalField(blank = True, default = 0, max_digits = 4, decimal_places = 2)
+    amount = models.DecimalField(blank = True, default = 0, max_digits = 5, decimal_places = 2)
     stripe_fee = models.DecimalField(blank = True, default = 0, max_digits = 4, decimal_places = 2)
     completed = models.DateTimeField(null = True, blank = True)
+
+    @property
+    def customer_user(self):
+        user_model = get_user_model()
+        try:
+            user = user_model.objects.get(email = self.customer)
+        except user_model.DoesNotExist:
+            user = None
+        return user
 
     @property
     def is_empty(self):
@@ -58,13 +68,16 @@ class Sale(TimeStampedModel):
             performances.append(performance)
         return performances
 
+    def __str__(self):
+        return f'{self.id} ({self.customer})'
+
 
 class Refund(TimeStampedModel):
 
     box_office = models.ForeignKey(BoxOffice, null = True, blank = True, on_delete = models.PROTECT, related_name = 'refunds')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.PROTECT, related_name = 'refunds')
     customer = models.CharField(max_length = 64, blank = True, default = '')
-    amount = models.DecimalField(blank = True, default = 0, max_digits = 4, decimal_places = 2)
+    amount = models.DecimalField(blank = True, default = 0, max_digits = 5, decimal_places = 2)
     reason = models.TextField()
     completed = models.DateTimeField(null = True, blank = True)
 
@@ -96,6 +109,9 @@ class Refund(TimeStampedModel):
             }
             performances.append(performance)
         return performances
+
+    def __str__(self):
+        return f'{self.id} ({self.customer})'
 
 
 class Basket(TimeStampedModel):
@@ -205,20 +221,24 @@ class Fringer(TimeStampedModel):
 
     @property
     def used(self):
-        return self.tickets.count()
+        return self.tickets.filter(refund = None).count()
 
     @property
     def available(self):
         return self.shows - self.used
 
+    @property
+    def valid_tickets(self):
+        return self.tickets.exclude(refund__isnull = False)
+
     def is_available(self, performance = None):
-        return (self.available > 0) and ((performance == None) or (performance not in [t.performance for t in self.tickets.all()]))
+        return (self.available > 0) and ((performance == None) or (performance not in [t.performance for t in self.tickets.filter(refund = None)]))
 
     def __str__(self):
         return "{0}:{1}".format(self.user.username, self.name)
 
     def get_available(user, performance = None):
-        return list(filter(lambda f: f.is_available(performance), user.fringers.exclude(basket__isnull=False)))
+        return [f for f in user.fringers.exclude(sale__completed__isnull = True) if f.is_available(performance)]
 
 class TicketType(TimeStampedModel):
 
@@ -266,5 +286,10 @@ class Ticket(TimeStampedModel):
         return (self.refund != None)
 
     def __str__(self):
-        customer = self.sale.customer if self.sale else self.user.email
-        return "{0} ({1}) for {2}".format(customer, self.description, self.performance)
+        if self.sale:
+            customer = self.sale.customer
+        elif self.basket:
+            customer = f'Basket: {self.basket.user.email}'
+        else:
+            customer = '[unknown]'
+        return "{0} ({1}): {2}".format(self.description, customer, self.performance)

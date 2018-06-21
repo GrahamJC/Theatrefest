@@ -19,10 +19,11 @@ from crispy_forms.bootstrap import FormActions, StrictButton
 
 import arrow
 
+from accounts.models import User
 from program.models import Show, Performance
 from tickets.models import BoxOffice, Sale, Refund, TicketType, Ticket, Fringer
 
-from .forms import SaleTicketsForm, SaleTicketSubForm, SaleExtrasForm, SaleForm, RefundTicketForm, RefundForm
+from .forms import CustomerForm, SaleTicketsForm, SaleTicketSubForm, SaleFringerSubForm, SaleExtrasForm, RefundTicketForm, RefundForm
 
 # Logging
 import logging
@@ -40,16 +41,17 @@ def _get_sale(request):
         request.session['sale_id'] = None
     return sale
 
-def _create_sale(request):
-    sale = Sale(
-        box_office = _get_box_office(request),
-        user = request.user
-    )
-    sale.save()
-    request.session['sale_id'] = sale.id
-    return sale
+def _create_customer_form(post_data = None):
+    # Create form and add crispy helper
+    form = CustomerForm(post_data)
+    helper = FormHelper()
+    helper.form_tag = False
+    helper.label_class = "col-xs-12 col-sm-3"
+    helper.field_class= "col-xs-12, col-sm-9"
+    form.helper = helper
+    return form
 
-def _create_sale_tickets_form(post_data = None):
+def _create_sale_tickets_form(sale, post_data = None):
     # Create form and add crispy helper
     form = SaleTicketsForm(post_data)
     helper = FormHelper()
@@ -59,22 +61,30 @@ def _create_sale_tickets_form(post_data = None):
     form.helper = helper
     return form
 
-def _create_sale_ticket_subforms(post_data = None):
+def _create_sale_ticket_subforms(sale, post_data = None):
     # Build and populate ticket formset
     TicketFormset = formset_factory(SaleTicketSubForm, extra = 0)
     initial_data = [{'type_id': t.id, 'name': t.name, 'price': t.price, 'quantity': 0} for t in TicketType.objects.filter(is_admin = False)]
-    return TicketFormset(post_data, initial=initial_data)
+    return TicketFormset(post_data, prefix = 'ticket', initial = initial_data)
+
+def _create_sale_fringer_subforms(sale, post_data = None):
+    # Build and populate ticket formset
+    FringerFormset = formset_factory(SaleFringerSubForm, extra = 0)
+    initial_data = []
+    customer_user = sale and sale.customer_user
+    if customer_user:
+        initial_data = [{'fringer_id': f.id, 'name': f.name, 'buy': False} for f in customer_user.fringers.all() if f.is_available]
+    return FringerFormset(post_data, prefix = 'fringer', initial = initial_data)
 
 def _create_sale_extras_form(sale, post_data = None):
     # Create form and add crispy helper
-    if post_data:
-        form = SaleExtrasForm(post_data)
-    else:
-        data = {
+    initial_data = {}
+    if sale:
+        initial_data = {
             'buttons': sale.buttons if sale else 0,
             'fringers': sale.fringers.count() if sale else 0,
         }
-        form = SaleExtrasForm(initial = data)
+    form = SaleExtrasForm(post_data, initial = initial_data)
     helper = FormHelper()
     helper.form_tag = False
     helper.label_class = "col-xs-12 col-sm-3"
@@ -82,29 +92,14 @@ def _create_sale_extras_form(sale, post_data = None):
     form.helper = helper
     return form
 
-def _create_sale_form(sale, post_data = None):
-    # Create form and add crispy helper
-    if post_data:
-        form = SaleForm(post_data)
-    else:
-        data = {
-            'amount': sale.total_cost if sale else 0,
-        }
-        form = SaleForm(initial = data)
-    helper = FormHelper()
-    helper.form_tag = False
-    helper.label_class = "col-xs-12 col-sm-3"
-    helper.field_class= "col-xs-12, col-sm-9"
-    form.helper = helper
-    return form
-
-def _render_sale(request, sale_tickets_form = None, sale_ticket_subforms = None, sale_extras_form = None, sale_form = None):
+def _render_sale(request, customer_form = None, tickets_form = None, ticket_subforms = None, fringer_subforms = None, extras_form = None):
     sale = _get_sale(request)
     context = {
-        'sale_tickets_form': sale_tickets_form or _create_sale_tickets_form(),
-        'sale_ticket_subforms': sale_ticket_subforms or _create_sale_ticket_subforms(),
-        'sale_extras_form': sale_extras_form or _create_sale_extras_form(sale),
-        'sale_form': sale_form or _create_sale_form(sale),
+        'sale_customer_form': customer_form or _create_customer_form(),
+        'sale_tickets_form': tickets_form or _create_sale_tickets_form(sale),
+        'sale_ticket_subforms': ticket_subforms or _create_sale_ticket_subforms(sale),
+        'sale_fringer_subforms': fringer_subforms or _create_sale_fringer_subforms(sale),
+        'sale_extras_form': extras_form or _create_sale_extras_form(sale),
         'sale': sale,
     }
     return render(request, "boxoffice/_main_sale.html", context)
@@ -169,11 +164,15 @@ def select(request, box_office_id = None):
     # If a box office is specified select it, cancel any incomplete sales/refunds
     # and go to the main box office page
     if box_office_id:
+        box_office = get_object_or_404(BoxOffice, pk = box_office_id)
+        logger.info("Box office selected: %s", box_office.name)
         request.session['box_office_id'] = box_office_id
         for sale in request.user.sales.filter(completed__isnull = True):
+            logger.info("Incomplete sale %s cancelled", sale)
             sale.delete();
         request.session['sale_id'] = None
         for refund in request.user.refunds.filter(completed__isnull = True):
+            logger.info("Incomplete refund %s cancelled", refund)
             refund.delete();
         request.session['refund_id'] = None
         return redirect(reverse('boxoffice:main'))
@@ -202,10 +201,11 @@ def main(request, tab = 'sale'):
     context = {
         'box_office': box_office,
         'tab': tab,
-        'sale_tickets_form': _create_sale_tickets_form(),
-        'sale_ticket_subforms': _create_sale_ticket_subforms(),
+        'sale_customer_form': _create_customer_form(),
+        'sale_tickets_form': _create_sale_tickets_form(sale),
+        'sale_ticket_subforms': _create_sale_ticket_subforms(sale),
+        'sale_fringer_subforms': _create_sale_fringer_subforms(sale),
         'sale_extras_form': _create_sale_extras_form(sale),
-        'sale_form': _create_sale_form(sale),
         'sale': sale,
         'refund_ticket_form': _create_refund_ticket_form(),
         'refund_form': _create_refund_form(refund),
@@ -216,10 +216,11 @@ def main(request, tab = 'sale'):
     return render(request, 'boxoffice/main.html', context)
 
 # AJAX sale support
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 def sale_show_performances(request, show_id):
 
     show = get_object_or_404(Show, pk = show_id)
-    html = '<option value="0">-- Select performance --</option>'
+    html = '<option value="">-- Select performance --</option>'
     for performance in show.performances.order_by('date', 'time'):
         dt = datetime.datetime.combine(performance.date, performance.time)
         if dt >= datetime.datetime.now():
@@ -227,94 +228,156 @@ def sale_show_performances(request, show_id):
             html += f'<option value="{performance.id}">{dt:ddd, MMM D} at {dt:h:mm a} ({performance.tickets_available} tickets available)</option>'
     return HttpResponse(html)
     
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
+@transaction.atomic
+def sale_start(request):
+    sale = _get_sale(request)
+    if sale:
+        logger.error('sale_start: sale already active')
+    else:
+        form = _create_customer_form(request.POST)
+        if form.is_valid():
+            customer = form.cleaned_data['customer']
+            sale = Sale(
+                user = request.user,
+                customer = customer,
+            )
+            sale.save()
+            request.session['sale_id'] = sale.id
+            form = None
+            logger.info("Sale %s started", sale)
+    return _render_sale(request, form, None, None, None, None)
+
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 @transaction.atomic
 def sale_add_tickets(request):
+
+    # Initialize forms
+    tickets_form = None
+    ticket_subforms = None
+    fringer_subforms = None
+
+    # Get sale
     sale = _get_sale(request)
-    sale_tickets_form = _create_sale_tickets_form(request.POST)
-    sale_ticket_subforms = _create_sale_ticket_subforms(request.POST)
-    if sale_tickets_form.is_valid() and sale_ticket_subforms.is_valid():
+    if not sale:
+        logger.error('sale_add_tickets: no active sale')
+    elif sale.completed:
+        logger.error('sale_add_tickets: sale completed')
+    else:
+        # Get performance
+        tickets_form = _create_sale_tickets_form(sale, request.POST)
+        ticket_subforms = _create_sale_ticket_subforms(sale, request.POST)
+        fringer_subforms = _create_sale_fringer_subforms(sale, request.POST)
+        if tickets_form.is_valid():
+            performance = tickets_form.cleaned_data['performance']
 
-        # Get perforamnce and total number of tickets being purchased
-        performance = get_object_or_404(Performance, pk = sale_tickets_form.cleaned_data['performance_id'])
-        tickets_requested = sum([f.cleaned_data['quantity'] for f in sale_ticket_subforms])
+            # Validate ticket and fringer subforms
+            for form in fringer_subforms:
+                form.performance = performance
+            if ticket_subforms.is_valid() and fringer_subforms.is_valid():
 
-        # Check if there are enought tickets available
-        if tickets_requested <= performance.tickets_available:
+                # Get total number of tickets
+                tickets_requested = sum([f.cleaned_data['quantity'] for f in ticket_subforms]) + sum([1 for f in fringer_subforms if f.cleaned_data['buy']])
 
-            # Create a new sale if there is not one currently active
-            if not sale:
-                sale = _create_sale(request)
+                # Check if there are enought tickets available
+                if tickets_requested <= performance.tickets_available:
 
-            # Add tickets
-            for form in sale_ticket_subforms:
+                    # Add tickets
+                    for form in ticket_subforms:
 
-                # Get ticket type and quantity                
-                ticket_type = get_object_or_404(TicketType, pk =  form.cleaned_data['type_id'])
-                quantity = form.cleaned_data['quantity']
+                        # Get ticket type and quantity                
+                        ticket_type = get_object_or_404(TicketType, pk =  form.cleaned_data['type_id'])
+                        quantity = form.cleaned_data['quantity']
 
-                # Add tickets to sale
-                if quantity > 0:
-                    for i in range(0, quantity):
-                        ticket = Ticket(
-                            sale = sale,
-                            performance = performance,
-                            description = ticket_type.name,
-                            cost = ticket_type.price,
-                        )
-                        ticket.save()
+                        # Add tickets to sale
+                        if quantity > 0:
+                            for i in range(0, quantity):
+                                ticket = Ticket(
+                                    sale = sale,
+                                    user = sale.customer_user,
+                                    performance = performance,
+                                    description = ticket_type.name,
+                                    cost = ticket_type.price,
+                                )
+                                ticket.save()
+                                logger.info("Sale %s ticket added: %s", sale, ticket)
 
-                    # Confirm purchase
-                    logger.info("%d x %s tickets added to sale: %s", quantity, ticket_type, performance)
+                    # Add fringer tickets
+                    for form in fringer_subforms:
+                        if form.cleaned_data['buy']:
+                            fringer = get_object_or_404(Fringer, pk =  form.cleaned_data['fringer_id'])
+                            ticket = Ticket(
+                                sale = sale,
+                                user = sale.customer_user,
+                                performance = performance,
+                                fringer = fringer,
+                                description = 'eFringer',
+                                cost = 0,
+                            )
+                            ticket.save()
+                            logger.info("Sale %s ticket added: %s", sale, ticket)
 
-            # Reset ticket form/formset
-            sale_tickets_form = None
-            sale_ticket_subforms = None
+                    # Reset ticket form/formset
+                    tickets_form = None
+                    ticket_subforms = None
+                    fringer_subforms = None
 
-        # Insufficient tickets available
-        else:
-            logger.info("Tickets not available (%d requested, %d available): %s", tickets_requested, performance.tickets_available, performance)
-            messages.error(request, f"There are only {performance.tickets_available} tickets available for this perfromance.")
+                # Insufficient tickets available
+                else:
+                    logger.info("Sale %s tickets not available (%d requested, %d available): %s", sale, tickets_requested, performance.tickets_available, performance)
+                    messages.error(request, f"There are only {performance.tickets_available} tickets available for this perfromance.")
 
-    return _render_sale(request, sale_tickets_form, sale_ticket_subforms, None, None)
+    return _render_sale(request, None, tickets_form, ticket_subforms, fringer_subforms, None)
 
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 @transaction.atomic
 def sale_update_extras(request):
-    sale = _get_sale(request)
-    sale_extras_form = _create_sale_extras_form(sale, request.POST)
-    if sale_extras_form.is_valid():
-        if not sale:
-            sale = _create_sale(request)
-        sale.buttons = sale_extras_form.cleaned_data['buttons']
-        sale.save()
-        fringers = sale_extras_form.cleaned_data['fringers']
-        while (sale.fringers.count() or 0) > fringers:
-            sale.fringers.first().delete()
-        while (sale.fringers.count() or 0) < fringers:
-            fringer = Fringer(
-                description = '6 shows for £18',
-                shows = 6,
-                cost = 18,
-                sale = sale,
-            )
-            fringer.save()
-        sale_extras_form = None
-    return _render_sale(request, None, None, sale_extras_form, None)
 
+    # Initialize forms
+    extras_form = None
+
+    # Get sale
+    sale = _get_sale(request)
+    if not sale:
+        logger.error('sale_update_extras: no active sale')
+    elif sale.completed:
+        logger.error('sale_update_extras: sale completed')
+    else:
+        extras_form = _create_sale_extras_form(sale, request.POST)
+        if extras_form.is_valid():
+            sale.buttons = extras_form.cleaned_data['buttons']
+            sale.save()
+            fringers = extras_form.cleaned_data['fringers']
+            while (sale.fringers.count() or 0) > fringers:
+                sale.fringers.first().delete()
+            while (sale.fringers.count() or 0) < fringers:
+                fringer = Fringer(
+                    description = '6 shows for £18',
+                    shows = 6,
+                    cost = 18,
+                    sale = sale,
+                )
+                fringer.save()
+            logger.info("Sale %s extras updated: %d buttons, %d fringers", sale, sale.buttons, sale.fringers.count())
+            extras_form = None
+    return _render_sale(request, None, None, None, None, extras_form)
+
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 @transaction.atomic
 def sale_remove_performance(request, performance_id):
     sale = _get_sale(request)
-    if sale:
+    if not sale:
+        logger.error('sale_remove_performance: no active sale')
+    else:
+        performance = get_object_or_404(Performance, pk = performance_id)
+        tickets = sale.tickets.count()
         for ticket in sale.tickets.all():
             if ticket.performance_id == performance_id:
                 ticket.delete()
-        if sale.is_empty:
-            sale.delete()
-            sale = None
-            request.session['sale_id'] = None
-    else:
-        logger.error('sale_remove_performance: no active sale')
+        logger.info("Sale %s performance removed (%d tickets): %s", sale, tickets, performance)
     return _render_sale(request)
 
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 @transaction.atomic
 def sale_remove_ticket(request, ticket_id):
     sale = _get_sale(request)
@@ -322,11 +385,8 @@ def sale_remove_ticket(request, ticket_id):
         try:
             ticket = Ticket.objects.get(pk = ticket_id)
             if ticket.sale == sale:
+                logger.info("Sale %s ticket removed: %s", sale, ticket)
                 ticket.delete()
-            if sale.is_empty:
-                sale.delete()
-                sale = None
-                request.session['sale_id'] = None
             else:
                 logger.error('sale_remove_ticket: ticket %d not part of sale %d', ticket.id, sale.id)
         except Ticket.DoesNotExist:
@@ -335,23 +395,22 @@ def sale_remove_ticket(request, ticket_id):
         logger.error('sale_remove_ticket: no active sale')
     return _render_sale(request)
 
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 @transaction.atomic
 def sale_complete(request):
     sale = _get_sale(request)
-    sale_form = _create_sale_form(sale, request.POST)
-    if sale_form.is_valid():
-        if not sale:
-            logger.error('sale_complete: no active sale')
-        elif sale.completed:
-            logger.error('sale_complete: sale completed')
-        else:
-            sale.customer = sale_form.cleaned_data['customer']
-            sale.amount = sale_form.cleaned_data['amount']
-            sale.completed = datetime.datetime.now()
-            sale.save()
-            sale_form = None
-    return _render_sale(request, None, None, None, sale_form)
+    if not sale:
+        logger.error('sale_complete: no active sale')
+    elif sale.completed:
+        logger.error('sale_complete: sale completed')
+    else:
+        sale.amount = sale.total_cost
+        sale.completed = datetime.datetime.now()
+        sale.save()
+        logger.info("Sale %s completed", sale)
+    return _render_sale(request, None, None, None, None, None)
 
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 @transaction.atomic
 def sale_cancel(request):
     sale = _get_sale(request)
@@ -360,23 +419,13 @@ def sale_cancel(request):
     elif sale.completed:
         logger.error('sale_cancel: sale completed')
     else:
+        logger.info("Sale %s cancelled", sale)
         sale.delete()
         request.session['sale_id'] = None
     return _render_sale(request)
 
-@transaction.atomic
-def sale_new(request):
-    sale = _get_sale(request)
-    if not sale:
-        logger.error('sale_new: no active sale')
-    elif not sale.completed:
-        logger.error('sale_new: sale not completed')
-    else:
-        sale = None
-        request.session['sale_id'] = None
-    return _render_sale(request)
-
 # AJAX refund support
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 @transaction.atomic
 def refund_add_ticket(request):
     refund = _get_refund(request)
@@ -398,6 +447,7 @@ def refund_add_ticket(request):
             refund_ticket_form.add_error('ticket_no', 'Ticket not found')
     return _render_refund(request, refund_ticket_form, None)
 
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 @transaction.atomic
 def refund_remove_ticket(request, ticket_id):
     refund = _get_refund(request)
@@ -419,6 +469,7 @@ def refund_remove_ticket(request, ticket_id):
         logger.error('refund_removeticket: no active refund')
     return _render_refund(request)
 
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 @transaction.atomic
 def refund_complete(request):
     refund = _get_refund(request)
@@ -437,6 +488,7 @@ def refund_complete(request):
             refund_form = None
     return _render_refund(request, None, refund_form)
 
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 @transaction.atomic
 def refund_cancel(request):
     refund = _get_refund(request)
@@ -449,6 +501,7 @@ def refund_cancel(request):
         request.session['refund_id'] = None
     return _render_refund(request)
 
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 @transaction.atomic
 def refund_new(request):
     refund = _get_refund(request)
@@ -462,6 +515,7 @@ def refund_new(request):
     return _render_refund(request)
 
 # AJAX admission support
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 def admission_shows(request):
 
     box_office = _get_box_office(request)
@@ -470,6 +524,7 @@ def admission_shows(request):
         html += f'<option value="{show.id}">{show.name}</option>'
     return HttpResponse(html)
 
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 def admission_show_performances(request, show_id):
 
     show = get_object_or_404(Show, pk = show_id)
@@ -479,15 +534,14 @@ def admission_show_performances(request, show_id):
         html += f'<option value="{performance.id}">{dt:ddd, MMM D} at {dt:h:mm a} ({performance.tickets_available} tickets available)</option>'
     return HttpResponse(html)
 
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 def admission_performance_tickets(request, performance_id):
 
     # Get performance
     performance = get_object_or_404(Performance, pk = performance_id)
 
-    # Get tickets for this performance (exclude tickets that are in a basket or part of an incomplete sale)
-    tickets = Ticket.objects.filter(performance = performance)
-    tickets = tickets.exclude(basket__isnull = False)
-    tickets = tickets.exclude(fringer__isnull = True, sale__completed__isnull = True)
+    # Get tickets for this performance (exclude tickets where the sale is incomplete)
+    tickets = Ticket.objects.filter(performance = performance, sale__completed__isnull = False)
 
     # Render report
     context = {
@@ -497,6 +551,7 @@ def admission_performance_tickets(request, performance_id):
     return render(request, 'boxoffice/admission_tickets.html', context)
 
 # Report AJAX support
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 def report_summary(request, yyyymmdd):
 
     # Get sales and refunds for this box office
@@ -527,6 +582,7 @@ def report_summary(request, yyyymmdd):
     }
     return render(request, 'boxoffice/report_summary.html', context)
 
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 def report_sales(request, yyyymmdd):
 
     # Get completed sales for this box office
@@ -541,6 +597,7 @@ def report_sales(request, yyyymmdd):
     }
     return render(request, 'boxoffice/report_sales.html', context)
 
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 def report_sale_detail(request, sale_id):
     sale = get_object_or_404(Sale, pk = sale_id)
     context = {
@@ -548,6 +605,7 @@ def report_sale_detail(request, sale_id):
     }
     return render(request, 'boxoffice/report_sale_detail.html', context)
 
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 def report_refunds(request, yyyymmdd):
 
     # Get completed refunds for this box office
@@ -562,6 +620,7 @@ def report_refunds(request, yyyymmdd):
     }
     return render(request, 'boxoffice/report_refunds.html', context)
 
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 def report_refund_detail(request, refund_id):
     refund = get_object_or_404(Refund, pk = refund_id)
     context = {

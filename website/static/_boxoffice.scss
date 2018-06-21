@@ -5,6 +5,14 @@
         margin-top: 15px;
     }
 
+    i.fa-user-circle {
+        float: right;
+        color: gray;
+        &.registered {
+            color: green;
+        }
+    }
+
     #admission-tickets {
         tr.cancelled {
             text-decoration: line-through;

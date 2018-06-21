@@ -14,6 +14,7 @@ urlpatterns = [
     path('main', views.main, name = 'main'),
     path('main/<str:tab>', views.main, name = 'main'),
     # Sale AJAX support
+    path('sale/start', views.sale_start, name = 'sale_start'),
     path('sale/show/<int:show_id>/performances', views.sale_show_performances, name = 'sale_show_performances'),
     path('sale/add/tickets', views.sale_add_tickets, name = 'sale_add_tickets'),
     path('sale/update/extras', views.sale_update_extras, name = 'sale_update_extras'),
@@ -21,7 +22,6 @@ urlpatterns = [
     path('sale/remove/ticket/<int:ticket_id>', views.sale_remove_ticket, name = 'sale_remove_ticket'),
     path('sale/complete', views.sale_complete, name = 'sale_complete'),
     path('sale/cancel', views.sale_cancel, name = 'sale_cancel'),
-    path('sale/new', views.sale_new, name = 'sale_new'),
     # Refund AJAX support
     path('refund/add/ticket', views.refund_add_ticket, name = 'refund_add_ticket'),
     path('refund/remove/ticket/<int:ticket_id>', views.refund_remove_ticket, name = 'refund_remove_ticket'),

@@ -18,6 +18,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'theatrefest',
+#        'NAME': 'training',
         'USER': 'theatrefest',
         'PASSWORD': 'barnum',
         'HOST': 'localhost',

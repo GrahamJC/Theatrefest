@@ -50,9 +50,9 @@ class MyAccountView(LoginRequiredMixin, View):
     def _get_performances(self, user):
         current = []
         past = []
-        for ticket in user.tickets.filter(basket = None).order_by('performance__date', 'performance__time', 'performance__show__name').values('performance_id').distinct():
+        for ticket in user.tickets.filter(basket = None, refund = None).order_by('performance__date', 'performance__time', 'performance__show__name').values('performance_id').distinct():
             performance = Performance.objects.get(pk = ticket['performance_id'])
-            tickets = user.tickets.filter(performance_id = ticket['performance_id'], basket = None, refund = None)
+            tickets = user.tickets.filter(performance_id = ticket['performance_id'], sale__completed__isnull = False, refund__isnull = True)
             p = {
                 'id': performance.id,
                 'show': performance.show.name,
@@ -68,7 +68,7 @@ class MyAccountView(LoginRequiredMixin, View):
 
     def _create_fringer_formset(self, user, post_data = None):
         FringerFormSet = modelformset_factory(Fringer, form = RenameFringerForm, extra = 0)
-        formset = FringerFormSet(post_data, queryset = user.fringers.filter(basket = None))
+        formset = FringerFormSet(post_data, queryset = user.fringers.exclude(sale__completed__isnull = True))
         return formset
 
     def _create_buy_fringer_form(self, user, post_data = None):
@@ -319,7 +319,7 @@ class BuyView(LoginRequiredMixin, View):
                         ticket = Ticket(
                             user = request.user,
                             performance = performance,
-                            description = "eFringer",
+                            description = 'eFringer',
                             cost = 0,
                             fringer = fringer,
                             sale = sale,
