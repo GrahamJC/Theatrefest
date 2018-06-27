@@ -11,8 +11,8 @@ class CustomerForm(forms.Form):
 
 class SaleTicketsForm(forms.Form):
 
-    show = forms.ModelChoiceField(Show.objects.none(), label = "Show", empty_label = '-- Select show --')
-    performance = forms.ModelChoiceField(Performance.objects.none(), label = "Performance", empty_label = '-- Select performance --')
+    show = forms.ModelChoiceField(Show.objects.none(), to_field_name = 'uuid', label = "Show", empty_label = '-- Select show --')
+    performance = forms.ModelChoiceField(Performance.objects.none(), to_field_name = 'uuid', label = "Performance", empty_label = '-- Select performance --')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -20,8 +20,8 @@ class SaleTicketsForm(forms.Form):
         self.fields['performance'].queryset = Performance.objects.none()
         if 'show' in self.data:
             try:
-                show_id = int(self.data.get('show'))
-                self.fields['performance'].queryset = Performance.objects.filter(show_id = show_id)
+                show_uuid = self.data.get('show')
+                self.fields['performance'].queryset = Performance.objects.filter(show__uuid = show_uuid)
             except:
                 pass
 
@@ -59,8 +59,8 @@ class SaleFringerSubForm(forms.Form):
 
 class SaleExtrasForm(forms.Form):
 
-    buttons = forms.IntegerField(required = False, min_value = 0)
-    fringers = forms.IntegerField(required = False, min_value = 0)
+    buttons = forms.IntegerField(label = 'Buttons', required = False, min_value = 0)
+    fringers = forms.IntegerField(label = 'Paper fringers', required = False, min_value = 0)
 
     def clean_buttons(self):
         value = self.cleaned_data['buttons']
@@ -78,6 +78,5 @@ class RefundTicketForm(forms.Form):
 
 class RefundForm(forms.Form):
 
-    customer = forms.CharField(label = 'Customer', max_length = 64, widget = forms.TextInput(attrs = {'placeholder': '-- Enter customer e-mail or name --'}))
-    amount = forms.DecimalField(label = 'Amount', min_value = 0, max_digits = 5, decimal_places = 2)
+    amount = forms.DecimalField(label = 'Refund', min_value = 0, max_digits = 5, decimal_places = 2)
     reason = forms.CharField(label = 'Reason', widget = forms.Textarea())

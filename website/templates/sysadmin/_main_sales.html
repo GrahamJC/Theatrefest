@@ -1,0 +1,98 @@
+{% load crispy_forms_tags %}
+
+<div class="row">
+    <div class="col-xs-6">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h4 class="panel-title">Sale</h4></div>
+            <div class="panel-body">
+                <form id="sale-search-form" class="form-horizontal">
+                    {% csrf_token %}
+                    {% crispy sale_search_form %}
+                    <div class="tf-form-actions">
+                        <a class="btn btn-primary" href="#" onclick="$('#sales-tab-content').load('{% url "sysadmin:sale_clear" %}')">Clear</a>
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                </form>
+                {% if sale %}
+                    <form id="sale-edit-form" class="form-horizontal">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="col-xs-3 control-label">Box office</label>
+                            <div class="col-xs-9"><p class="form-control-static">{{ sale.box_office.name }}</p></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-3 control-label">Customer</label>
+                            <div class="col-xs-9"><p class="form-control-static">{{ sale.customer }}</p></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-3 control-label">Amount</label>
+                            <div class="col-xs-9"><p class="form-control-static">&#163;{{ sale.amount | floatformat }}</p></div>
+                        </div>
+                        {% crispy sale_edit_form %}
+                        <div class="tf-form-actions">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if sale %}
+        <div class="col-xs-6">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h4 class="panel-title">Delete</h4></div>
+                <div class="panel-body">
+                    <p><strong>Caution:</strong> once a sale has been deleted it cannot be recovered.</p>
+                    <div class="tf-form-actions">
+                        <a class="btn btn-primary" href="#" onclick="$('#sales-tab-content').load('{% url "sysadmin:sale_delete" sale.uuid %}')">Delete</a>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading"><h4 class="panel-title">Tickets</h4></div>
+                <div class="panel-body">
+                    <p><strong>Caution:</strong> once a ticket has been removed from the sale it cannot be recovered.</p>
+                    <table class="table table-striped">
+                        {% for performance in sale.performances %}
+                            <tr><td>
+                                <table width="100%">
+                                    <tr><td colspan="4"><strong>{{ performance.show }}</strong></td></tr>
+                                    <tr><td colspan="4">{{ performance.date | date:"D, jS M" }} at {{ performance.time }}</td></tr>
+                                    {% for ticket in performance.tickets %}
+                                        <tr>
+                                            <td width="10%"></td>
+                                            <td width="50%">{{ ticket.description }}</td>
+                                            <td width="20%">{% if ticket.cost %}&#163;{{ ticket.cost }}{% endif %}</td>
+                                            <td width="20%"><a href="#" onclick="$('#sales-tab-content').load('{% url "sysadmin:sale_ticket_remove" sale.uuid ticket.uuid %}')">Remove</a></td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            </td></tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+
+<script language="javascript">
+
+    $( function() {
+        $('#sale-search-form').submit(function (event) {
+            event.preventDefault();
+            var postData = $('#sale-search-form').serializeArray()
+            $('#sales-tab-content').load('{% url "sysadmin:sale_search" %}', postData);
+        });
+        {% if sale %}
+            $('#sale-edit-form').submit(function (event) {
+                event.preventDefault();
+                var postData = $('#sale-edit-form').serializeArray()
+                $('#sales-tab-content').load('{% url "sysadmin:sale_update" sale.uuid %}', postData);
+            });
+        {% endif %}
+    });
+
+</script>

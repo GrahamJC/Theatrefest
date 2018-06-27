@@ -6,7 +6,9 @@ app_name = "reports"
 
 urlpatterns = [
     # Sales
-    path('sale/<int:sale_id>/pdf', views.sale_pdf, name = 'sale_pdf'),
+    path('sale/<slug:sale_uuid>/pdf', views.sale_pdf, name = 'sale_pdf'),
     # Refunds
-    path('refund/<int:refund_id>/pdf', views.refund_pdf, name = 'refund_pdf'),
+    path('refund/<slug:refund_uuid>/pdf', views.refund_pdf, name = 'refund_pdf'),
+    # Admissions
+    path('admission/<slug:performance_uuid>/pdf', views.admission_pdf, name = 'admission_pdf'),
 ]

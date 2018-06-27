@@ -526,7 +526,7 @@ class CheckoutView(LoginRequiredMixin, View):
                     'tickets': sale.tickets.order_by('performance__date', 'performance__time', 'performance__show__name')
                 }
                 body = render_to_string('tickets/sale_email.txt', context)
-                send_mail('Theatrfest 2018', body, settings.DEFAULT_FROM_EMAIL, [self.request.user.email])
+                send_mail('Theatrefest 2018', body, settings.DEFAULT_FROM_EMAIL, [self.request.user.email])
 
             # Confirm checkout
             return redirect(reverse('tickets:checkout_confirm', args = [sale.id]))

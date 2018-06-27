@@ -127,7 +127,8 @@
                 </div>
                 <div class="modal-body"></div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <a id="report-modal-pdf" class="btn btn-primary" href="#" target="_blank">PDF</a>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -140,14 +141,14 @@
     <script language="javascript">
 
         $( function() {
-            $('#admission-show').load('{% url 'boxoffice:admission_shows' %}');
+            $('#admission-show').load('{% url 'boxoffice:admission_shows' box_office.uuid %}');
 
             $('#admission-show').on('change', function(event) {
-                $('#admission-performance').load('{% url 'boxoffice:admission_show_performances' 0 %}'.replace('/0', '/' + $(this).val()));
+                $('#admission-performance').load('{% url 'boxoffice:admission_show_performances' '-UUID-' %}'.replace('-UUID-', $(this).val()));
             });
 
             $('#admission-performance').on('change', function(event) {
-                $('#admission-tickets').load('{% url 'boxoffice:admission_performance_tickets' 0 %}'.replace('/0', '/' + $(this).val()));
+                $('#admission-tickets').load('{% url 'boxoffice:admission_performance_tickets' '-UUID-' %}'.replace('-UUID-', $(this).val()));
             });
 
             $('#report-date').on('change', updateReport);
@@ -156,20 +157,22 @@
 
         function updateReport() {
             var date = $('#report-date').val()
-            $('#report-summary').load('{% url 'boxoffice:report_summary' 'yyyyMMdd' %}'.replace('yyyyMMdd', date));
-            $('#report-sales').load('{% url 'boxoffice:report_sales' 'yyyyMMdd' %}'.replace('yyyyMMdd', date));
-            $('#report-refunds').load('{% url 'boxoffice:report_refunds' 'yyyyMMdd' %}'.replace('yyyyMMdd', date));
+            $('#report-summary').load('{% url 'boxoffice:report_summary' box_office.uuid 'yyyyMMdd' %}'.replace('yyyyMMdd', date));
+            $('#report-sales').load('{% url 'boxoffice:report_sales' box_office.uuid 'yyyyMMdd' %}'.replace('yyyyMMdd', date));
+            $('#report-refunds').load('{% url 'boxoffice:report_refunds' box_office.uuid 'yyyyMMdd' %}'.replace('yyyyMMdd', date));
         };
 
-        function showSaleDetail(sale_id) {
+        function showSaleDetail(sale_id, sale_uuid) {
             $('#report-modal .modal-title').text('Sale: ' + sale_id);
-            $('#report-modal .modal-body').load('{% url "boxoffice:report_sale_detail" 0 %}'.replace('/0', '/' + sale_id));
+            $('#report-modal .modal-body').load('{% url "boxoffice:report_sale_detail" '-UUID-' %}'.replace('-UUID-', sale_uuid));
+            $('#report-modal-pdf').attr('href', '{% url 'reports:sale_pdf' '-UUID-' %}'.replace('-UUID-', sale_uuid));
             $('#report-modal').modal('show');
         }
 
-        function showRefundDetail(refund_id) {
+        function showRefundDetail(refund_id, refund_uuid) {
             $('#report-modal .modal-title').text('Refund: ' + refund_id);
-            $('#report-modal .modal-body').load('{% url "boxoffice:report_refund_detail" 0 %}'.replace('/0', '/' + refund_id));
+            $('#report-modal .modal-body').load('{% url "boxoffice:report_refund_detail" '-UUID-' %}'.replace('-UUID-', refund_uuid));
+            $('#report-modal-pdf').attr('href', '{% url 'reports:refund_pdf' '-UUID-' %}'.replace('-UUID-', refund_uuid));
             $('#report-modal').modal('show');
         }
 

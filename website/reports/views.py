@@ -2,7 +2,7 @@ import os
 import datetime
 
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import get_object_or_404, render, redirect
 from django.template import Template, Context
 from django.views import View
@@ -21,15 +21,16 @@ from reportlab.lib import colors
 from program.models import BoxOffice, Show, Performance
 from tickets.models import Sale, Refund, Ticket
 
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
 @login_required
-def sale_pdf(request, sale_id):
+def sale_pdf(request, sale_uuid):
 
     # Get sale to be printed
-    sale = get_object_or_404(Sale, pk = sale_id)
+    sale = get_object_or_404(Sale, uuid = sale_uuid)
 
     # Create receipt as a Platypus story
     response = HttpResponse(content_type = "application/pdf")
-    response["Content-Disposition"] = f"attachment; filename=sale{sale.id}.pdf"
+    response["Content-Disposition"] = f"filename=sale{sale.id}.pdf"
     doc = SimpleDocTemplate(
         response,
         pagesize = portrait(A4),
@@ -117,14 +118,16 @@ def sale_pdf(request, sale_id):
     doc.build(story)
     return response
     
-def refund_pdf(request, refund_id):
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
+@login_required
+def refund_pdf(request, refund_uuid):
 
     # Get refund to be printed
-    refund = get_object_or_404(Refund, pk = refund_id)
+    refund = get_object_or_404(Refund, uuid = refund_uuid)
 
     # Create receipt as a Platypus story
     response = HttpResponse(content_type = "application/pdf")
-    response["Content-Disposition"] = f"attachment; filename=refund{refund.id}.pdf"
+    response["Content-Disposition"] = f"filename=refund{refund.id}.pdf"
     doc = SimpleDocTemplate(
         response,
         pagesize = portrait(A4),
@@ -176,6 +179,76 @@ def refund_pdf(request, refund_id):
             )
         )
         story.append(table)
+
+    # Create PDF document and return it
+    doc.build(story)
+    return response
+
+@user_passes_test(lambda u: u.is_volunteer or u.is_admin)
+@login_required
+def admission_pdf(request, performance_uuid):
+
+    # Get performance
+    performance = get_object_or_404(Performance, uuid = performance_uuid)
+
+    # Create admission list as a Platypus story
+    response = HttpResponse(content_type = "application/pdf")
+    response["Content-Disposition"] = f"filename=admission{performance.id}.pdf"
+    doc = SimpleDocTemplate(
+        response,
+        pagesize = portrait(A4),
+        leftMargin = 2.5*cm,
+        rightMargin = 2.5*cm,
+        topMargin = 2.5*cm,
+        bottomMargin = 2.5*cm,
+    )
+    styles = getSampleStyleSheet()
+    story = []
+
+    # Theatrefest banner
+    banner = Image(os.path.join(settings.STATIC_ROOT, "BridgeBanner.png"), width = 16*cm, height = 4*cm)
+    banner.hAlign = 'CENTER'
+    story.append(banner)
+    story.append(Spacer(1, 1*cm))
+
+    # Show and performance
+    table = Table(
+        (
+            (Paragraph("<para><b>Show:</b></para>", styles['Normal']), performance.show),
+            (Paragraph("<para><b>Performance:</b></para>", styles['Normal']), f"{performance.date:%a, %e %b} at {performance.time:%I:%M %p}"),
+        ),
+        colWidths = (4*cm, 12*cm),
+        hAlign = 'LEFT'
+    )
+    story.append(table)
+    story.append(Spacer(1, 1*cm))
+
+    # Tickets
+    tableData = []
+    tableData.append((
+        Paragraph(f"<para><b>Ticket No</b></para>", styles['Normal']),
+        Paragraph(f"<para><b>Customer</b></para>", styles['Normal']),
+        Paragraph(f"<para><b>Type</b></para>", styles['Normal'])
+    ))
+    for ticket in performance.tickets.filter(sale__completed__isnull = False).order_by('id'):
+        if ticket.refund:
+            tableData.append((
+                Paragraph(f"<para><strike>{ticket.id}</strike></para>", styles['Normal']),
+                Paragraph(f"<para><strike>{ticket.sale.customer}</strike></para>", styles['Normal']),
+                Paragraph(f"<para><strike>{ticket.description}</strike></para>", styles['Normal'])
+            ))
+        else:
+            tableData.append((
+                Paragraph(f"<para>{ticket.id}</para>", styles['Normal']),
+                Paragraph(f"<para>{ticket.sale.customer}</para>", styles['Normal']),
+                Paragraph(f"<para>{ticket.description}</para>", styles['Normal'])
+            ))
+    table = Table(
+        tableData,
+        colWidths = (4*cm, 8*cm, 4*cm),
+        hAlign = 'LEFT',
+    )
+    story.append(table)
 
     # Create PDF document and return it
     doc.build(story)

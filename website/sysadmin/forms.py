@@ -14,6 +14,17 @@ class VolunteerForm(forms.Form):
         self.fields['user'].queryset = User.objects.filter(is_volunteer = False, is_admin = False).order_by('email')
 
 
+class SaleSearchForm(forms.Form):
+
+    sale_id = forms.IntegerField(label = 'Sale No')
+
+
+class SaleEditForm(forms.Form):
+
+    buttons = forms.IntegerField()
+    fringers = forms.IntegerField()
+
+
 class EMailForm(forms.Form):
 
     from_email = forms.EmailField(required=True)

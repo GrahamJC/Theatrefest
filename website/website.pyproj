@@ -268,7 +268,8 @@
     <Content Include="templates\registration\resend_activation_complete.html" />
     <Content Include="templates\registration\resend_activation_form.html" />
     <Content Include="templates\boxoffice\admission_tickets.html" />
-    <Content Include="templates\sysadmin\_main_reports.html" />
+    <Content Include="templates\sysadmin\_main_sales.html" />
+    <Content Include="templates\sysadmin\_main_tickets.html" />
     <Content Include="templates\sysadmin\_main_volunteers.html" />
     <Content Include="templates\sysadmin\main.html" />
     <Content Include="templates\sysadmin\email.html" />

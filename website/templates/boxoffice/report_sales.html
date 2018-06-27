@@ -10,7 +10,7 @@
     </tr>
     {% for sale in sales %}
         <tr>
-            <td><a href="#" onclick="showSaleDetail({{ sale.id }})">{{ sale.id }}</a></td>
+            <td><a href="#" onclick="showSaleDetail({{ sale.id }}, '{{ sale.uuid }}')">{{ sale.id }}</a></td>
             <td>{{ sale.customer }}</td>
             <td>{{ sale.buttons }}</td>
             <td>{{ sale.fringers.count }}</td>

@@ -26,7 +26,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading"><h4 class="panel-title">Tickets</h4></div>
                 <div class="panel-body">
-                    <form id="sale-tickets-form" class="form-horizontal" novalidate>
+                    <form id="sale-tickets-form" class="form-horizontal">
                         {% csrf_token %}
                         <div class="form-group {% if sale_tickets_form.show.errors %}has-error{% endif %}">
                             <div class="col-xs-12">
@@ -125,14 +125,22 @@
                             <div class="col-xs-3 text-right">&#163;{{ performance.ticket_cost }}</div>
                             <div class="col-xs-6">{{ performance.date | date:"D, jS M" }} at {{ performance.time }}</div>
                             <div class="col-xs-3"><a href="#tf-boxoffice-sale-tickets-{{ forloop.counter }}" data-toggle="collapse">{{ performance.tickets | length }} Tickets</a></div>
-                            <div class="col-xs-3 text-right"><a href="#" onclick="$('#sale-tab-content').load('{% url "boxoffice:sale_remove_performance" performance.id %}')">Remove</a></div>
+                            <div class="col-xs-3 text-right">
+                                {% if not sale.completed %}
+                                    <a href="#" onclick="$('#sale-tab-content').load('{% url "boxoffice:sale_remove_performance" sale.uuid performance.uuid %}')">Remove</a>
+                                {% endif %}
+                            </div>
                             <div id="tf-boxoffice-sale-tickets-{{ forloop.counter }}" class="col-xs-12 collapse">
                                 {% for ticket in performance.tickets %}
                                     <div class="row">
                                         <div class="col-xs-1"></div>
                                         <div class="col-xs-3">{{ ticket.description }}</div>
                                         <div class="col-xs-2 text-right">{% if ticket.cost %}&#163;{{ ticket.cost }}{% endif %}</div>
-                                        <div class="col-xs-3"><a href="#" onclick="$('#sale-tab-content').load('{% url "boxoffice:sale_remove_ticket" ticket.id %}')">Remove</a></div>
+                                        <div class="col-xs-3">
+                                            {% if not sale.completed %}
+                                                <a href="#" onclick="$('#sale-tab-content').load('{% url "boxoffice:sale_remove_ticket" sale.uuid ticket.uuid %}')">Remove</a>
+                                            {% endif %}
+                                        </div>
                                         <div class="col-xs-3"></div>
                                     </div>
                                 {% endfor %}
@@ -147,10 +155,10 @@
                         <div class="col-xs-12 tf-form-actions">
                             {% if sale.completed %}
                                 <button class="btn btn-primary">E-mail</button>
-                                <a class="btn btn-primary" href="{% url 'reports:sale_pdf' sale.id %}" target="_blank">PDF</a>
+                                <a class="btn btn-primary" href="{% url 'reports:sale_pdf' sale.uuid %}" target="_blank">PDF</a>
                             {% else %}
-                                <a class="btn btn-primary" href="#" onclick="$('#sale-tab-content').load('{% url "boxoffice:sale_complete" %}')">Complete</a>
-                                <a class="btn btn-primary" href="#" onclick="$('#sale-tab-content').load('{% url "boxoffice:sale_cancel" %}')">Cancel</a>
+                                <a class="btn btn-primary" href="#" onclick="$('#sale-tab-content').load('{% url "boxoffice:sale_complete" sale.uuid %}')">Complete</a>
+                                <a class="btn btn-primary" href="#" onclick="$('#sale-tab-content').load('{% url "boxoffice:sale_cancel" sale.uuid %}')">Cancel</a>
                             {% endif %}
                         </div>
                     </div>
@@ -163,34 +171,29 @@
 <script language="javascript">
 
     function onSaleTicketsShowChange() {
-        var show_id = $(this).val();
-        $('#{{ sale_tickets_form.performance.auto_id }}').load('{% url 'boxoffice:sale_show_performances' 0 %}'.replace('/0', '/' + show_id));
+        $('#{{ sale_tickets_form.performance.auto_id }}').load('{% url 'boxoffice:sale_show_performances' '-UUID-' %}'.replace('-UUID-', $(this).val()));
     }
 
     $( function() {
-        {% if sale_tickets_form %}
+        {% if not sale or sale.completed %}
+            $('#sale-customer-form').submit(function (event) {
+                event.preventDefault();
+                var postData = $('#sale-customer-form').serializeArray()
+                $('#sale-tab-content').load('{% url "boxoffice:sale_start" box_office.uuid %}', postData);
+            });
+        {% else %}
             $('#{{ sale_tickets_form.show.auto_id }}').on('change', onSaleTicketsShowChange );
+            $('#sale-tickets-form').submit(function (event) {
+                event.preventDefault();
+                var postData = $('#sale-tickets-form').serializeArray()
+                $('#sale-tab-content').load('{% url "boxoffice:sale_add_tickets" sale.uuid %}', postData);
+            });
+            $('#sale-extras-form').submit(function (event) {
+                event.preventDefault();
+                var postData = $('#sale-extras-form').serializeArray()
+                $('#sale-tab-content').load('{% url "boxoffice:sale_update_extras" sale.uuid %}', postData);
+            });
         {% endif %}
-        $('#sale-customer-form').submit(function (event) {
-            event.preventDefault();
-            var postData = $('#sale-customer-form').serializeArray()
-            $('#sale-tab-content').load('{% url "boxoffice:sale_start" %}', postData);
-        });
-        $('#sale-tickets-form').submit(function (event) {
-            event.preventDefault();
-            var postData = $('#sale-tickets-form').serializeArray()
-            $('#sale-tab-content').load('{% url "boxoffice:sale_add_tickets" %}', postData);
-        });
-        $('#sale-extras-form').submit(function (event) {
-            event.preventDefault();
-            var postData = $('#sale-extras-form').serializeArray()
-            $('#sale-tab-content').load('{% url "boxoffice:sale_update_extras" %}', postData);
-        });
-        $('#sale-form').submit(function (event) {
-            event.preventDefault();
-            var postData = $('#sale-form').serializeArray()
-            $('#sale-tab-content').load('{% url "boxoffice:sale_complete" %}', postData);
-        });
     });
 
 </script>

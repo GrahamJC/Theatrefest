@@ -1,3 +1,7 @@
+<div class="tf-form-actions">
+    <a class="btn btn-primary" href="{% url 'reports:admission_pdf' performance.uuid %}" target="_blank">PDF</a>
+</div>
+
 <p><a class="tf-show-name" href="{% url 'program:show_detail' performance.show.id %}">{{ performance.show.name }}</a></p>
 <p class="tf-performance">{{ performance.date|date:'D, j M' }} at {{ performance.time|time:'P' }}</p>
 

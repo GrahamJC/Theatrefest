@@ -1,0 +1,33 @@
+<table class="table table-striped">
+
+    <tr>
+        <th>Show/Performance</th>
+        <th>Tickets</th>
+        <th>Cost</th>
+    </tr>
+
+    {% for show in shows %}
+        <tr>
+            <td>
+                <b>{{ show.name }}</b><br/>
+                {% for performance in show.performances %}
+                    {{ performance.date | date:'l, F d' }} at {{ performance.time | time:'P' }}<br/>
+                {% endfor %}
+            </td>
+            <td>
+                <b>{{ show.tickets }}</b></br>
+                {% for performance in show.performances %}
+                    {{ performance.tickets }}<br/>
+                {% endfor %}
+            </td>
+            <td>
+                <b>&#163;{{ show.cost | floatformat }}</b></br>
+                {% for performance in show.performances %}
+                    &#163;{{ performance.cost | floatformat }}<br/>
+                {% endfor %}
+            </td>
+        </tr>
+    {% endfor %}
+
+</table>    
+

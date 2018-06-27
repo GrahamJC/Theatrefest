@@ -47,7 +47,7 @@ LOGGING = {
         },
         "file": {
             "class": "logging.handlers.TimedRotatingFileHandler",
-            "filename": r"/var/log/theatrefest/theatrefest.log",
+            "filename": r"/var/log/theatrefest/training.log",
             "when": "midnight",
             "interval": 1,
             "backupCount": 10,
@@ -56,7 +56,7 @@ LOGGING = {
         },
         "django": {
             "class": "logging.handlers.TimedRotatingFileHandler",
-            "filename": r"/var/log/theatrefest/django.log",
+            "filename": r"/var/log/theatrefest/training_django.log",
             "when": "midnight",
             "interval": 1,
             "backupCount": 10,

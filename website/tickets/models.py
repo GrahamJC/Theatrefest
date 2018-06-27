@@ -59,11 +59,12 @@ class Sale(TimeStampedModel):
             tickets = self.tickets.filter(performance_id = ticket['performance_id'])
             performance = {
                 'id': p.id,
+                'uuid': p.uuid,
                 'show': p.show.name,
                 'date' : p.date,
                 'time': p.time,
                 'ticket_cost': sum(t.cost for t in tickets.all()), 
-                'tickets': [{'id': t.id, 'description': t.description, 'cost': t.cost} for t in tickets],
+                'tickets': [{'id': t.id, 'uuid': t.uuid, 'description': t.description, 'cost': t.cost} for t in tickets],
             }
             performances.append(performance)
         return performances
@@ -80,6 +81,15 @@ class Refund(TimeStampedModel):
     amount = models.DecimalField(blank = True, default = 0, max_digits = 5, decimal_places = 2)
     reason = models.TextField()
     completed = models.DateTimeField(null = True, blank = True)
+
+    @property
+    def customer_user(self):
+        user_model = get_user_model()
+        try:
+            user = user_model.objects.get(email = self.customer)
+        except user_model.DoesNotExist:
+            user = None
+        return user
 
     @property
     def is_empty(self):
@@ -101,11 +111,12 @@ class Refund(TimeStampedModel):
             tickets = self.tickets.filter(performance_id = ticket['performance_id'])
             performance = {
                 'id': p.id,
+                'uuid': p.uuid,
                 'show': p.show.name,
                 'date' : p.date,
                 'time': p.time,
                 'ticket_cost': sum(t.cost for t in tickets.all()), 
-                'tickets': [{'id': t.id, 'description': t.description, 'cost': t.cost} for t in tickets],
+                'tickets': [{'id': t.id, 'uuid': t.uuid, 'description': t.description, 'cost': t.cost} for t in tickets],
             }
             performances.append(performance)
         return performances
@@ -235,7 +246,12 @@ class Fringer(TimeStampedModel):
         return (self.available > 0) and ((performance == None) or (performance not in [t.performance for t in self.tickets.filter(refund = None)]))
 
     def __str__(self):
-        return "{0}:{1}".format(self.user.username, self.name)
+        if self.user:
+            return f"eFringer: {self.user.email} ({self.name})"
+        if self.sale:
+            return f"Paper: {self.sale.customer}"
+        else:
+            return f"Fringer({self.id})"
 
     def get_available(user, performance = None):
         return [f for f in user.fringers.exclude(sale__completed__isnull = True) if f.is_available(performance)]
@@ -286,10 +302,4 @@ class Ticket(TimeStampedModel):
         return (self.refund != None)
 
     def __str__(self):
-        if self.sale:
-            customer = self.sale.customer
-        elif self.basket:
-            customer = f'Basket: {self.basket.user.email}'
-        else:
-            customer = '[unknown]'
-        return "{0} ({1}): {2}".format(self.description, customer, self.performance)
+        return "{0} ({1}): {2}".format(self.id, self.description, self.performance)
