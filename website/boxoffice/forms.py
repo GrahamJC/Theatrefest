@@ -60,7 +60,7 @@ class SaleFringerSubForm(forms.Form):
 class SaleExtrasForm(forms.Form):
 
     buttons = forms.IntegerField(label = 'Buttons', required = False, min_value = 0)
-    fringers = forms.IntegerField(label = 'Paper fringers', required = False, min_value = 0)
+    fringers = forms.IntegerField(label = 'Frequent fringers', required = False, min_value = 0)
 
     def clean_buttons(self):
         value = self.cleaned_data['buttons']

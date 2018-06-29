@@ -8,6 +8,7 @@ urlpatterns = [
     path('myaccount', views.MyAccountView.as_view(), name = 'myaccount'),
     path('myaccount/confirm/fringers', views.MyAccountConfirmFringersView.as_view(), name = 'myaccount_confirm_fringers'),
     path('buy/<int:performance_id>', views.BuyView.as_view(), name = 'buy'),
+    path('buy/<int:performance_id>/closed', views.BuyClosedView.as_view(), name = 'buy_closed'),
     path('buy/confirm/tickets/<int:performance_id>', views.BuyConfirmTicketsView.as_view(), name = 'buy_confirm_tickets'),
     path('buy/confirm/fringer_tickets/<int:performance_id>', views.BuyConfirmFringerTicketsView.as_view(), name = 'buy_confirm_fringer_tickets'),
     path('buy/confirm/fringers/<int:performance_id>', views.BuyConfirmFringersView.as_view(), name = 'buy_confirm_fringers'),

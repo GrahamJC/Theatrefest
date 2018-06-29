@@ -150,6 +150,7 @@ class MyAccountView(LoginRequiredMixin, View):
                     description = buy_type.description,
                     shows = buy_type.shows,
                     cost = buy_type.price,
+                    payment = buy_type.payment,
                     basket = basket,
                 )
                 fringer.save()
@@ -207,12 +208,17 @@ class BuyView(LoginRequiredMixin, View):
 
     def get(self, request, performance_id):
 
-        # Get basket, performance and ticket/fringer types
+        # Get basket and performance
         basket = request.user.basket
         performance = get_object_or_404(Performance, pk = performance_id)
-        ticket_types = TicketType.objects.filter(is_online = True)
+
+        # Check if online ticket sales are still open
+        delta = datetime.combine(performance.date, performance.time) - datetime.now()
+        if delta.total_seconds() <= (30 * 60):
+            return redirect(reverse('tickets:buy_closed', args = [performance.id]))
 
         # Create buy ticket formset
+        ticket_types = TicketType.objects.filter(is_online = True)
         ticket_formset = self.get_ticket_formset(ticket_types, None)
 
         # Get fringers available for this perfromance
@@ -274,6 +280,7 @@ class BuyView(LoginRequiredMixin, View):
                                     cost = ticket_type.price,
                                     user = request.user,
                                     basket = basket,
+                                    payment = ticket_type.payment,
                                 )
                                 ticket.save()
 
@@ -323,6 +330,7 @@ class BuyView(LoginRequiredMixin, View):
                             cost = 0,
                             fringer = fringer,
                             sale = sale,
+                            payment = fringer.payment,
                         )
                         ticket.save()
 
@@ -397,6 +405,23 @@ class BuyView(LoginRequiredMixin, View):
             'buy_fringer_form': buy_fringer_form,
         }
         return render(request, "tickets/buy.html", context)
+
+
+class BuyClosedView(LoginRequiredMixin, View):
+
+    def get(self, request, performance_id):
+
+        # Get basket and performance
+        basket = request.user.basket
+        performance = get_object_or_404(Performance, pk = performance_id)
+
+        # Display closed page
+        context = {
+            'basket': basket,
+            'performance': performance,
+            'last_30mins': (datetime.combine(performance.date, performance.time) - datetime.now()).total_seconds() > 0,
+        }
+        return render(request, "tickets/buy_closed.html", context)
 
 
 class BuyConfirmTicketsView(LoginRequiredMixin, View):
@@ -667,7 +692,7 @@ class PrintSaleView(LoginRequiredMixin, View):
 
         # Create receipt as a Platypus story
         response = HttpResponse(content_type = "application/pdf")
-        response["Content-Disposition"] = f"attachment; filename=sale{sale.id}.pdf"
+        response["Content-Disposition"] = f"filename=sale{sale.id}.pdf"
         doc = SimpleDocTemplate(
             response,
             pagesize = portrait(A4),
@@ -778,7 +803,7 @@ class PrintPerformanceView(LoginRequiredMixin, View):
 
         # Create a Platypus story
         response = HttpResponse(content_type = "application/pdf")
-        response["Content-Disposition"] = f"attachment; filename=performance{performance.id}.pdf"
+        response["Content-Disposition"] = f"filename=performance{performance.id}.pdf"
         doc = SimpleDocTemplate(
             response,
             pagesize = portrait(A4),

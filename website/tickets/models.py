@@ -208,6 +208,7 @@ class FringerType(TimeStampedModel):
     price = models.DecimalField(max_digits = 4, decimal_places = 2, blank = True, default = 0)
     is_online = models.BooleanField(default = False)
     rules = models.TextField(blank = True, default = '')
+    payment = models.DecimalField(max_digits = 4, decimal_places = 2, blank = True, default = 0)
 
     @property
     def description(self):
@@ -229,6 +230,7 @@ class Fringer(TimeStampedModel):
     cost = models.DecimalField(max_digits = 4, decimal_places = 2)
     basket = models.ForeignKey(Basket, on_delete = models.CASCADE, null = True, blank = True, related_name = 'fringers')
     sale = models.ForeignKey(Sale, on_delete = models.CASCADE, null = True, blank = True, related_name = 'fringers')
+    payment = models.DecimalField(max_digits = 4, decimal_places = 2, blank = True, default = 0)
 
     @property
     def used(self):
@@ -267,6 +269,7 @@ class TicketType(TimeStampedModel):
     is_online = models.BooleanField(default = False)
     is_admin = models.BooleanField(default = False)
     rules = models.TextField(blank = True, default = '')
+    payment = models.DecimalField(max_digits = 4, decimal_places = 2, blank = True, default = 0)
 
     @property
     def description(self):
@@ -292,6 +295,7 @@ class Ticket(TimeStampedModel):
     fringer = models.ForeignKey(Fringer, on_delete = models.PROTECT, null = True, blank = True, related_name = 'tickets')
     sale = models.ForeignKey(Sale, on_delete = models.CASCADE, null = True, blank = True, related_name = 'tickets')
     refund = models.ForeignKey(Refund, on_delete = models.SET_NULL, null = True, blank = True, related_name = 'tickets')
+    payment = models.DecimalField(max_digits = 4, decimal_places = 2, blank = True, default = 0)
 
     @property
     def is_confirmed(self):

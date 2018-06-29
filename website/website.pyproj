@@ -268,11 +268,14 @@
     <Content Include="templates\registration\resend_activation_complete.html" />
     <Content Include="templates\registration\resend_activation_form.html" />
     <Content Include="templates\boxoffice\admission_tickets.html" />
+    <Content Include="templates\sysadmin\boxoffice_report.html" />
     <Content Include="templates\sysadmin\_main_sales.html" />
-    <Content Include="templates\sysadmin\_main_tickets.html" />
+    <Content Include="templates\sysadmin\_main_boxoffice.html" />
+    <Content Include="templates\sysadmin\_main_shows.html" />
     <Content Include="templates\sysadmin\_main_volunteers.html" />
     <Content Include="templates\sysadmin\main.html" />
     <Content Include="templates\sysadmin\email.html" />
+    <Content Include="templates\tickets\buy_closed.html" />
     <Content Include="templates\tickets\buy_confirm_fringers.html" />
     <Content Include="templates\tickets\buy_confirm_fringer_tickets.html" />
     <Content Include="templates\tickets\buy_confirm_tickets.html" />

@@ -1,3 +1,6 @@
+import datetime
+from django.conf import settings
+from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db import transaction
@@ -16,7 +19,7 @@ from crispy_forms.bootstrap import FormActions, StrictButton
 
 from accounts.models import User
 from program.models import Show, Performance
-from tickets.models import Sale, Ticket, Fringer
+from tickets.models import BoxOffice, Sale, Refund, Ticket, Fringer
 
 from .forms import VolunteerForm, SaleSearchForm, SaleEditForm, EMailForm
 
@@ -90,15 +93,19 @@ def main(request):
                 'date': performance.date,
                 'time': performance.time,
                 'tickets': tickets.count(),
-                'cost': tickets.aggregate(sum_cost = Coalesce(Sum('cost'), 0))['sum_cost'],
+                'payment': tickets.aggregate(sum_payment = Coalesce(Sum('payment'), 0))['sum_payment'],
             })
         tickets = Ticket.objects.filter(performance__show = show, sale__completed__isnull = False, refund__isnull = True)
         shows.append({
             'name': show.name,
             'tickets': tickets.count(),
-            'cost': tickets.aggregate(sum_cost = Coalesce(Sum('cost'), 0))['sum_cost'],
+            'payment': tickets.aggregate(sum_payment = Coalesce(Sum('payment'), 0))['sum_payment'],
             'performances': performances,
         })
+
+    # Box office sales/refunds
+    today = datetime.datetime.today()
+    boxoffice_dates = [today - datetime.timedelta(days = n) for n in range(1, 14)]
 
     # Render main page
     context = {
@@ -106,6 +113,8 @@ def main(request):
         'volunteer_form': volunteer_form,
         'volunteers': User.objects.filter(is_volunteer = True).order_by('last_name', 'first_name'),
         'shows': shows,
+        'boxoffice_today': f'{today:%Y%m%d}',
+        'boxoffice_dates': [{ 'value': f'{d:%Y%m%d}', 'text': f'{d:%a, %b %d}'} for d in boxoffice_dates],
         'sale': None,
         'sale_search_form': _create_sale_search_form(),
         'sale_edit_form': _create_sale_edit_form(),
@@ -132,6 +141,43 @@ def volunteer_remove(request, user_uuid):
     volunteer.is_volunteer = False
     volunteer.save()
     return _render_volunteers(request)
+
+
+# Box office
+@user_passes_test(lambda u: u.is_admin)
+def boxoffice_report(request, yyyymmdd):
+
+    # Get date
+    date = datetime.datetime.strptime(yyyymmdd, '%Y%m%d')
+
+    # Get box offices with aggregated numbers
+    box_offices = []
+    for box_office in BoxOffice.objects.order_by('name'):
+        sales = Sale.objects.filter(box_office = box_office, completed__date = date)
+        sales_total = sales.aggregate(total = Coalesce(Sum('amount'), 0))['total']
+        refunds = Refund.objects.filter(box_office = box_office, completed__date = date)
+        refunds_total = refunds.aggregate(total = Coalesce(Sum('amount'), 0))['total']
+        box_offices.append({
+            'name': box_office.name,
+            'sales_buttons': sales.aggregate(buttons = Coalesce(Sum('buttons'), 0))['buttons'],
+            'sales_fringers': sales.aggregate(fringers = Coalesce(Sum('fringers__cost'), 0))['fringers'],
+            'sales_tickets': sales.aggregate(tickets = Coalesce(Sum('tickets__cost'), 0))['tickets'],
+            'sales_total': sales_total,
+            'refunds_total': refunds_total,
+            'balance': sales_total - refunds_total,
+        })
+
+    # Render report
+    context = {
+        'box_offices': box_offices,
+        'total_buttons': sum(bo['sales_buttons'] for bo in box_offices),
+        'total_fringers': sum(bo['sales_fringers'] for bo in box_offices),
+        'total_tickets': sum(bo['sales_tickets'] for bo in box_offices),
+        'total_sales': sum(bo['sales_total'] for bo in box_offices),
+        'total_refunds': sum(bo['refunds_total'] for bo in box_offices),
+        'total_balance': sum(bo['balance'] for bo in box_offices),
+    }
+    return render(request, 'sysadmin/boxoffice_report.html', context)
 
 
 # Sales

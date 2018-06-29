@@ -115,7 +115,7 @@
                     {% endif %}
                     {% for fringer in sale.fringers.all %}
                         <div class="row form-group">
-                            <div class="col-xs-9"><strong>eFringer Voucher: {{ fringer.description }}</strong></div>
+                            <div class="col-xs-9"><strong>Frequent Fringers: {{ fringer.description }}</strong></div>
                             <div class="col-xs-3 text-right">&#163;{{ fringer.cost }}</div>
                         </div>
                     {% endfor %}
@@ -170,10 +170,6 @@
 
 <script language="javascript">
 
-    function onSaleTicketsShowChange() {
-        $('#{{ sale_tickets_form.performance.auto_id }}').load('{% url 'boxoffice:sale_show_performances' '-UUID-' %}'.replace('-UUID-', $(this).val()));
-    }
-
     $( function() {
         {% if not sale or sale.completed %}
             $('#sale-customer-form').submit(function (event) {
@@ -182,7 +178,9 @@
                 $('#sale-tab-content').load('{% url "boxoffice:sale_start" box_office.uuid %}', postData);
             });
         {% else %}
-            $('#{{ sale_tickets_form.show.auto_id }}').on('change', onSaleTicketsShowChange );
+            $('#{{ sale_tickets_form.show.auto_id }}').on('change', function() {
+                $('#{{ sale_tickets_form.performance.auto_id }}').load('{% url 'boxoffice:sale_show_performances' sale.uuid '-UUID-' %}'.replace('-UUID-', $(this).val()));
+            });
             $('#sale-tickets-form').submit(function (event) {
                 event.preventDefault();
                 var postData = $('#sale-tickets-form').serializeArray()

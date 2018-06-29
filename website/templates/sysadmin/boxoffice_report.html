@@ -1,0 +1,34 @@
+<table class="table table-striped">
+
+    <tr>
+        <th>Box Office</th>
+        <th>Buttons</th>
+        <th>Fringers</th>
+        <th>Tickets</th>
+        <th>Sales</th>
+        <th>Refunds</th>
+        <th>Balance</th>
+    </tr>
+
+    {% for box_office in box_offices %}
+        <tr>
+            <td>{{ box_office.name }}</td>
+            <td>&#163;{{ box_office.sales_buttons | floatformat }}</td>
+            <td>&#163;{{ box_office.sales_fringers | floatformat }}</td>
+            <td>&#163;{{ box_office.sales_tickets | floatformat }}</td>
+            <td>&#163;{{ box_office.sales_total | floatformat }}</td>
+            <td>&#163;{{ box_office.refunds_total | floatformat }}</td>
+            <td>&#163;{{ box_office.balance | floatformat }}</td>
+        </tr>
+    {% endfor %}
+    <tr>
+        <td><strong>Total</strong></td>
+        <td><strong>&#163;{{ total_buttons | floatformat }}</strong></td>
+        <td><strong>&#163;{{ total_fringers | floatformat }}</strong></td>
+        <td><strong>&#163;{{ total_tickets | floatformat }}</strong></td>
+        <td><strong>&#163;{{ total_sales | floatformat }}</strong></td>
+        <td><strong>&#163;{{ total_refunds | floatformat }}</strong></td>
+        <td><strong>&#163;{{ total_balance | floatformat }}</strong></td>
+    </tr>
+
+</table>    

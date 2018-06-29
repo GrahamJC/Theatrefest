@@ -13,7 +13,7 @@ urlpatterns = [
     path('<slug:box_office_uuid>/tab/<str:tab>', views.main, name = 'main'),
     # Sale AJAX support
     path('<slug:box_office_uuid>/sale', views.sale_start, name = 'sale_start'),
-    path('sale/show/<slug:show_uuid>/performances', views.sale_show_performances, name = 'sale_show_performances'),
+    path('sale/<slug:sale_uuid>/show/<slug:show_uuid>/performances', views.sale_show_performances, name = 'sale_show_performances'),
     path('sale/<slug:sale_uuid>/add/tickets', views.sale_add_tickets, name = 'sale_add_tickets'),
     path('sale/<slug:sale_uuid>/update/extras', views.sale_update_extras, name = 'sale_update_extras'),
     path('sale/<slug:sale_uuid>/remove/performance/<slug:performance_uuid>', views.sale_remove_performance, name = 'sale_remove_performance'),

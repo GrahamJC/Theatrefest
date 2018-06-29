@@ -3,7 +3,7 @@
     <tr>
         <th>Show/Performance</th>
         <th>Tickets</th>
-        <th>Cost</th>
+        <th>Payment</th>
     </tr>
 
     {% for show in shows %}
@@ -21,9 +21,9 @@
                 {% endfor %}
             </td>
             <td>
-                <b>&#163;{{ show.cost | floatformat }}</b></br>
+                <b>&#163;{{ show.payment | floatformat }}</b></br>
                 {% for performance in show.performances %}
-                    &#163;{{ performance.cost | floatformat }}<br/>
+                    &#163;{{ performance.payment | floatformat }}<br/>
                 {% endfor %}
             </td>
         </tr>

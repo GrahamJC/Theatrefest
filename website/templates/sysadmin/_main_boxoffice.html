@@ -1,0 +1,34 @@
+<div class="form-horizontal">
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Select date</label>
+        <div class="col-sm-4">
+            <select id="boxoffice-date" class="form-control">
+                <option value="{{ boxoffice_today }}" selected>Today</option>
+                {% for date in boxoffice_dates %}
+                    <option value="{{ date.value }}">{{ date.text }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div id="boxoffice-report"></div>
+    </div>
+</div>
+
+<script language="javascript">
+
+    $( function() {
+        $('#boxoffice-date').on('change', updateBoxOffice);
+        $('#boxoffice-tab a').on('show.bs.tab', updateBoxOffice);
+    });
+
+    function updateBoxOffice() {
+        var date = $('#boxoffice-date').val()
+        $('#boxoffice-report').load('{% url 'sysadmin:boxoffice_report' 'yyyyMMdd' %}'.replace('yyyyMMdd', date));
+    };
+
+</script>
+

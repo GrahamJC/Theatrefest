@@ -180,15 +180,20 @@ def main(request, box_office_uuid, tab = 'sale'):
 
 # AJAX sale support
 @user_passes_test(lambda u: u.is_volunteer or u.is_admin)
-def sale_show_performances(request, show_uuid):
+def sale_show_performances(request, sale_uuid, show_uuid):
 
+    sale = get_object_or_404(Sale, uuid = sale_uuid)
     show = get_object_or_404(Show, uuid = show_uuid)
     html = '<option value="">-- Select performance --</option>'
     for performance in show.performances.order_by('date', 'time'):
         dt = datetime.datetime.combine(performance.date, performance.time)
-        if dt >= datetime.datetime.now():
+        mins_remaining = (dt - datetime.datetime.now()).total_seconds() / 60
+        if mins_remaining >= -30:
             dt = arrow.get(dt)
-            html += f'<option value="{performance.uuid}">{dt:ddd, MMM D} at {dt:h:mm a} ({performance.tickets_available} tickets available)</option>'
+            if (mins_remaining > 30) or (sale.box_office == show.venue.box_office):
+                html += f'<option value="{performance.uuid}">{dt:ddd, MMM D} at {dt:h:mm a} ({performance.tickets_available} available)</option>'
+            else:
+                html += f'<option disabled value="{performance.uuid}">{dt:ddd, MMM D} at {dt:h:mm a} ({performance.tickets_available} available - venue only)</option>'
     return HttpResponse(html)
     
 @user_passes_test(lambda u: u.is_volunteer or u.is_admin)
@@ -259,6 +264,7 @@ def sale_add_tickets(request, sale_uuid):
                                     performance = performance,
                                     description = ticket_type.name,
                                     cost = ticket_type.price,
+                                    payment = ticket_type.payment,
                                 )
                                 ticket.save()
                                 logger.info("Sale %s ticket added: %s", sale, ticket)
@@ -274,6 +280,7 @@ def sale_add_tickets(request, sale_uuid):
                                 fringer = fringer,
                                 description = 'eFringer',
                                 cost = 0,
+                                payment = fringer.payment,
                             )
                             ticket.save()
                             logger.info("Sale %s ticket added: %s", sale, ticket)

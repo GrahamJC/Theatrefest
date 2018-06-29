@@ -10,7 +10,8 @@
             <div class="col-xs-12">
                 <ul class="nav nav-tabs nav-justified">
                     <li id="volunteers-tab" {% if tab == 'volunteers' %}class="active"{% endif %}><a href="#volunteers-tab-content" data-toggle="tab">Volunteers</a></li>
-                    <li id="tickets-tab" {% if tab == 'tickets' %}class="active"{% endif %}><a href="#tickets-tab-content" data-toggle="tab">Tickets</a></li>
+                    <li id="shows-tab" {% if tab == 'shows' %}class="active"{% endif %}><a href="#shows-tab-content" data-toggle="tab">Shows</a></li>
+                    <li id="boxoffice-tab" {% if tab == 'boxoffice' %}class="active"{% endif %}><a href="#boxoffice-tab-content" data-toggle="tab">Box Office</a></li>
                     <li id="sales-tab" {% if tab == 'sales' %}class="active"{% endif %}><a href="#sales-tab-content" data-toggle="tab">Sales</a></li>
                 </ul>
             </div>
@@ -22,8 +23,12 @@
                 {% include 'sysadmin/_main_volunteers.html' %}
             </div>
 
-            <div id="tickets-tab-content" class="tab-pane {% if tab == 'tickets' %}active{% endif %}">
-                {% include 'sysadmin/_main_tickets.html' %}
+            <div id="shows-tab-content" class="tab-pane {% if tab == 'shows' %}active{% endif %}">
+                {% include 'sysadmin/_main_shows.html' %}
+            </div>
+
+            <div id="boxoffice-tab-content" class="tab-pane {% if tab == 'boxoffice' %}active{% endif %}">
+                {% include 'sysadmin/_main_boxoffice.html' %}
             </div>
 
             <div id="sales-tab-content" class="tab-pane {% if tab == 'sales' %}active{% endif %}">

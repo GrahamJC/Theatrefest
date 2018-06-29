@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load tf_filters %}
+{% load crispy_forms_tags %}
+
+{% block pagetitle %}buy tickets{% endblock %}
+
+{% block content %}
+
+    <div id="tf-tickets-buy-closed">
+
+        <p><a class="tf-show-name" href="{% url 'program:show_detail' performance.show.id %}">{{ performance.show.name }}</a></p>
+        <p class="tf-performance">{{ performance.date|date:'D, j M' }} at {{ performance.time|time:'P' }}</p>
+        <p>Tickets available: {{ performance.tickets_available }}</p>
+
+        {% if last_30mins %}
+            <p><strong>Online ticket sales for this performance are now closed.</strong></p>
+            <p>Tickets can still be purchased from the venue box office.</p>
+        {% else %}
+            <p><strong>Ticket sales for this performance are now closed.</strong></p>
+        {% endif %}
+
+
+    </div>
+
+{% endblock %}

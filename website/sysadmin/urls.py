@@ -9,6 +9,7 @@ urlpatterns = [
     path('main', views.main),
     path('volunteer/add', views.volunteer_add, name = 'volunteer_add'),
     path('volunteer/<slug:user_uuid>/remove', views.volunteer_remove, name = 'volunteer_remove'),
+    path('boxoffice/report/<str:yyyymmdd>', views.boxoffice_report, name = 'boxoffice_report'),
     path('sale/search', views.sale_search, name = 'sale_search'),
     path('sale/clear', views.sale_clear, name = 'sale_clear'),
     path('sale/<slug:sale_uuid>/update', views.sale_update, name = 'sale_update'),

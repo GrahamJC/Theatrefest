@@ -22,15 +22,14 @@
 
                 {% for performance in sale.performances %}
                     <div class="row form-group">
-                        <div class="col-xs-3">{{ performance.date | date:"D, jS M" }} at {{ performance.time }}</div>
-                        <div class="col-xs-9"><strong>{{ performance.show }}</strong></div>
+                        <div class="col-xs-12"><strong>{{ performance.show }}</strong></div>
+                        <div class="col-xs-12">{{ performance.date | date:"D, jS M" }} at {{ performance.time }}</div>
                         <div class="col-xs-12">
                             {% for ticket in performance.tickets %}
                                 <div class="row">
-                                    <div class="col-xs-1">{{ ticket.id }}</div>
-                                    <div class="col-xs-3">{{ ticket.description }}</div>
-                                    <div class="col-xs-2 text-right">{% if ticket.cost %}&#163;{{ ticket.cost }}{% endif %}</div>
-                                    <div class="col-xs-6"></div>
+                                    <div class="col-xs-3 col-sm-2 text-right">{{ ticket.id }}</div>
+                                    <div class="col-xs-5 col-sm-2">{{ ticket.description }}</div>
+                                    <div class="col-xs-4 col-sm-2 text-right">{% if ticket.cost %}&#163;{{ ticket.cost }}{% endif %}</div>
                                 </div>
                             {% endfor %}
                         </div>
