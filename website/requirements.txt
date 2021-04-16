@@ -3,7 +3,7 @@ certifi==2018.4.16
 chardet==3.0.4
 Django==2.0.5
 django-crispy-forms==1.7.2
-django-debug-toolbar==1.9.1
+django-debug-toolbar==1.11.1
 django-registration-redux==2.4
 django-requestlogging-redux==1.2.1
 idna==2.6
