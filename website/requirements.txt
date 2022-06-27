@@ -13,7 +13,7 @@ pip==10.0.1
 psycopg2==2.7.4
 python-dateutil==2.7.3
 pytz==2018.4
-reportlab==3.4.0
+reportlab==3.5.55
 requests==2.18.4
 setuptools==39.2.0
 six==1.11.0
