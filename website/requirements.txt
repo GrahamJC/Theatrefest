@@ -15,7 +15,7 @@ python-dateutil==2.7.3
 pytz==2018.4
 reportlab==3.4.0
 requests==2.18.4
-setuptools==39.2.0
+setuptools==65.5.1
 six==1.11.0
 sqlparse==0.2.4
 stripe==1.82.1
